@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
-  sudo git zip unzip libpng-dev \
+  sudo nano git zip unzip libpng-dev \
   libzip-dev default-mysql-client
 
 RUN docker-php-ext-install pdo pdo_mysql zip gd
