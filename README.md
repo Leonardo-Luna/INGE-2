@@ -98,6 +98,43 @@ Estos comandos generan plantillas vacías listas para ser personalizadas.
 - 📖 [Documentación de Doctrine](https://www.doctrine-project.org/projects/orm.html)
 - 📖 [Documentación de PHP](https://www.php.net/docs.php)
 
+# Uso básico de Docker 🐳
+
+Esta sección describe los comandos esenciales para manejar el proyecto con Docker.
+
+## 🚀 1. Iniciar los contenedores
+Posiciónate en el directorio del proyecto donde se encuentra el archivo `docker-compose.yml` y ejecuta:
+
+```bash
+docker compose up -d
+```
+
+Esto iniciará los contenedores en segundo plano.
+
+## 🔍 2. Acceder a un contenedor
+Para entrar a un contenedor y ejecutar comandos dentro de él, usa:
+
+```bash
+docker exec -it inge-app bash # o inge-db para acceder a la base de datos
+```
+
+Esto abrirá una terminal interactiva dentro del contenedor llamado `app-inge`.
+
+## ⏹️ 3. Detener los contenedores
+Para detener y eliminar los contenedores:
+
+1. Sal del contenedor con `Ctrl + D` o escribiendo `exit`.
+2. Ejecuta el siguiente comando desde tu máquina:
+
+   ```bash
+   docker compose down
+   ```
+
+Esto cerrará y limpiará los contenedores en ejecución.
+
+Con estos comandos esenciales, podrás manejar el proyecto sin complicaciones. 🚀
+
+
 # Git Workflow 🚀
 
 Este workflow establece cómo organizaremos el trabajo con ramas en el proyecto para mantener un desarrollo ordenado y minimizar conflictos.
