@@ -93,6 +93,17 @@ bin/console make:repository  # Crea un nuevo repositorio
 
 Estos comandos generan plantillas vacías listas para ser personalizadas.
 
+## 🏗️ Actualización del esquema de base de datos en Symfony
+
+El **esquema** de la base de datos define las tablas, columnas y relaciones entre ellas en función de las entidades de Doctrine. Cuando se realizan cambios en las entidades (como agregar nuevas propiedades o relaciones), es necesario actualizar el esquema para reflejar estos cambios en la base de datos.
+
+### 📌 Comando para actualizar el esquema
+Para aplicar los cambios en la base de datos sin perder datos existentes, ejecuta:
+
+```bash
+bin/console doctrine:schema:update --force
+
+
 ## 📚 Enlaces útiles
 - 📖 [Documentación de Symfony](https://symfony.com/doc/current/index.html)
 - 📖 [Documentación de Doctrine](https://www.doctrine-project.org/projects/orm.html)
@@ -134,6 +145,7 @@ Esto cerrará y limpiará los contenedores en ejecución.
 
 Con estos comandos esenciales, podrás manejar el proyecto sin complicaciones. 🚀
 
+- 📖 [Documentación de Docker](https://docs.docker.com/)
 
 # Git Workflow 🚀
 
