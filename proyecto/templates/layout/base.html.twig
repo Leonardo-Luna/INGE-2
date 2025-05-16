@@ -1,0 +1,245 @@
+<!-- Todo separadito para tener más organización, pero no importa  
+
+Imports: Importaciones de otros archivos, como lo es el top bar y footer, por ejemplo
+
+Content: Contenido genérico que podemos querer en todos los archivos
+
+CSSs: CSS general que se quiere aplicar a todos los archivos ej. fuente, tamaño de letra, colores de fondo
+
+JavaScripts: Scripts que queremos en todo el sistema, como lo es el jQuery de Bootstrap
+
+-->
+
+
+{% block imports %}
+
+    {% include 'layout/topbar.html.twig' %}
+    {% include 'layout/footer.html.twig' %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<body>
+
+</body>
+
+{% endblock %}
+
+{% block CSSs %}
+
+    <style>
+        /* Estilos generales del cuerpo */
+        body {
+            font-family: sans-serif; /* Fuente genérica para la mayoría de los textos */
+            line-height: 1.6; /* Espaciado entre líneas para mejorar la legibilidad */
+            color: #333; /* Color de texto principal */
+            background-color:rgb(221, 221, 221); /* Color de fondo ligero */
+            margin: 0; /* Eliminar márgenes predeterminados del body */
+            padding: 0; /* Eliminar rellenos predeterminados del body */
+            display: flex; /* Usar flexbox para el diseño principal */
+            flex-direction: column; /* Apilar los elementos verticalmente (header, main, footer) */
+            min-height: 100vh; /* Asegurar que el body ocupe al menos la altura de la ventana */
+        }
+
+        /* Estilos para el encabezado (header) */
+        header {
+            background-color: #343a40; /* Fondo oscuro para el encabezado */
+            color: #fff; /* Texto blanco para el encabezado */
+            padding: 1rem 2rem; /* Relleno superior/inferior y izquierda/derecha */
+            display: flex; /* Usar flexbox para alinear elementos dentro del header */
+            justify-content: space-between; /* Espaciar el logo y la navegación */
+            align-items: center; /* Centrar verticalmente los elementos */
+        }
+
+        .topbar.bg-light.py-2 {
+            /*border-radius: 100px;*/
+        }
+
+        .logo a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 1rem;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Estilos para el contenido principal (main) */
+        main {
+            flex-grow: 1; /* Hacer que el main ocupe el espacio restante */
+            padding: 2rem; /* Relleno alrededor del contenido principal */
+            max-width: 1200px; /* Ancho máximo del contenido para evitar que se extienda demasiado */
+            margin: 0 auto; /* Centrar el contenido horizontalmente */
+        }
+
+        /* Estilos para el pie de página (footer) */
+        footer {
+            background-color: #f0f0f0; /* Fondo claro para el pie de página */
+            color: #555; /* Color de texto del pie de página */
+            text-align: center; /* Centrar el texto del pie de página */
+            padding: 1rem; /* Relleno superior/inferior */
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd; /* Separador superior */
+        }
+
+        /* Estilos para contenedores generales */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Estilos para títulos */
+        h1, h2, h3 {
+            color: #222;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+
+        h3 {
+            font-size: 1.75rem;
+        }
+
+        /* Estilos para párrafos */
+        p {
+            margin-bottom: 1rem;
+        }
+
+        /* Estilos para enlaces dentro del contenido principal */
+        main a {
+            color: #007bff; /* Color azul para los enlaces */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        main a:hover {
+            color: #0056b3; /* Color más oscuro al pasar el ratón */
+            text-decoration: underline;
+        }
+
+        /* Estilos para listas */
+        ul, ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        /* Estilos para imágenes */
+        img {
+            max-width: 100%; /* Hacer que las imágenes sean responsivas */
+            display: block; /* Evitar espacio extra debajo de las imágenes inline */
+            margin-bottom: 1rem;
+        }
+
+        /* Estilos para formularios (muy básico) */
+        form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            box-sizing: border-box; /* Incluir el padding y el border en el ancho */
+        }
+
+        form button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        form button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilos para utilidades (puedes expandir esto) */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+
+        /* Media queries para hacerlo un poco más responsivo (ejemplo básico) */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar__logo {
+                margin-bottom: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            nav ul li {
+                margin-left: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            nav ul li a {
+                display: block;
+                width: 100%;
+            }
+        }
+    </style>
+
+{% endblock %}
+
+{% block JavaScripts %}
+
+{% endblock %}
