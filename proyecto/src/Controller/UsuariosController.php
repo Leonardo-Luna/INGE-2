@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Rol;
 use App\Entity\Usuario;
 use App\Form\RegistrarClienteType;
 use App\Repository\RolRepository;
@@ -25,8 +26,8 @@ final class UsuariosController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {  
-            $rolAutenticado = $this->rolesRepository->findOneBy(["nombre" => "ROL_AUTENTICADO"]);
-            $rolCliente = $this->rolesRepository->findOneBy(["nombre" => "ROL_CLIENTE"]);
+            $rolAutenticado = $this->rolesRepository->find(Rol::AUTENTICADO);
+            $rolCliente = $this->rolesRepository->find(Rol::CLIENTE);
 
             $nuevoUsuario->addRole($rolAutenticado);
             $nuevoUsuario->addRole($rolCliente);

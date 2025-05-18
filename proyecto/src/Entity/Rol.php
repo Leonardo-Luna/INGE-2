@@ -28,6 +28,11 @@ class Rol
     #[ORM\ManyToMany(targetEntity: Usuario::class, mappedBy: 'roles')]
     private Collection $usuarios;
 
+    public const AUTENTICADO = 1;
+    public const CLIENTE = 2;
+    public const EMPLEADO = 3;
+    public const GERENTE = 4;
+
     public function __construct()
     {
         $this->usuarios = new ArrayCollection();

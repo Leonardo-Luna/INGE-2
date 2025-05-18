@@ -15,8 +15,8 @@ class RolFixture extends Fixture implements FixtureGroupInterface
     
     public function load(ObjectManager $manager): void
     {
-        $rolGerente = $this->manager->getRepository(Rol::class)->findOneBy(['nombre' => 'ROL_GERENTE']);
-        $rolAutenticado = $this->manager->getRepository(Rol::class)->findOneBy(['nombre' => 'ROL_AUTENTICADO']);
+        $rolGerente = $this->manager->getRepository(Rol::class)->find(Rol::GERENTE);
+        $rolAutenticado = $this->manager->getRepository(Rol::class)->find(Rol::AUTENTICADO);
         
         $gerenteLuigi = new Usuario();
         $gerenteLuigi->setNombre("Luigi");
@@ -37,7 +37,7 @@ class RolFixture extends Fixture implements FixtureGroupInterface
         $gerenteMario->addRole($rolGerente);
         $gerenteMario->addRole($rolAutenticado);
         $this->manager->persist($gerenteMario);
-        
+
         $manager->flush();
     }
 
