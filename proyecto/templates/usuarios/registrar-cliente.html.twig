@@ -1,0 +1,28 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {{ form_start(form) }}
+    
+        {{ form_rest(form) }}    
+        
+        <button type="submit" class="btn btn-primary">
+            <i class="ri-save-line me-1"></i> Guardar
+        </button>
+        
+        <a href="{{ path('app_usuarios_nuevo_cliente') }}" class="btn btn-secondary">
+            <i class="ri-arrow-go-back-line me-1"></i> Cancelar
+        </a>
+    
+    {{ form_end(form, {render_rest: false} )}}
+
+{% endblock %}

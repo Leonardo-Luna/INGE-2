@@ -1,5 +1,5 @@
 {% block footer %}
-<footer class="bg-light py-3 mt-auto">
+<footer class="bg-light py-3 mt-auto footerClass">
     <div class="container text-center">
         <p>&copy; {{ "now"|date("Y") }} Alquil.AR - Todos los derechos reservados.</p>
         <ul class="list-inline">
@@ -9,4 +9,22 @@
         </ul>
     </div>
 </footer>
+
+<style>
+    /* Estilos para el pie de página (footer) - Posicionamiento abajo */
+    .footerClass {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Asegura que el body ocupe al menos la altura de la ventana */
+    }
+
+    footer {
+        background-color: #f0f0f0; /* Fondo claro para el pie de página */
+        color: #555; /* Color de texto del pie de página */
+        text-align: center; /* Centrar el texto del pie de página */
+        padding: 1rem; /* Relleno superior/inferior */
+        font-size: 0.9rem;
+        border-top: 1px solid #ddd; /* Separador superior */
+    }
+</style>
 {% endblock %}
