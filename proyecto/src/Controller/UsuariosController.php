@@ -6,6 +6,7 @@ use App\Entity\Rol;
 use App\Entity\Usuario;
 use App\Form\RegistrarClienteType;
 use App\Repository\RolRepository;
+use App\Services\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 final class UsuariosController extends AbstractController
 {
     public function __construct(private RolRepository $rolesRepository,
-                                private EntityManagerInterface $manager) { }
+                                private EntityManagerInterface $manager,
+                                private MailService $mailService) { }
 
     #[Route('/usuarios/nuevo-cliente', name: 'app_usuarios_nuevo_cliente')]
     public function NuevoCliente(Request $request): Response
@@ -37,6 +39,7 @@ final class UsuariosController extends AbstractController
             $nuevoUsuario->setPassword($hashedPassword);
 
             // ACÁ VA LA LÓGICA DE ENVÍO DE LA CONTRASEÑA AL CORREO ELECTRÓNICO ASIGNADO (sería enviar la randomPassword)
+            $this->mailService->enviarPassword($randomPassword, $nuevoUsuario->getEmail());
 
             $this->manager->persist($nuevoUsuario);
             $this->manager->flush();
