@@ -1,0 +1,15 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+
+    {{ form_start(form) }}
+
+    {{ form_rest(form) }}
+
+    <button type="submit" class="btn btn-success">
+        <i class="ri-save-line me-1"></i> Iniciar Sesión
+    </button>
+
+    {{ form_end(form, { render_rest: false }) }}
+
+{% endblock %}

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UsuarioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UsuarioRepository::class)]
@@ -35,6 +36,12 @@ class Usuario
      */
     #[ORM\ManyToMany(targetEntity: Rol::class, inversedBy: 'usuarios')]
     private Collection $roles;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $token2FA = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $expiracion2FA = null;
 
     public function __construct()
     {
@@ -129,4 +136,41 @@ class Usuario
 
         return $this;
     }
+
+    public function hasRole(Rol $role)
+    {
+        $roles = $this->roles;
+
+        foreach($roles as $rol) {
+            if($rol->getId() == $role->getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getToken2FA(): ?string
+    {
+        return $this->token2FA;
+    }
+
+    public function setToken2FA(?string $token2FA): static
+    {
+        $this->token2FA = $token2FA;
+
+        return $this;
+    }
+
+    public function getExpiracion2FA(): ?\DateTimeInterface
+    {
+        return $this->expiracion2FA;
+    }
+
+    public function setExpiracion2FA(?\DateTimeInterface $expiracion2FA): static
+    {
+        $this->expiracion2FA = $expiracion2FA;
+
+        return $this;
+    }
+
 }

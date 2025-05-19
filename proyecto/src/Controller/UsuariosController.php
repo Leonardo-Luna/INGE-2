@@ -7,6 +7,7 @@ use App\Entity\Usuario;
 use App\Form\RegistrarClienteType;
 use App\Repository\RolRepository;
 use App\Services\MailService;
+use App\Services\StringService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,8 @@ final class UsuariosController extends AbstractController
 {
     public function __construct(private RolRepository $rolesRepository,
                                 private EntityManagerInterface $manager,
-                                private MailService $mailService) { }
+                                private MailService $mailService,
+                                private StringService $stringService) { }
 
     #[Route('/usuarios/nuevo-cliente', name: 'app_usuarios_nuevo_cliente')]
     public function NuevoCliente(Request $request): Response
@@ -34,7 +36,7 @@ final class UsuariosController extends AbstractController
             $nuevoUsuario->addRole($rolAutenticado);
             $nuevoUsuario->addRole($rolCliente);
 
-            $randomPassword = $this->generateRandomString();
+            $randomPassword = $this->stringService->generateRandomPassword();
             $hashedPassword = hash('sha256', $randomPassword);
             $nuevoUsuario->setPassword($hashedPassword);
 
@@ -53,15 +55,4 @@ final class UsuariosController extends AbstractController
         ]);
     }
 
-    private function generateRandomString($length = 8) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-    
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
-        }
-    
-        return $randomString;
-    }
 }

@@ -6,17 +6,15 @@ use App\Entity\Rol;
 use App\Entity\Usuario;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class RolFixture extends Fixture implements FixtureGroupInterface
+class GerentesFixture extends Fixture implements FixtureGroupInterface
 {
-    public function __construct(private EntityManagerInterface $manager) { }
-    
+   
     public function load(ObjectManager $manager): void
     {
-        $rolGerente = $this->manager->getRepository(Rol::class)->find(Rol::GERENTE);
-        $rolAutenticado = $this->manager->getRepository(Rol::class)->find(Rol::AUTENTICADO);
+        $rolGerente = $manager->getRepository(Rol::class)->find(Rol::GERENTE);
+        $rolAutenticado = $manager->getRepository(Rol::class)->find(Rol::AUTENTICADO);
         
         $gerenteLuigi = new Usuario();
         $gerenteLuigi->setNombre("Luigi");
@@ -26,7 +24,7 @@ class RolFixture extends Fixture implements FixtureGroupInterface
         $gerenteLuigi->setPassword(hash('sha256', 'LuigiMario_123'));
         $gerenteLuigi->addRole($rolGerente);
         $gerenteLuigi->addRole($rolAutenticado);
-        $this->manager->persist($gerenteLuigi);
+        $manager->persist($gerenteLuigi);
 
         $gerenteMario = new Usuario();
         $gerenteMario->setNombre("Mario");
@@ -36,7 +34,7 @@ class RolFixture extends Fixture implements FixtureGroupInterface
         $gerenteMario->setPassword(hash('sha256', 'MarioMario_123'));
         $gerenteMario->addRole($rolGerente);
         $gerenteMario->addRole($rolAutenticado);
-        $this->manager->persist($gerenteMario);
+        $manager->persist($gerenteMario);
 
         $manager->flush();
     }
