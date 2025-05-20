@@ -5,10 +5,12 @@ namespace App\DataFixtures;
 use App\Entity\Rol;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class RolFixture extends Fixture implements FixtureGroupInterface
 {
+
     public function load(ObjectManager $manager): void
     {
         $rolAutenticado = new Rol();
