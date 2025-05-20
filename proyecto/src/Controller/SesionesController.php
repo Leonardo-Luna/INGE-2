@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Rol;
 use App\Entity\Usuario;
+use App\Services\MailService;
+use App\Services\SesionesService;
 use App\Services\StringService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,53 +18,49 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SesionesController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $manager,
-                                private StringService $stringService) { }
+                                private StringService $stringService,
+                                private MailService $mailService,
+                                private SesionesService $sesionesService) { }
 
-    #[Route('/login', name: 'app_sesiones')]
+    #[Route('/login', name: 'app_sesiones_login')]
     public function login(Request $request): Response
     {
 
-        $formBuilder = $this->createFormBuilder();
+        $formBuilder = $this->createFormBuilder(); # Armo un formulario on the fly 🕊 
         $formBuilder
             ->add('email', TextType::class)
             ->add('password', TextType::class)
         ;
 
-        $form = $formBuilder->getForm();
+        $form = $formBuilder->getForm(); # Lo convierto a un formulario renderizable
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
 
             $email = $form->get('email')->getData();
             $password = $form->get('password')->getData();
+            $hashedPassword = hash('sha256', $password);
             $existeUsuario = $this->manager->getRepository(Usuario::class)->findOneBy(['email' => $email]);
             $rolGerente = $this->manager->getRepository(Rol::class)->find(Rol::GERENTE);
 
-            if($existeUsuario) {
-                // To-do:
-                    # Hashear la contraseña ingresada y compararla con la del usuario existente
-                    # Manejar la lógica de las sesiones, debería quedarse iniciada 🤓 
+            if(($existeUsuario) && ($existeUsuario->getPassword() == $hashedPassword)) {
 
-                # Eso de arriba es lógica comaprtida, vean cómo lo hacen entre ustedes, caguense a piñas
+                if($existeUsuario->hasRole($rolGerente)) { # Si es gernete:
+                    $code = $this->stringService->generate2FA();
+                    $to = $existeUsuario->getEmail();
 
-                if($existeUsuario->hasRole($rolGerente)) {
-                    // Lógica para el inicio de gerente
-                    // Asumo que lo mejor sería hacer una redirección a la página de chequeo de 2FA, manejalo como quieras don Santi
-                   
-                    var_dump("Gerente"); die();
+                    $existeUsuario->setToken2FA($code); # Se setea el código contra el cual comparar
+                    $existeUsuario->setExpiracion2FA(new DateTime()); # Se setea el tiempo actual para ver que no esté expirado
+                    $this->manager->flush();
+                    # $this->mailService->Enviar2FA($code, $to); # Este método existe y funciona, pero para no mandar 1000 mails mejor dejarlo así a menos que se quiera probar :D
                 }
-                else {
-                    var_dump("Usuario normal"); die();
-                    // Lógica para el inicio normal
-                    // Acá no tengo ni idea de qué es lo mejor para hacer, éxitos en tu journey Mati 
+                else { # Si es usuario normal:
+                    $this->sesionesService->iniciarSesion(); # ESTE METODO ESTA VACIO, FALTA IMPLEMENTARLO @MATI, nunca implementé sesiones de 0 en Symfony, suerte :D
                 }
             }
-            else {
-                # Y acá tiramos un flash de error de credenciales or something like that, dejo un ejemplo por si la quieren usar, solo es acomodarla
-                /*
-                $this->addFlash('success', 'Usuario creado exitosamente.');
-                return $this->redirectToRoute('app_usuarios_nuevo_cliente');
-            */
+            else { # Si no existe la cuenta:
+                $this->addFlash('error', 'Las credenciales ingresadas son incorrectas.');
+                return $this->redirectToRoute('app_sesiones_login');
             }
         }
 
