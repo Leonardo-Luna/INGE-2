@@ -9,7 +9,7 @@ use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class RolFixture extends Fixture implements FixtureGroupInterface
+class GerentesFixture extends Fixture implements FixtureGroupInterface
 {
     public function __construct(private EntityManagerInterface $manager) { }
     
