@@ -18,12 +18,12 @@
                         <li class="nav-item mx-md-2">
                             <a class="nav-link" href="">Catálogo</a>
                         </li>
-                        {% if is_granted("ROL_GERENTE") %}
+                        {% if is_granted("ROLE_GERENTE") %}
                             <li class="nav-item mx-md-2">
                                 <a class="nav-link" href="">Gerencia</a>
                             </li>
                         {% endif %}
-                        {% if is_granted("ROL_EMPLEADO") %}
+                        {% if is_granted("ROLE_EMPLEADO") %}
                             <li class="nav-item mx-md-2">
                                 <a class="nav-link" href="">Administración</a>
                             </li>
@@ -35,14 +35,22 @@
             <nav class="topbar__auth navbar navbar-expand-md navbar-light">
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNavRight">
                     <ul class="navbar-nav">
-                        {% if is_granted("ROL_CLIENTE") %}
+                        {% if is_granted('ROLE_CLIENTE') %}
                             <li class="nav-item mx-md-2">
                                 <a class="nav-link" href="">Mi perfil</a>
                             </li>
+                        {% else %}
+                            {% if is_granted('ROLE_AUTENTICADO') %}
+                                <li class="nav-item mx-md-2">
+                                    <a class="nav-link">Bienvenido, {{ app.user.userIdentifier }}</a>
+                                </li>
+                            {% endif %}
                         {% endif %}
-                        {% if is_granted("ROL_AUTENTICADO") %}
+
+
+                        {% if is_granted('ROLE_AUTENTICADO') %}
                             <li class="nav-item mx-md-2">
-                                <a class="nav-link" href="">Cerrar Sesión</a>
+                                <a class="nav-link" href="{{ path('app_sesiones_logout') }}">Cerrar Sesión</a>
                             </li>
                         {% else %}
                             <li class="nav-item mx-md-2">

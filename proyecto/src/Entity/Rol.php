@@ -22,21 +22,12 @@ class Rol
     #[ORM\Column(type: Types::TEXT)]
     private ?string $descripcion = "";
 
-    /**
-     * @var Collection<int, Usuario>
-     */
-    #[ORM\ManyToMany(targetEntity: Usuario::class, mappedBy: 'roles')]
-    private Collection $usuarios;
-
     public const AUTENTICADO = 1;
     public const CLIENTE = 2;
     public const EMPLEADO = 3;
     public const GERENTE = 4;
 
-    public function __construct()
-    {
-        $this->usuarios = new ArrayCollection();
-    }
+    public function __construct() { }
 
     public function getId(): ?int
     {
@@ -66,31 +57,5 @@ class Rol
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Usuario>
-     */
-    public function getUsuarios(): Collection
-    {
-        return $this->usuarios;
-    }
-
-    public function addUsuario(Usuario $usuario): static
-    {
-        if (!$this->usuarios->contains($usuario)) {
-            $this->usuarios->add($usuario);
-            $usuario->addRole($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUsuario(Usuario $usuario): static
-    {
-        if ($this->usuarios->removeElement($usuario)) {
-            $usuario->removeRole($this);
-        }
-
-        return $this;
-    }
+    
 }
