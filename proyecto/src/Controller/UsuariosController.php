@@ -33,6 +33,13 @@ final class UsuariosController extends AbstractController
             $rolAutenticado = $this->rolesRepository->find(Rol::AUTENTICADO);
             $rolCliente = $this->rolesRepository->find(Rol::CLIENTE);
 
+            $verificarExistencia = $this->manager->getRepository(Usuario::class)->findOneBy(['email' => $nuevoUsuario->getEmail()]);
+
+            if($verificarExistencia) {
+                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
+                return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
+            }
+
             $nuevoUsuario->addRole($rolAutenticado);
             $nuevoUsuario->addRole($rolCliente);
 
