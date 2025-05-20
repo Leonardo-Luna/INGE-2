@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Services\MailService;
 use App\Services\SesionesService;
 use App\Services\StringService;
 use DateTime;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,69 +23,69 @@ final class SesionesController extends AbstractController
                                 private StringService $stringService) { }
 
     #[Route('/verificar', name: 'app_sesiones_verificar')]
-    public function VerificarGerente(Request $request) {
+    public function VerificarGerente() {
         if($this->authChecker->isGranted('ROLE_GERENTE')) {
             $usuario = $this->getUser();
 
-            $code = $this->stringService->generate2FA();
-            $to = $usuario->getEmail();
+            $this->EnviarToken($usuario);
 
-            $usuario->setToken2FA($code); # Se setea el código contra el cual comparar
-            $usuario->setExpiracion2FA(new DateTime()); # Se setea el tiempo actual para ver que no esté expirado
-            $this->manager->flush();
-            # $this->mailService->Enviar2FA($code, $to); # Este método existe y funciona, pero para no mandar 1000 mails mejor dejarlo así a menos que se quiera probar :D
-        
-            $this->redirectToRoute('app_sesiones_token', ['id' => $usuario->getId()]);
+            return $this->redirectToRoute('app_sesiones_token', ['id' => $usuario->getId()]);
         }
 
-        $this->redirectToRoute('app_index');
+        return $this->redirectToRoute('app_index');
 
     }
 
-    // #[Route('/login', name: 'app_sesiones_login')] # Lo dejo comentado por si de la nada nos sirve algo de todo esto, a futuro se borrará
-    // public function login(Request $request): Response
-    // {
+    #[Route('/login/token/{id}', name: 'app_sesiones_token')]
+    public function ComprobarToken(Request $request, $id) {
 
-    //     $formBuilder = $this->createFormBuilder(); # Armo un formulario on the fly 🕊 
-    //     $formBuilder
-    //         ->add('email', TextType::class)
-    //         ->add('password', TextType::class)
-    //     ;
+        $usuario = $this->manager->getRepository(User::class)->findOneBy(['id' => $id]);
+        $token = $usuario->getToken2FA();
+        $expiracion = $usuario->getExpiracion2FA();
 
-    //     $form = $formBuilder->getForm(); # Lo convierto a un formulario renderizable
-    //     $form->handleRequest($request);
+        $formBuilder = $this->createFormBuilder();
+        $formBuilder
+            ->add('codigo', TextType::class)
+        ;
 
-    //     if($form->isSubmitted() && $form->isValid()) {
+        $form = $formBuilder->getForm(); # Lo convierto a un formulario renderizable
+        $form->handleRequest($request);
 
-    //         $email = $form->get('email')->getData();
-    //         $password = $form->get('password')->getData();
-    //         $hashedPassword = hash('sha256', $password);
-    //         $existeUsuario = $this->manager->getRepository(Usuario::class)->findOneBy(['email' => $email]);
-    //         $rolGerente = $this->manager->getRepository(Rol::class)->find(Rol::GERENTE);
+        if($form->isSubmitted() && $form->isValid()) {
+            $tokenIngresado = $form->get('codigo')->getData();
 
-    //         if(($existeUsuario) && ($existeUsuario->getPassword() == $hashedPassword)) {
+            if($tokenIngresado == $token) {
+                $tiempoLogin = new DateTime();
+                $segundosPasados = abs($tiempoLogin->getTimestamp() - $expiracion->getTimestamp());
+                $minutosPasados = $segundosPasados / 60;
+                if($minutosPasados > 5) { # Token expirado
+                    $this->EnviarToken($usuario);
+                    $this->addFlash('error', 'El token ingresado ha expirado, revisa tu casilla de correo para obtener el nuevo.');
+                    return $this->redirectToRoute('app_sesiones_token', ['id' => $id]);
+                }
+                else { # Éxito
+                    return $this->redirectToRoute('app_index');
+                }
+            }
+            else { # Token incorrecto
+                $this->addFlash('error', 'El token ingresado es incorrecto, vuelva a intentarlo.');
+                return $this->redirectToRoute('app_sesiones_token', ['id' => $id]);
+            }
+        }
 
-    //             if($existeUsuario->hasRole($rolGerente)) { # Si es gernete:
-    //                 $code = $this->stringService->generate2FA();
-    //                 $to = $existeUsuario->getEmail();
+        return $this->render('sesiones/token.html.twig', [
+            'form' => $form,
+        ]);
+    }
 
-    //                 $existeUsuario->setToken2FA($code); # Se setea el código contra el cual comparar
-    //                 $existeUsuario->setExpiracion2FA(new DateTime()); # Se setea el tiempo actual para ver que no esté expirado
-    //                 $this->manager->flush();
-    //                 # $this->mailService->Enviar2FA($code, $to); # Este método existe y funciona, pero para no mandar 1000 mails mejor dejarlo así a menos que se quiera probar :D
-    //             }
-    //             else { # Si es usuario normal:
-    //                 $this->sesionesService->iniciarSesion(); # ESTE METODO ESTA VACIO, FALTA IMPLEMENTARLO @MATI, nunca implementé sesiones de 0 en Symfony, suerte :D
-    //             }
-    //         }
-    //         else { # Si no existe la cuenta:
-    //             $this->addFlash('error', 'Las credenciales ingresadas son incorrectas.');
-    //             return $this->redirectToRoute('app_sesiones_login');
-    //         }
-    //     }
+    private function EnviarToken($existeUsuario) {
+        $code = $this->stringService->generate2FA();
+        $to = $existeUsuario->getEmail();
 
-    //     return $this->render('sesiones/login.html.twig', [
-    //         'form' => $form,
-    //     ]);
-    // }
+        $existeUsuario->setToken2FA($code); # Se setea el código contra el cual comparar
+        $existeUsuario->setExpiracion2FA(new DateTime()); # Se setea el tiempo actual para ver que no esté expirado
+        $this->manager->flush();
+        # $this->mailService->Enviar2FA($code, $to); # Este método existe y funciona, pero para no mandar 1000 mails mejor dejarlo así a menos que se quiera probar :D
+    }
+
 }

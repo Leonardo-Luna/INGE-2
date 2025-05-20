@@ -1,0 +1,24 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {{ form_start(form) }}
+
+    {{ form_rest(form) }}
+
+    <button type="submit" class="btn btn-success">
+        <i class="ri-save-line me-1"></i> Confirmar
+    </button>
+
+    {{ form_end(form, { render_rest: false }) }}
+
+{% endblock %}
