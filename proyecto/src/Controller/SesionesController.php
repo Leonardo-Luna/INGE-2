@@ -43,25 +43,18 @@ final class SesionesController extends AbstractController
             $existeUsuario = $this->manager->getRepository(Usuario::class)->findOneBy(['email' => $email]);
             $rolGerente = $this->manager->getRepository(Rol::class)->find(Rol::GERENTE);
 
-            if($existeUsuario) {
+            if(($existeUsuario) && ($existeUsuario->getPassword() == $hashedPassword)) {
 
-                if($existeUsuario->getPassword() == $hashedPassword) {
-
-                    if($existeUsuario->hasRole($rolGerente)) { # Si es gerente:
-                        $this->EnviarToken($existeUsuario);
-                        $this->redirectToRoute('app_sesiones_token', ['id' => $existeUsuario->getId()]); # Agregar parámetro de la ID, no me acuerdo como era $existeUsuario->getId()
-                    }
-                    else { # Si es usuario normal:
-                        $this->sesionesService->iniciarSesion(); # ESTE METODO ESTA VACIO, FALTA IMPLEMENTARLO @MATI, nunca implementé sesiones de 0 en Symfony, suerte :D
-                    }
+                if($existeUsuario->hasRole($rolGerente)) { # Si es gerente:
+                    $this->EnviarToken($existeUsuario);
+                    $this->redirectToRoute('app_sesiones_token', ['id' => $existeUsuario->getId()]); # Agregar parámetro de la ID, no me acuerdo como era $existeUsuario->getId()
                 }
-                else { # Contraseña incorrecta ### YO DIFIERO DE ESTO. UN SOLO ESCENARIO POR CREDENCIALES, PERO ASÍ ESTÁ LA HU
-                    $this->addFlash('error', 'La contraseña ingresada es incorrecta.');
-                    return $this->redirectToRoute('app_sesiones_login');
+                else { # Si es usuario normal:
+                    $this->sesionesService->iniciarSesion(); # ESTE METODO ESTA VACIO, FALTA IMPLEMENTARLO @MATI, nunca implementé sesiones de 0 en Symfony, suerte :D
                 }
             }
             else { # Si no existe la cuenta:
-                $this->addFlash('error', 'El correo electrónico ingresado no se encuentra registrado en el sistema.');
+                $this->addFlash('error', 'Las credenciales ingresadas son incorrectas.');
                 return $this->redirectToRoute('app_sesiones_login');
             }
         }
@@ -96,7 +89,7 @@ final class SesionesController extends AbstractController
                 if($minutosPasados > 5) { # Token expirado
                     $this->EnviarToken($usuario);
                     $this->addFlash('error', 'El token ingresado ha expirado, revisa tu casilla de correo para obtener el nuevo.');
-                    return $this->redirectToRoute('app_sesiones_token', ['id' => $id]); # POR AHORA NO APLICA, ESPEREMOS A QUE NOS DEJEN CAMBIAR LA HU
+                    return $this->redirectToRoute('app_sesiones_token', ['id' => $id]);
                 }
                 else { # Éxito
                     $this->sesionesService->iniciarSesion();
