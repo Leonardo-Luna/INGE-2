@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserToken;
 use App\Services\MailService;
 use App\Services\SesionesService;
 use App\Services\StringService;
@@ -46,8 +47,8 @@ final class SesionesController extends AbstractController
     public function ComprobarToken(Request $request, $id) {
 
         $usuario = $this->manager->getRepository(User::class)->findOneBy(['id' => $id]);
-        $token = $usuario->getToken2FA();
-        $expiracion = $usuario->getExpiracion2FA();
+        $token = $usuario->getToken2FA()->getToken();
+        $expiracion = $usuario->getToken2FA()->getCreatedAt();
 
         $formBuilder = $this->createFormBuilder();
         $formBuilder
@@ -88,8 +89,11 @@ final class SesionesController extends AbstractController
         $code = $this->stringService->generate2FA();
         $to = $existeUsuario->getEmail();
 
-        $existeUsuario->setToken2FA($code); # Se setea el código contra el cual comparar
-        $existeUsuario->setExpiracion2FA(new DateTime()); # Se setea el tiempo actual para ver que no esté expirado
+        $token2FA = new UserToken();
+        $token2FA->setToken($code);
+        $token2FA->setCreatedAt(new DateTime());
+
+        $existeUsuario->setToken2FA($token2FA); # Se setea el código contra el cual comparar
         $this->manager->flush();
         # $this->mailService->Enviar2FA($code, $to); # Este método existe y funciona, pero para no mandar 1000 mails mejor dejarlo así a menos que se quiera probar :D
     }

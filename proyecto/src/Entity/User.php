@@ -3,9 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -43,16 +40,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    /**
-     * @var Collection<int, UserToken>
-     */
-    #[ORM\OneToMany(targetEntity: UserToken::class, mappedBy: 'user', orphanRemoval: true)]
-    private Collection $userTokens;
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?UserToken $token2FA = null;
 
-    public function __construct()
-    {
-        $this->userTokens = new ArrayCollection();
-    }
+    public function __construct() { }
 
     public function getId(): ?int
     {
@@ -184,33 +175,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-    /**
-     * @return Collection<int, UserToken>
-     */
-    public function getUserTokens(): Collection
+    public function getToken2FA(): ?UserToken
     {
-        return $this->userTokens;
+        return $this->token2FA;
     }
 
-    public function addUserToken(UserToken $userToken): static
+    public function setToken2FA(?UserToken $token2FA): static
     {
-        if (!$this->userTokens->contains($userToken)) {
-            $this->userTokens->add($userToken);
-            $userToken->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserToken(UserToken $userToken): static
-    {
-        if ($this->userTokens->removeElement($userToken)) {
-            // set the owning side to null (unless already changed)
-            if ($userToken->getUser() === $this) {
-                $userToken->setUser(null);
-            }
-        }
+        $this->token2FA = $token2FA;
 
         return $this;
     }
