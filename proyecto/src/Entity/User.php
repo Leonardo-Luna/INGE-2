@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -29,12 +31,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $apellido = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $token2FA = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $expiracion2FA = null;
-
     /**
      * @var list<string> The user roles
      */
@@ -46,6 +42,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, UserToken>
+     */
+    #[ORM\OneToMany(targetEntity: UserToken::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $userTokens;
+
+    public function __construct()
+    {
+        $this->userTokens = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -177,26 +184,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getToken2FA(): ?string
+
+    /**
+     * @return Collection<int, UserToken>
+     */
+    public function getUserTokens(): Collection
     {
-        return $this->token2FA;
+        return $this->userTokens;
     }
 
-    public function setToken2FA(?string $token2FA): static
+    public function addUserToken(UserToken $userToken): static
     {
-        $this->token2FA = $token2FA;
+        if (!$this->userTokens->contains($userToken)) {
+            $this->userTokens->add($userToken);
+            $userToken->setUser($this);
+        }
 
         return $this;
     }
 
-    public function getExpiracion2FA(): ?\DateTimeInterface
+    public function removeUserToken(UserToken $userToken): static
     {
-        return $this->expiracion2FA;
-    }
-
-    public function setExpiracion2FA(?\DateTimeInterface $expiracion2FA): static
-    {
-        $this->expiracion2FA = $expiracion2FA;
+        if ($this->userTokens->removeElement($userToken)) {
+            // set the owning side to null (unless already changed)
+            if ($userToken->getUser() === $this) {
+                $userToken->setUser(null);
+            }
+        }
 
         return $this;
     }
