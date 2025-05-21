@@ -37,7 +37,12 @@ final class SesionesController extends AbstractController
         return $this->redirectToRoute('app_index');
     }
 
-    #[Route('/login/token/{id}', name: 'app_sesiones_token')]
+    #[Route('/token', name: 'app_sesiones_empty_token')]
+    public function EmptyToken(Request $request, $id) {
+        return $this->redirectToRoute('app_sesiones_login');
+    }
+
+    #[Route('/token/{id}', name: 'app_sesiones_token')]
     public function ComprobarToken(Request $request, $id) {
 
         $usuario = $this->manager->getRepository(User::class)->findOneBy(['id' => $id]);
