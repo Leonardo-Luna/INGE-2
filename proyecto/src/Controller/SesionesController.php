@@ -33,7 +33,6 @@ final class SesionesController extends AbstractController
         }
 
         return $this->redirectToRoute('app_index');
-
     }
 
     #[Route('/login/token/{id}', name: 'app_sesiones_token')]
