@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -20,13 +21,14 @@ final class SesionesController extends AbstractController
                                 private MailService $mailService,
                                 private SesionesService $sesionesService,
                                 private AuthorizationCheckerInterface $authChecker,
-                                private StringService $stringService) { }
+                                private StringService $stringService,
+                                private RequestStack $requestStack) { }
 
     #[Route('/verificar', name: 'app_sesiones_verificar')]
     public function VerificarGerente() {
         if($this->authChecker->isGranted('ROLE_GERENTE')) {
+            
             $usuario = $this->getUser();
-
             $this->EnviarToken($usuario);
 
             return $this->redirectToRoute('app_sesiones_token', ['id' => $usuario->getId()]);
