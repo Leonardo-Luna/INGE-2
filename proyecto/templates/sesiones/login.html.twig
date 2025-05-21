@@ -1,7 +1,6 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-<form method="post">
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
@@ -10,7 +9,7 @@
             </div>
         {% endfor %}
     {% endfor %}
-    
+
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
@@ -21,23 +20,43 @@
         </div>
     {% endif %}
 
-    <label for="inputEmail">Correo electrónico</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Contraseña</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+    <div class="card shadow-sm rounded-lg mx-auto" style="max-width: 600px; width: 90vw; margin-top: 60px;">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="ri-lock-line me-2"></i> Iniciar Sesión</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="form-group mb-3">
+                    <label for="inputEmail" class="form-label">Correo electrónico</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="inputPassword" class="form-label">Contraseña</label>
+                    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                </div>
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Recuerdame
-        </label>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" name="_remember_me" id="rememberMeCheck">
+                        <label class="form-check-label" for="rememberMeCheck">
+                            Recuérdame
+                        </label>
+                    </div>
+                    <div>
+                        <a href="{{ path('app_reset_password') }}" class="text-decoration-none">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button class="btn btn-success" type="submit">
+                        <i class="ri-login-box-line me-1"></i> Iniciar Sesión
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Iniciar Sesión
-    </button>
-</form>
 {% endblock %}
