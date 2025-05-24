@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ReservaRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservaRepository::class)]
@@ -30,11 +29,7 @@ class Reserva
     #[ORM\Column(nullable: true)]
     private ?int $reembolsoPenalizado = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $fechaInicio = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $fechaFIn = null;
+    
 
     public function getId(): ?int
     {
@@ -92,30 +87,6 @@ class Reserva
     public function setMontoReembolso(int $MontoReembolso): static
     {
         $this->MontoReembolso = $MontoReembolso;
-
-        return $this;
-    }
-
-    public function getFechaInicio(): ?\DateTimeInterface
-    {
-        return $this->fechaInicio;
-    }
-
-    public function setFechaInicio(\DateTimeInterface $fechaInicio): static
-    {
-        $this->fechaInicio = $fechaInicio;
-
-        return $this;
-    }
-
-    public function getFechaFIn(): ?\DateTimeInterface
-    {
-        return $this->fechaFIn;
-    }
-
-    public function setFechaFIn(\DateTimeInterface $fechaFIn): static
-    {
-        $this->fechaFIn = $fechaFIn;
 
         return $this;
     }
