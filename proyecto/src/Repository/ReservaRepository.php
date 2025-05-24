@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\FechasReserva;
+use App\Entity\Reserva;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<FechasReserva>
+ * @extends ServiceEntityRepository<Reserva>
  */
-class FechasReservaRepository extends ServiceEntityRepository
+class ReservaRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, FechasReserva::class);
+        parent::__construct($registry, Reserva::class);
     }
 
     //    /**
-    //     * @return FechasReserva[] Returns an array of FechasReserva objects
+    //     * @return Reserva[] Returns an array of Reserva objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
+    //            ->orderBy('r.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?FechasReserva
+    //    public function findOneBySomeField($value): ?Reserva
     //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

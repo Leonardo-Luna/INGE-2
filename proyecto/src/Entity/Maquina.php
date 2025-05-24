@@ -21,12 +21,6 @@ class Maquina
     #[ORM\Column(length: 255)]
     private ?string $Marca = null;
 
-    /**
-     * @var Collection<int, FechasReserva>
-     */
-    #[ORM\OneToMany(targetEntity: FechasReserva::class, mappedBy: 'relacionMaquina', orphanRemoval: true)]
-    private Collection $fechasOcupadas;
-
     #[ORM\Column]
     private ?int $costoPorDIa = null;
 
@@ -37,7 +31,7 @@ class Maquina
     private ?bool $enReparacion = null;
 
     #[ORM\Column]
-    private ?int $Anio = null;
+    private ?int $Año = null;
 
     #[ORM\Column]
     private ?int $minimoDias = null;
@@ -52,14 +46,21 @@ class Maquina
     private ?int $reembolsoNormal = null;
 
     #[ORM\Column]
-    private ?DateTimeInterface $diasReembolso = null;
+    private ?int $diasReembolso = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $reembolsoPenalizado = null;
 
+    /**
+     * @var Collection<int, Reserva>
+     */
+    #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'Maquina', orphanRemoval: true)]
+    private Collection $reservas;
+
     public function __construct()
     {
         $this->fechasOcupadas = new ArrayCollection();
+        $this->reservas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -237,6 +238,36 @@ class Maquina
     public function setReembolsoPenalizado(?int $reembolsoPenalizado): static
     {
         $this->reembolsoPenalizado = $reembolsoPenalizado;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reserva>
+     */
+    public function getReservas(): Collection
+    {
+        return $this->reservas;
+    }
+
+    public function addReserva(Reserva $reserva): static
+    {
+        if (!$this->reservas->contains($reserva)) {
+            $this->reservas->add($reserva);
+            $reserva->setMaquina($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReserva(Reserva $reserva): static
+    {
+        if ($this->reservas->removeElement($reserva)) {
+            // set the owning side to null (unless already changed)
+            if ($reserva->getMaquina() === $this) {
+                $reserva->setMaquina(null);
+            }
+        }
 
         return $this;
     }
