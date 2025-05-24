@@ -47,7 +47,7 @@ security:
     access_control:
             - { path: ^/token, roles: ROLE_GERENTE }
             - { path: ^/usuarios, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
-
+            - { path: ^/maquina, roles: ROLE_GERENTE }
 when@test:
     security:
         password_hashers:

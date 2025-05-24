@@ -31,7 +31,7 @@ class Maquina
     private ?bool $enReparacion = null;
 
     #[ORM\Column]
-    private ?int $Año = null;
+    private ?int $Anio = null;
 
     #[ORM\Column]
     private ?int $minimoDias = null;
