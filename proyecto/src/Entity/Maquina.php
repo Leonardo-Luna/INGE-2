@@ -16,28 +16,28 @@ class Maquina
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Nombre = null;
+    private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Marca = null;
+    private ?string $marca = null;
 
     #[ORM\Column]
-    private ?int $costoPorDIa = null;
+    private ?int $costoPorDia = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Descripcion = null;
+    private ?string $descripcion = null;
 
     #[ORM\Column]
     private ?bool $enReparacion = null;
 
     #[ORM\Column]
-    private ?int $Anio = null;
+    private ?int $anio = null;
 
     #[ORM\Column]
     private ?int $minimoDias = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $Tipo = null;
+    private ?string $tipo = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $rutaImagen = null;
@@ -59,7 +59,6 @@ class Maquina
 
     public function __construct()
     {
-        $this->fechasOcupadas = new ArrayCollection();
         $this->reservas = new ArrayCollection();
     }
 
@@ -70,78 +69,48 @@ class Maquina
 
     public function getNombre(): ?string
     {
-        return $this->Nombre;
+        return $this->nombre;
     }
 
-    public function setNombre(string $Nombre): static
+    public function setNombre(string $nombre): static
     {
-        $this->Nombre = $Nombre;
+        $this->nombre = $nombre;
 
         return $this;
     }
 
     public function getMarca(): ?string
     {
-        return $this->Marca;
+        return $this->marca;
     }
 
-    public function setMarca(string $Marca): static
+    public function setMarca(string $marca): static
     {
-        $this->Marca = $Marca;
+        $this->marca = $marca;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, FechasReserva>
-     */
-    public function getFechasOcupadas(): Collection
+    public function getCostoPorDia(): ?int
     {
-        return $this->fechasOcupadas;
+        return $this->costoPorDia;
     }
 
-    public function addFechasOcupada(FechasReserva $fechasOcupada): static
+    public function setCostoPorDIa(int $costoPorDia): static
     {
-        if (!$this->fechasOcupadas->contains($fechasOcupada)) {
-            $this->fechasOcupadas->add($fechasOcupada);
-            $fechasOcupada->setRelacionMaquina($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFechasOcupada(FechasReserva $fechasOcupada): static
-    {
-        if ($this->fechasOcupadas->removeElement($fechasOcupada)) {
-            // set the owning side to null (unless already changed)
-            if ($fechasOcupada->getRelacionMaquina() === $this) {
-                $fechasOcupada->setRelacionMaquina(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getCostoPorDIa(): ?int
-    {
-        return $this->costoPorDIa;
-    }
-
-    public function setCostoPorDIa(int $costoPorDIa): static
-    {
-        $this->costoPorDIa = $costoPorDIa;
+        $this->costoPorDia = $costoPorDia;
 
         return $this;
     }
 
     public function getDescripcion(): ?string
     {
-        return $this->Descripcion;
+        return $this->descripcion;
     }
 
-    public function setDescripcion(string $Descripcion): static
+    public function setDescripcion(string $descripcion): static
     {
-        $this->Descripcion = $Descripcion;
+        $this->descripcion = $descripcion;
 
         return $this;
     }
@@ -160,12 +129,12 @@ class Maquina
 
     public function getAnio(): ?int
     {
-        return $this->Anio;
+        return $this->anio;
     }
 
-    public function setAnio(int $Anio): static
+    public function setAnio(int $anio): static
     {
-        $this->Anio = $Anio;
+        $this->anio = $anio;
 
         return $this;
     }
@@ -184,12 +153,12 @@ class Maquina
 
     public function getTipo(): ?string
     {
-        return $this->Tipo;
+        return $this->tipo;
     }
 
-    public function setTipo(?string $Tipo): static
+    public function setTipo(?string $tipo): static
     {
-        $this->Tipo = $Tipo;
+        $this->tipo = $tipo;
 
         return $this;
     }

@@ -15,13 +15,13 @@ class Reserva
 
     #[ORM\ManyToOne(inversedBy: 'reservas')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Maquina $Maquina = null;
+    private ?Maquina $maquina = null;
 
     #[ORM\Column]
-    private ?int $CostoTotal = null;
+    private ?int $costoTotal = null;
 
     #[ORM\Column]
-    private ?int $MontoReembolso = null;
+    private ?int $montoReembolso = null;
 
     #[ORM\Column]
     private ?DateTimeInterface $fechaReembolsoPenalizado = null;
@@ -38,19 +38,19 @@ class Reserva
 
     public function getMaquina(): ?Maquina
     {
-        return $this->Maquina;
+        return $this->maquina;
     }
 
     public function setMaquina(?Maquina $Maquina): static
     {
-        $this->Maquina = $Maquina;
+        $this->maquina = $Maquina;
 
         return $this;
     }
 
     public function getFechas(): ?FechasReserva
     {
-        return $this->Fechas;
+        return $this->fechas;
     }
 
     public function setFechas(FechasReserva $Fechas): static

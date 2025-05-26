@@ -23,7 +23,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteLuigi->setNombre("Luigi");
         $gerenteLuigi->setApellido("Mario");
         $gerenteLuigi->setDni("12345678");
-        $gerenteLuigi->setEmail("luigimario@gmail.com"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
+        $gerenteLuigi->setEmail("aritzblesa@gmail.com"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
         $gerenteLuigi->setPassword($this->passwordHasher->hashPassword($gerenteLuigi, 'LuigiMario_123'));
         $gerenteLuigi->addRole($rolAutenticado);
         $gerenteLuigi->addRole($rolGerente);
@@ -33,7 +33,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteMario->setNombre("Mario");
         $gerenteMario->setApellido("Mario");
         $gerenteMario->setDni("12345678");
-        $gerenteMario->setEmail("mariomario@gmail.com"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
+        $gerenteMario->setEmail("oscar.stanchi@gmail.com"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
         $gerenteMario->setPassword($this->passwordHasher->hashPassword($gerenteMario, 'MarioMario_123'));
         $gerenteMario->addRole($rolAutenticado);
         $gerenteMario->addRole($rolGerente);
