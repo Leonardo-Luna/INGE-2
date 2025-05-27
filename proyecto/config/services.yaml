@@ -6,6 +6,7 @@
 parameters:
     # Este es el directorio donde se guardarán las imágenes subidas
     images_directory: '%kernel.project_dir%/public/images/maquinaria/'
+    url_nominatim: '%env(URL_NOMINATIM)%'
 
 services:
     # default configuration for services in *this* file
