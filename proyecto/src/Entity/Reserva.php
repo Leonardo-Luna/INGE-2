@@ -29,7 +29,7 @@ class Reserva
     #[ORM\Column(nullable: true)]
     private ?int $reembolsoPenalizado = null;
 
-    
+
 
     public function getId(): ?int
     {
@@ -89,5 +89,15 @@ class Reserva
         $this->MontoReembolso = $MontoReembolso;
 
         return $this;
+    }
+
+    public function getFechaReembolsoPenalizado(): ?\DateTimeInterface
+    {
+        return $this->fechaReembolsoPenalizado;
+    }
+
+    public function getReembolsoPenalizado(): ?int
+    {
+    return $this->fechaReembolsoPenalizado;
     }
 }
