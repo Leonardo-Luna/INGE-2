@@ -16,7 +16,7 @@ class ResetPasswordConfirmType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => 'Correo electrónico',
-                'attr' => ['placeholder' => 'Ingresa tu correo'],
+                'attr' => ['placeholder' => 'Ingresa tu correo electrónico'],
                 'mapped' => false,
             ])
             ->add('newPassword', RepeatedType::class, [

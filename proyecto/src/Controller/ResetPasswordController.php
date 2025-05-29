@@ -23,7 +23,7 @@ final class ResetPasswordController extends AbstractController
     public function __construct( private StringService $stringService,
                                  private MailService $mailService,
                                  private EntityManagerInterface $manager,
-                                 private UserPasswordHasherInterface $hasher) { }
+                                 private UserPasswordHasherInterface $passwordHasher) { }
 
     #[Route('/reset-password', name: 'app_reset_password')]
     public function request(Request $request): Response
@@ -35,14 +35,13 @@ final class ResetPasswordController extends AbstractController
             $user = $this->manager->getRepository(User::class)->findOneBy(['email' => $email]); // Buscamos el usuario por el email
             if ($user) {                                              // Si existe el usuario     
                 $this->sendToken($user);                              // Enviamos el token al usuario                      
-                $this->addFlash('success', 'Se envio un mail a la direccion de correo electronico con instrucciones para recuperar tu contraseña.'); // Mensaje de éxito
+                $this->addFlash('success', 'Se envió un e-mail a su dirección de correo electrónico con instrucciones para la recuperación de su contraseña.'); // Mensaje de éxito
             }else{
-                $this->addFlash('error', 'No se encontro un usuario con la direccion de correo ingresada.'); // Si no existe el usuario, mostramos un mensaje de error
+                $this->addFlash('error', 'No se encontró un usuario asociado a la dirección de correo electrónico ingresada.'); // Si no existe el usuario, mostramos un mensaje de error
             }
         }
         return $this->render('reset-password/request.html.twig', [ 
             'form' => $form->createView(), // Renderizamos el formulario
-            'controller_name' => 'ResetPasswordController',
         ]);
     }
 
@@ -53,19 +52,19 @@ final class ResetPasswordController extends AbstractController
         $userToken = $this->manager->getRepository(UserToken::class)->findOneBy(['token' => $tokenValue]); // Buscamos el usuario por el token
         
         if (!$userToken) { // Si no existe el token
-            $this->addFlash('error', 'El token de recuperación es inválido o ha expirado.');
+            $this->addFlash('error', 'El enlace de recuperación es inválido o ha expirado.');
             return $this->redirectToRoute('app_reset_password');
         }
 
         $user = $this->manager->getRepository(User::class)->findOneBy(['resetToken' => $userToken]); // Buscamos el usuario por el token
         
         if(!$user) { 
-            $this->addFlash('error', 'El usuario asociado al token no existe.');
+            $this->addFlash('error', 'El usuario asociado al enlace de recuperación no existe.');
             return $this->redirectToRoute('app_reset_password');
         }
 
-        if($user->getResetToken()->getCreatedAt() < (new DateTime())->modify('-30 minutes')) { // Verificamos si el token ha expirado (1 hora)
-            $this->addFlash('error', 'El token de recuperación ha expirado.');
+        if($user->getResetToken()->getCreatedAt() < (new DateTime())->modify('-30 minutes')) { // Verificamos si el token ha expirado (30 mins)
+            $this->addFlash('error', 'El enlace de recuperación de contraseña ha expirado.');
             return $this->redirectToRoute('app_reset_password');
         }
 
@@ -79,7 +78,7 @@ final class ResetPasswordController extends AbstractController
                 return $this->redirectToRoute('app_reset_password_confirm', ['token' => $tokenValue]);
             }
             $newPassword = $form->get('newPassword')->getData(); // Obtenemos la nueva contraseña del formulario
-            $hashedPassword = $this->hasher->hashPassword($user, $newPassword); // Hasheamos la nueva contraseña
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword); // Hasheamos la nueva contraseña
             $user->setPassword($hashedPassword); // Seteamos la nueva contraseña al usuario
             $user->setResetToken(null); // Eliminamos el token de recuperación del usuario
             $this->manager->flush(); // Guardamos los cambios en la base de datos
@@ -90,13 +89,12 @@ final class ResetPasswordController extends AbstractController
 
         return $this->render('reset-password/confirm.html.twig', [
             'form' => $form->createView(), // Renderizamos el formulario
-            'controller_name' => 'ResetPasswordController',
         ]);
     }
 
     public function sendToken($user){
         $code = $this->stringService->generateToken(); // Generamos un código aleatorio de 32 caracteres
-        $to= $user->getEmail();
+        $to = $user->getEmail();
 
         $resetToken = new UserToken();
         $resetToken->setToken($code);
@@ -106,6 +104,6 @@ final class ResetPasswordController extends AbstractController
         $this->manager->flush();
 
         $link = $this->generateUrl('app_reset_password_confirm', ['token' => $code], UrlGeneratorInterface::ABSOLUTE_URL); // Generamos el link de reset
-        $this->mailService->EnviarRecuperarContraseña($link, $to); 
+        $this->mailService->EnviarRecuperarPassword($link, $to); 
     }
 }

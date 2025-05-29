@@ -40,7 +40,7 @@ class MailService {
 
     }
 
-    public function EnviarRecuperarContraseña($link, $to) {
+    public function EnviarRecuperarPassword($link, $to) {
 
         $email = (new Email())
             ->from(new Address('alquilar@leostrange.live','Alquil.AR'))

@@ -39,6 +39,15 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteMario->addRole($rolGerente);
         $manager->persist($gerenteMario);
 
+        $testingLeo = new User();
+        $testingLeo->setNombre("Leo");
+        $testingLeo->setApellido("Luna");
+        $testingLeo->setDni("12345678");
+        $testingLeo->setEmail("lunaleonardo031@gmail.com");
+        $testingLeo->setPassword($this->passwordHasher->hashPassword($testingLeo, "abc123"));
+        $testingLeo->addRole($rolAutenticado);
+        $manager->persist($testingLeo);
+
         $manager->flush();
     }
 
