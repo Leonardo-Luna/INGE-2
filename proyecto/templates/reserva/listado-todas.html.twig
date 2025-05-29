@@ -1,0 +1,25 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Alquil.AR{% endblock %}
+
+{% block body %}
+
+    {% for reserva in reservas %}
+
+        {% set cliente = reserva.cliente %} <!-- SET permite establecer una variable, como está dentro del for es temporal por iteración :D -->
+        {% set maquina = reserva.maquina %}
+
+        <dl>
+
+            <dt>{{reserva.id}}</dt>
+
+            <dd>{{reserva.estado}}</dd>
+            <dd>{{maquina.nombre}}</dd>
+            <dd>{{cliente.nombre}}</dd>
+            <dd>{{cliente.apellido}}</dd>
+
+        </dl>
+
+    {% endfor %}
+
+{% endblock %}

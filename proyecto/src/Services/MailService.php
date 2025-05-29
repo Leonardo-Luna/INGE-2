@@ -39,4 +39,19 @@ class MailService {
         $sent = $this->mailer->send($email);
 
     }
+
+    public function EnviarRecuperarPassword($link, $to) {
+
+        $email = (new Email())
+            ->from(new Address('alquilar@leostrange.live','Alquil.AR'))
+            ->to($to)
+            ->replyTo('ivtech.unlp@gmail.com')
+            ->priority(Email::PRIORITY_HIGH)
+            ->subject('Alquil.AR | Recuperación de contraseña')
+            ->text('¡Gracias por usar Alquil.AR!')
+            ->html('<p>Has solicitado recuperar tu contraseña. Si no fuiste tú, ignora este mensaje.</p>
+                    <p>Si fuiste tú, haz click aqui para recuperar tu contraseña: <a href="' . $link . '">Recuperar contraseña</a></p>');
+       $sent = $this->mailer->send($email);           
+
+    }
 }
