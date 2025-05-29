@@ -1,0 +1,38 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="card shadow-sm rounded-lg mx-auto" style="max-width: 600px; width: 90vw; margin-top: 60px;">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="ri-mail-send-line me-2"></i> Restablecer Contraseña</h4>
+        </div>
+        <div class="card-body">
+            <p class="mb-4">Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+
+            {{ form_start(form) }}
+                <div class="form-group mb-3">
+                    {{ form_label(form.email, 'Correo electrónico', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control', 'autocomplete': 'email'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <button class="btn btn-success" type="submit">
+                        <i class="ri-mail-line me-1"></i> Confirmar
+                    </button>
+                    <a href="{{ path('app_sesiones_login') }}" class="btn btn-secondary">
+                        <i class="ri-arrow-left-line me-1"></i> Cancelar
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

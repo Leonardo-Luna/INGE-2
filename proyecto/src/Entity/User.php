@@ -43,6 +43,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?UserToken $token2FA = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?UserToken $resetToken = null;
+
     public function __construct() { }
 
     public function getId(): ?int
@@ -183,6 +186,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setToken2FA(?UserToken $token2FA): static
     {
         $this->token2FA = $token2FA;
+
+        return $this;
+    }
+
+    public function getResetToken(): ?UserToken
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?UserToken $resetToken): static
+    {
+        $this->resetToken = $resetToken;
 
         return $this;
     }
