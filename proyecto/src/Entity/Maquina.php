@@ -57,6 +57,10 @@ class Maquina
     #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'Maquina', orphanRemoval: true)]
     private Collection $reservas;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Sucursal $ubicacion = null;
+
     public function __construct()
     {
         $this->reservas = new ArrayCollection();
@@ -237,6 +241,18 @@ class Maquina
                 $reserva->setMaquina(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUbicacion(): ?Sucursal
+    {
+        return $this->ubicacion;
+    }
+
+    public function setUbicacion(Sucursal $ubicacion): static
+    {
+        $this->ubicacion = $ubicacion;
 
         return $this;
     }

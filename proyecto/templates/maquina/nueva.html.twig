@@ -3,9 +3,9 @@
 
 {% block title %}Cargar Nueva Máquina{% endblock %}
 
-{% block content %} {# ¡Cambiado de 'body' a 'content'! #}
+{% block content %} 
 
-    {# Bloque para mensajes flash (copiado de tu ejemplo) #}
+    {# Bloque para mensajes flash (copiado del login) #}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
@@ -14,8 +14,6 @@
             </div>
         {% endfor %}
     {% endfor %}
-
-    {# Aquí no necesitas el 'if error' o 'if app.user' porque no es una página de login #}
 
     <div class="card shadow-sm rounded-lg mx-auto" style="max-width: 600px; width: 90vw; margin-top: 60px;">
         <div class="card-header bg-primary text-white">
@@ -67,6 +65,11 @@
                     {{ form_label(form.rutaImagen, 'Ruta de la Imagen', {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.rutaImagen, {'attr': {'class': 'form-control'}}) }}
                     {{ form_errors(form.rutaImagen) }}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form_label(form.ubicacion, 'Sucursal', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.ubicacion, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.ubicacion) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.reembolsoNormal, 'Reembolso Normal (%)', {'label_attr': {'class': 'form-label'}}) }}

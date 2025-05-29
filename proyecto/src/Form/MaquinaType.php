@@ -3,12 +3,14 @@
 namespace App\Form;
 
 use App\Entity\Maquina;
+use App\Entity\Sucursal;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType; 
 use Symfony\Component\Form\Extension\Core\Type\FileType; 
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class MaquinaType extends AbstractType
 {
@@ -39,9 +41,18 @@ class MaquinaType extends AbstractType
                     ])
                 ],
             ])
+
+               ->add('ubicacion', EntityType::class, [
+                'class' => Sucursal::class,
+                'choice_label' => 'nombre', // Muestra el nombre de la sucursal en el select
+                'placeholder' => 'Seleccione una sucursal', // Opcional: texto predeterminado
+                'required' => true, 
+            ])
             ->add('reembolsoNormal')
             ->add('diasReembolso')
             ->add('reembolsoPenalizado')
+         
+
 
             
         ;
