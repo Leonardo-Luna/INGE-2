@@ -62,9 +62,9 @@
                     {{ form_errors(form.Tipo) }}
                 </div>
                 <div class="form-group mb-3">
-                    {{ form_label(form.rutaImagen, 'Ruta de la Imagen', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.rutaImagen, {'attr': {'class': 'form-control'}}) }}
-                    {{ form_errors(form.rutaImagen) }}
+                    {{ form_label(form.imagenes, 'Imágenes de la Máquina', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.imagenes) }} {# Esto renderiza el input file con 'multiple' #}
+                    {{ form_errors(form.imagenes) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.ubicacion, 'Sucursal', {'label_attr': {'class': 'form-label'}}) }}

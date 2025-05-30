@@ -39,9 +39,6 @@ class Maquina
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $tipo = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $rutaImagen = null;
-
     #[ORM\Column]
     private ?int $reembolsoNormal = null;
 
@@ -60,6 +57,9 @@ class Maquina
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Sucursal $ubicacion = null;
+
+    #[ORM\Column(nullable: true)]
+    private array $imagenes = [];
 
     public function __construct()
     {
@@ -167,18 +167,6 @@ class Maquina
         return $this;
     }
 
-    public function getRutaImagen(): ?string
-    {
-        return $this->rutaImagen;
-    }
-
-    public function setRutaImagen(?string $rutaImagen): static
-    {
-        $this->rutaImagen = $rutaImagen;
-
-        return $this;
-    }
-
     public function getReembolsoNormal(): ?int
     {
         return $this->reembolsoNormal;
@@ -253,6 +241,18 @@ class Maquina
     public function setUbicacion(Sucursal $ubicacion): static
     {
         $this->ubicacion = $ubicacion;
+
+        return $this;
+    }
+
+    public function getImagenes(): array
+    {
+        return $this->imagenes;
+    }
+
+    public function setImagenes(array $imagenes): static
+    {
+        $this->imagenes = $imagenes;
 
         return $this;
     }

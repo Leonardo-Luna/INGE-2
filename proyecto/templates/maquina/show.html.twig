@@ -1,0 +1,384 @@
+{# templates/maquina/show.html.twig - Versión inspirada en Mercado Libre #}
+
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Máquina: {{ maquina.nombre }} - Detalles{% endblock %}
+
+{% block imports %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEbFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Estilos generales */
+        body {
+            background-color: #ededed;
+        }
+        .container-fluid.product-page {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);
+        }
+
+        /* Sección de la imagen */
+        .product-image-gallery {
+            display: flex;
+        }
+        .product-thumbnails {
+            width: 60px; /* Ancho fijo para las miniaturas */
+            margin-right: 15px;
+            /* Si las miniaturas son más de 3-4, podrías querer un overflow-y: auto; aquí */
+        }
+        .thumbnail-item {
+            border: 1px solid #dee2e6;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            height: 50px; /* Altura fija para miniaturas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff; /* Fondo blanco para las miniaturas */
+        }
+        .thumbnail-item.active {
+            border-color: #3483fa;
+            box-shadow: 0 0 0 2px rgba(52, 131, 250, 0.5);
+        }
+        .thumbnail-item img {
+            max-width: 100%; /* Ajusta la imagen dentro de la miniatura */
+            max-height: 100%;
+            object-fit: contain; /* Asegura que la imagen no se recorte */
+        }
+        .main-image-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .main-product-image {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        .placeholder-icon {
+            color: #ccc;
+        }
+
+        /* Resto de tus estilos... */
+        /* Información del producto (derecha) */
+        .product-info-panel {
+            padding-left: 20px;
+        }
+        .product-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .product-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .product-old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .product-discount {
+            color: #00a650;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .price-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .stock-info {
+            font-size: 16px;
+            font-weight: 500;
+            color: #00a650;
+            margin-bottom: 15px;
+        }
+        .btn-buy, .btn-add-cart {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 18px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+        .btn-buy {
+            background-color: #3483fa;
+            border-color: #3483fa;
+            color: #fff;
+        }
+        .btn-add-cart {
+            background-color: #e3e3e3;
+            border-color: #e3e3e3;
+            color: #3483fa;
+        }
+        .seller-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 15px;
+        }
+        .seller-info strong {
+            color: #333;
+        }
+        .delivery-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6f2ff;
+            border-radius: 4px;
+            border-left: 5px solid #3483fa;
+        }
+        .delivery-info .lead {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            color: #333;
+        }
+        .delivery-info small {
+            color: #666;
+        }
+
+        /* Sección de "Lo que tenés que saber" (Características) */
+        .specs-card {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .specs-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .specs-card li {
+            width: 50%;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #555;
+        }
+        .specs-card li strong {
+            color: #333;
+        }
+
+        /* Sección de Descripción Detallada */
+        .description-full {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        .description-full h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .description-full p {
+            line-height: 1.6;
+            color: #444;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container my-4">
+        <div class="container-fluid product-page">
+            <div class="row">
+                {# Columna Izquierda: Galería de Imágenes #}
+                <div class="col-lg-5 col-md-6 mb-4">
+                    <div class="product-image-gallery">
+                        <div class="product-thumbnails">
+                            {# Miniaturas #}
+                            {% if maquina.imagenes is not empty %}
+                                {% for filename in maquina.imagenes %}
+                                    <div class="thumbnail-item {% if loop.first %}active{% endif %}">
+                                        <img src="{{ asset('images/maquinaria/' ~ filename) }}" class="img-fluid" alt="Miniatura de {{ maquina.nombre }}">
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {# Placeholder para cuando no hay imágenes. Muestra solo una por simplicidad o replica el bloque si quieres más. #}
+                                <div class="thumbnail-item active">
+                                    <i class="fas fa-image fa-2x placeholder-icon"></i>
+                                </div>
+                                <div class="thumbnail-item">
+                                    <i class="fas fa-image fa-2x placeholder-icon"></i>
+                                </div>
+                                <div class="thumbnail-item">
+                                    <i class="fas fa-image fa-2x placeholder-icon"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="main-image-container">
+                            {% if maquina.imagenes is not empty %}
+                                {# Muestra la primera imagen como la principal #}
+                                <img src="{{ asset('images/maquinaria/' ~ maquina.imagenes[0]) }}" class="main-product-image" alt="{{ maquina.nombre }}">
+                            {% else %}
+                                {# Placeholder si no hay imágenes #}
+                                <i class="fas fa-image fa-5x placeholder-icon"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div> 
+
+                {# Columna Derecha: Información del Producto y Acciones #}
+                <div class="col-lg-7 col-md-6 mb-4 product-info-panel">
+                    <h1 class="product-title">{{ maquina.nombre }} {{ maquina.marca }} {{ maquina.tipo }}</h1>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="text-warning">
+                            {% for i in 1..((maquina.id % 5) + 1) %}<i class="fas fa-star"></i>{% endfor %}
+                            {% if maquina.reembolsoNormal is not null and maquina.reembolsoNormal % 20 != 0 %}<i class="fas fa-star-half-alt"></i>{% endif %}
+                        </span>
+                        <span class="text-muted ms-2">({{ maquina.id }})</span>
+                    </div>
+
+                    <div class="price-section mb-3">
+                        {% if maquina.costoPorDia > 100000 %}
+                            <span class="product-old-price">${{ (maquina.costoPorDia * 1.2) | number_format(2, ',', '.') }}</span>
+                            <span class="product-discount">{{ (maquina.costoPorDia * 100 / (maquina.costoPorDia * 1.2) - 100) | abs | number_format(0) }}% OFF</span>
+                        {% endif %}
+                        <p class="product-price">${{ maquina.costoPorDia | number_format(2, ',', '.') }}</p>
+                        <p class="price-details">Alquiler por día</p>
+                    </div>
+
+                    <div class="delivery-info mb-4">
+                        <p class="lead mb-1"><i class="fas fa-truck text-primary me-2"></i> Disponible para alquiler</p>
+                        {% if maquina.ubicacion %}
+                            <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> Ubicación: <a href="#" class="text-primary text-decoration-none">{{ maquina.ubicacion.nombre }}</a></small>
+                        {% endif %}
+                    </div>
+
+                    <div class="stock-info mb-4">
+                        {% if not maquina.enReparacion %}
+                            <i class="fas fa-check-circle me-2 text-success"></i> Stock disponible
+                        {% else %}
+                            <i class="fas fa-exclamation-triangle me-2 text-danger"></i> ¡Máquina en reparación! No disponible.
+                        {% endif %}
+                    </div>
+
+                    {% if not maquina.enReparacion %}
+                        <form action="#" method="POST" class="mb-2">
+                            <button type="submit" class="btn btn-buy mb-2">Alquilar ahora</button>
+                        </form>
+                        <button type="button" class="btn btn-add-cart">Agregar a mi lista de deseos</button>
+                    {% else %}
+                        <button type="button" class="btn btn-secondary btn-buy" disabled>No disponible para alquiler</button>
+                    {% endif %}
+
+                    <div class="seller-info">
+                        <p>Vendido por <strong>Alquil.ar</strong></p>
+                        <p><i class="fas fa-medal me-2"></i> Mercadolíder | <span class="text-success"> con +10mil alquileres por mes</span></p>
+                        <small class="text-muted">Hacemos Factura A y B.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="specs-card mt-5">
+                <h3 class="mb-3">Lo que tenés que saber de esta máquina</h3>
+                <ul class="row">
+                    <li class="col-md-6"><i class="fas fa-ruler me-2"></i> <strong>Marca:</strong> {{ maquina.marca }}</li>
+                    <li class="col-md-6"><i class="fas fa-cogs me-2"></i> <strong>Tipo:</strong> {{ maquina.tipo ?: 'No especificado' }}</li>
+                    <li class="col-md-6"><i class="fas fa-calendar-check me-2"></i> <strong>Año de fabricación:</strong> {{ maquina.anio }}</li>
+                    <li class="col-md-6"><i class="fas fa-calendar-day me-2"></i> <strong>Mínimo de días de alquiler:</strong> {{ maquina.minimoDias }} días</li>
+                    <li class="col-md-6"><i class="fas fa-hand-holding-usd me-2"></i> <strong>Reembolso normal:</strong> {{ maquina.reembolsoNormal }}%</li>
+                    <li class="col-md-6"><i class="fas fa-gavel me-2"></i> <strong>Reembolso penalizado:</strong> {{ maquina.reembolsoPenalizado ?: 'N/A' }}%</li>
+                    <li class="col-md-6"><i class="fas fa-map-marker-alt me-2"></i> <strong>Ubicación:</strong> {{ maquina.ubicacion ? maquina.ubicacion.nombre : 'No asignada' }}</li>
+                    <li class="col-md-6"><i class="fas fa-check-circle me-2"></i> <strong>Estado:</strong> {% if maquina.enReparacion %}<span class="text-danger">En Reparación</span>{% else %}<span class="text-success">Operativa</span>{% endif %}</li>
+                </ul>
+            </div>
+
+            <div class="description-full mt-5">
+                <h2>Descripción</h2>
+                <p>{{ maquina.descripcion }}</p>
+            </div>
+
+            <div class="card shadow-sm border-0 mt-5">
+                <div class="card-header bg-dark text-white fw-bold">
+                    <i class="fas fa-file-invoice-dollar me-2"></i> Detalles de Políticas de Reembolso
+                </div>
+                <div class="card-body p-4">
+                    <p>El porcentaje de reembolso normal aplicable es del <strong>{{ maquina.reembolsoNormal }}%</strong>.</p>
+                    <p>Para optar al reembolso normal, la cancelación debe realizarse con al menos <strong>{{ maquina.diasReembolso }} días de antelación</strong> a la fecha de inicio de la reserva.</p>
+                    <p>En caso de no cumplir con el preaviso, se aplicará un reembolso penalizado del <strong>{{ maquina.reembolsoPenalizado ?: 'No aplica' }}%</strong>.</p>
+                    <p class="text-muted small">Para más información sobre las políticas de cancelación y reembolso, por favor contacte a nuestro soporte.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainImage = document.querySelector('.main-product-image');
+            const thumbnails = document.querySelectorAll('.thumbnail-item img');
+            const thumbnailItems = document.querySelectorAll('.thumbnail-item');
+            const placeholderIconMain = document.querySelector('.main-image-container .placeholder-icon'); // Seleccionar el icono principal
+
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    // Remover la clase 'active' de todas las miniaturas
+                    thumbnailItems.forEach(item => item.classList.remove('active'));
+
+                    // Añadir la clase 'active' a la miniatura clickeada
+                    this.closest('.thumbnail-item').classList.add('active');
+
+                    // Esconder el placeholder si está visible
+                    if (placeholderIconMain) {
+                        placeholderIconMain.style.display = 'none';
+                    }
+                    // Mostrar la imagen principal y cambiar su src
+                    mainImage.style.display = 'block'; // Asegurarse de que la imagen principal sea visible
+                    mainImage.src = this.src;
+                });
+            });
+
+            // Lógica para manejar el estado inicial si no hay imágenes o si solo hay placeholders
+            if (thumbnails.length > 0) {
+                // Si hay miniaturas reales, asegurarse de que la primera sea activa y cargue la imagen principal
+                const firstThumbnail = thumbnails[0];
+                const firstThumbnailItem = firstThumbnail.closest('.thumbnail-item');
+                if (firstThumbnailItem && !firstThumbnailItem.classList.contains('active')) {
+                    firstThumbnailItem.classList.add('active');
+                }
+                if (mainImage && firstThumbnail) { // Asegurarse de que mainImage exista
+                    mainImage.src = firstThumbnail.src;
+                    mainImage.style.display = 'block';
+                    if (placeholderIconMain) {
+                        placeholderIconMain.style.display = 'none'; // Esconder el placeholder
+                    }
+                }
+            } else {
+                // Si no hay miniaturas (solo placeholders), asegurar que la imagen principal sea el placeholder
+                if (mainImage) {
+                    mainImage.style.display = 'none'; // Ocultar el tag <img> si no hay imagen
+                }
+                if (placeholderIconMain) {
+                    placeholderIconMain.style.display = 'block'; // Asegurarse de que el icono principal sea visible
+                }
+                // Si solo hay placeholders, el primer placeholder item debe estar activo
+                const firstPlaceholderItem = document.querySelector('.thumbnail-item.active');
+                if (firstPlaceholderItem) {
+                    firstPlaceholderItem.classList.add('active');
+                }
+            }
+        });
+    </script>
+{% endblock %}

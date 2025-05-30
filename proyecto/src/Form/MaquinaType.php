@@ -9,8 +9,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType; 
 use Symfony\Component\Form\Extension\Core\Type\FileType; 
-use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\File;       
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Validator\Constraints\Count;
 
 class MaquinaType extends AbstractType
 {
@@ -25,20 +27,31 @@ class MaquinaType extends AbstractType
             ->add('Anio') 
             ->add('minimoDias')
             ->add('Tipo')
-            ->add('rutaImagen', FileType::class, [ // <<<<<<<< Cambiado a FileType
-                'label' => 'Imagen de la Máquina (JPG, PNG, GIF)',
-                'mapped' => false, // <<<<<<<< IMPORTANTE: esto no se mapea directamente a la entidad
-                'required' => false, // Puedes hacerlo obligatorio o no
+            ->add('imagenes', FileType::class, [ 
+                'label' => 'Imágenes de la Máquina (JPG, PNG, GIF)',
+                'multiple' => true, 
+                'mapped' => false,
+                'required' => false, 
                 'constraints' => [
-                    new File([
-                        'maxSize' => '5M', // Límite de tamaño, ej. 5 megabytes
-                        'mimeTypes' => [    // Tipos de archivo permitidos
-                            'image/jpeg',
-                            'image/png',
-                            'image/gif',
-                        ],
-                        'mimeTypesMessage' => 'Por favor, suba una imagen válida (JPG, PNG o GIF).',
+                    new Count([
+                        'min' => 1,
+                        'minMessage' => 'Debe subir al menos una imagen.',
+                    ]),
+                    new All([
+                        new File([
+                            'maxSize' => '5M',
+                            'mimeTypes' => [
+                                'image/jpeg',
+                                'image/png',
+                                'image/gif',
+                            ],
+                            'mimeTypesMessage' => 'Por favor, suba imágenes válidas (JPG, PNG o GIF).',
+                        ])
                     ])
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'accept' => 'image/*' 
                 ],
             ])
 

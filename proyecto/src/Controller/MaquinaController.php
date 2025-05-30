@@ -34,42 +34,65 @@ final class MaquinaController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $brochureFile */
-            $imageFile = $form->get('rutaImagen')->getData(); // <<<<<< Obtener el archivo del formulario
+            /** @var UploadedFile[] $imagenesSubidas */
+            $imagenesSubidas = $form->get('imagenes')->getData(); // Obtiene la colección de archivos subidos
 
-            // Este if es para que solo se procese la imagen si se ha subido una
-            if ($imageFile) {
-                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                // Esto es necesario para incluir de forma segura el nombre del archivo como parte de la URL
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+            // Aquí debes decidir cómo vas a guardar las rutas de las imágenes asociadas a esta máquina.
+            // Opción 1 (Recomendada para este enfoque): Un campo JSON en la entidad Maquina
+            // Si ya agregaste la propiedad 'imagenFilenames' de tipo JSON en Maquina
+            // y generaste la migración como discutimos antes:
+            $currentImageFilenames = $maquina->getImagenes() ?? []; // Carga las existentes si las hay
 
-                // Mueve el archivo al directorio donde se guardarán las imágenes
-                try {
-                    $imageFile->move(
-                        $this->getParameter('images_directory'), // <<<< Directorio configurado (ver c.3)
-                        $newFilename
-                    );
-                } catch (FileException $e) {
-                    // ... manejar excepción si algo sale mal durante la subida del archivo
-                    $this->addFlash('error', 'Hubo un error al subir la imagen: ' . $e->getMessage());
-                    return $this->render('maquina/nueva.html.twig', ['form' => $form]);
+            if ($imagenesSubidas) {
+                $targetDirectory = $this->getParameter('kernel.project_dir') . '/public/images/maquinaria';
+
+                if (!file_exists($targetDirectory)) {
+                    mkdir($targetDirectory, 0777, true);
                 }
 
-                // Actualiza la propiedad 'rutaImagen' de la entidad para guardar el nombre del archivo
-                $maquina->setRutaImagen($newFilename);
+                foreach ($imagenesSubidas as $imagenFile) {
+                    if ($imagenFile) {
+                        $originalFilename = pathinfo($imagenFile->getClientOriginalName(), PATHINFO_FILENAME);
+                        $safeFilename = $slugger->slug($originalFilename);
+                        $newFilename = $safeFilename.'-'.uniqid().'.'.$imagenFile->guessExtension();
+
+                        try {
+                            $imagenFile->move(
+                                $targetDirectory,
+                                $newFilename
+                            );
+                            $currentImageFilenames[] = $newFilename; // Añade el nuevo nombre a la lista
+                        } catch (FileException $e) {
+                            $this->addFlash('error', 'Error al subir la imagen: ' . $e->getMessage());
+                            // Podrías considerar hacer un rollback o eliminar la máquina si la subida es crítica
+                        }
+                    }
+                }
             }
 
+            // Actualiza la entidad Maquina con los nuevos nombres de archivo
+            $maquina->setImagenes($currentImageFilenames);
             $entityManager->persist($maquina);
-            $entityManager->flush();
+            $entityManager->flush(); // Vuelve a guardar para actualizar los nombres de archivo
 
-            $this->addFlash('success', '¡Máquina guardada con éxito!');
-
-            return $this->redirectToRoute('app_maquina_nueva');
+            $this->addFlash('success', 'Máquina creada y imágenes subidas correctamente.');
+            return $this->redirectToRoute('app_maquina_nueva', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('maquina/nueva.html.twig', [
             'form' => $form, 
+        ]);
+    }
+
+    #[Route('/maquina/{id}', name: 'app_maquina_show')]
+    public function show(Maquina $maquina): Response
+    {
+        // La inyección de dependencias de Symfony automáticamente
+        // buscará la Maquina con el ID proporcionado en la URL.
+        // Si no la encuentra, lanzará un 404.
+
+        return $this->render('maquina/show.html.twig', [
+            'maquina' => $maquina,
         ]);
     }
 }
