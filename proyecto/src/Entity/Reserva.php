@@ -3,13 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\ReservaRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservaRepository::class)]
 class Reserva
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy:'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -23,13 +24,20 @@ class Reserva
     #[ORM\Column]
     private ?int $montoReembolso = null;
 
-    #[ORM\Column]
-    private ?DateTimeInterface $fechaReembolsoPenalizado = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $fechaReembolsoPenalizado = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $reembolsoPenalizado = null;
 
-    
+    #[ORM\Column(length: 255)]
+    private ?string $estado = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $fechaInicio = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $fechaFin = null;
 
     public function getId(): ?int
     {
@@ -41,53 +49,86 @@ class Reserva
         return $this->maquina;
     }
 
-    public function setMaquina(?Maquina $Maquina): static
+    public function setMaquina(?Maquina $maquina): self
     {
-        $this->maquina = $Maquina;
-
-        return $this;
-    }
-
-    public function getFechas(): ?FechasReserva
-    {
-        return $this->fechas;
-    }
-
-    public function setFechas(FechasReserva $Fechas): static
-    {
-        $this->Fechas = $Fechas;
-
-        return $this;
-    }
-
-    public function setId(int $Id): static
-    {
-        $this->Id = $Id;
-
+        $this->maquina = $maquina;
         return $this;
     }
 
     public function getCostoTotal(): ?int
     {
-        return $this->CostoTotal;
+        return $this->costoTotal;
     }
 
-    public function setCostoTotal(int $CostoTotal): static
+    public function setCostoTotal(int $costoTotal): self
     {
-        $this->CostoTotal = $CostoTotal;
-
+        $this->costoTotal = $costoTotal;
         return $this;
     }
 
     public function getMontoReembolso(): ?int
     {
-        return $this->MontoReembolso;
+        return $this->montoReembolso;
     }
 
-    public function setMontoReembolso(int $MontoReembolso): static
+    public function setMontoReembolso(int $montoReembolso): self
     {
-        $this->MontoReembolso = $MontoReembolso;
+        $this->montoReembolso = $montoReembolso;
+        return $this;
+    }
 
+    public function getFechaReembolsoPenalizado(): ?\DateTimeInterface
+    {
+        return $this->fechaReembolsoPenalizado;
+    }
+
+    public function setFechaReembolsoPenalizado(\DateTimeInterface $fecha): self
+    {
+        $this->fechaReembolsoPenalizado = $fecha;
+        return $this;
+    }
+
+    public function getReembolsoPenalizado(): ?int
+    {
+        return $this->reembolsoPenalizado;
+    }
+
+    public function setReembolsoPenalizado(?int $monto): self
+    {
+        $this->reembolsoPenalizado = $monto;
+        return $this;
+    }
+
+    public function getEstado(): ?string
+    {
+        return $this->estado;
+    }
+
+    public function setEstado(string $estado): self
+    {
+        $this->estado = $estado;
+        return $this;
+    }
+
+    public function getFechaInicio(): ?\DateTimeInterface
+    {
+        return $this->fechaInicio;
+    }
+
+    public function setFechaInicio(\DateTimeInterface $fechaInicio): self
+    {
+        $this->fechaInicio = $fechaInicio;
+        return $this;
+    }
+
+    public function getFechaFin(): ?\DateTimeInterface
+    {
+        return $this->fechaFin;
+    }
+
+    public function setFechaFin(\DateTimeInterface $fechaFin): self
+    {
+        $this->fechaFin = $fechaFin;
         return $this;
     }
 }

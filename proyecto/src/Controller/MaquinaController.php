@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\MaquinaController;
 use App\Entity\Maquina;
 use App\Form\MaquinaType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -93,6 +94,7 @@ final class MaquinaController extends AbstractController
 
         return $this->render('maquina/show.html.twig', [
             'maquina' => $maquina,
+        
         ]);
     }
 }
