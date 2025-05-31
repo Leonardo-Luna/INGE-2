@@ -39,6 +39,10 @@ class Reserva
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $fechaFin = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reservas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?user $usuario = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -129,6 +133,18 @@ class Reserva
     public function setFechaFin(\DateTimeInterface $fechaFin): self
     {
         $this->fechaFin = $fechaFin;
+        return $this;
+    }
+
+    public function getUsuario(): ?user
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?user $usuario): static
+    {
+        $this->usuario = $usuario;
+
         return $this;
     }
 }
