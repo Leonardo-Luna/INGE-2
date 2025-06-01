@@ -1,0 +1,45 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Alquil.AR{% endblock %}
+
+
+{% block content %}
+
+  <h1>Confirmar reserva</h1>
+
+    
+ <div style="display: flex; justify-content: space-between; gap: 40px; margin-top: 20px;">
+        <!-- Columna izquierda -->
+        <div style="width: 48%;">
+            <h2>{{ maquina.nombre }}</h2>
+
+            {% if maquina.imagenes is not empty %}
+                <img src="{{ asset('images/maquinaria/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px;">
+            {% else %}
+                <p>No hay imagen disponible.</p>
+            {% endif %}
+
+            <p><strong>Descripción:</strong> {{ maquina.descripcion }}</p>
+        </div>
+
+        <!-- Columna derecha -->
+        <div style="width: 48%; border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
+            <h3>Datos de la reserva</h3>
+            <p><strong>Fechas:</strong> {{ reserva.fechaInicio|date('d/m/Y') }} – {{ reserva.fechaFin|date('d/m/Y') }}</p>
+            <p><strong>Días:</strong> {{ reserva.fechaInicio.diff(reserva.fechaFin).days }}</p>
+            <p><strong>Costo total:</strong> ${{ reserva.costoTotal }}</p>
+            <p> Reembolso si cancelas antes del  {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{reserva.montoReembolso}}</p>
+            <p> Reembolso si cancelas despues del  {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{reserva.ReembolsoPenalizado}}</p>
+
+            <div style="margin-top: 30px;">
+                <button style="display: block; width: 100%; padding: 10px; margin-bottom: 10px; background-color: #f0ad4e; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer;">
+                    Aplicar cupón
+                </button>
+
+                <button style="display: block; width: 100%; padding: 10px; background-color: #5cb85c; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer;">
+                    Pagar
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
