@@ -93,6 +93,7 @@ final class MaquinaController extends AbstractController
 
         return $this->render('maquina/show.html.twig', [
             'maquina' => $maquina,
+            'maquinaId' => $maquina->getId(),
         ]);
     }
 }

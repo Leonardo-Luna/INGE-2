@@ -28,7 +28,7 @@ class Maquina
     private ?string $descripcion = null;
 
     #[ORM\Column]
-    private ?bool $enReparacion = null;
+    private ?bool $enReparacion = false;
 
     #[ORM\Column]
     private ?int $anio = null;
@@ -100,7 +100,7 @@ class Maquina
         return $this->costoPorDia;
     }
 
-    public function setCostoPorDIa(int $costoPorDia): static
+    public function setCostoPorDia(int $costoPorDia): static
     {
         $this->costoPorDia = $costoPorDia;
 
@@ -253,6 +253,13 @@ class Maquina
     public function setImagenes(array $imagenes): static
     {
         $this->imagenes = $imagenes;
+
+        return $this;
+    }
+
+    public function addImagen($imagen): static
+    {
+        $this->imagenes[] = $imagen;
 
         return $this;
     }

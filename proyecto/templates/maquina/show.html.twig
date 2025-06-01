@@ -207,7 +207,7 @@
                             {% if maquina.imagenes is not empty %}
                                 {% for filename in maquina.imagenes %}
                                     <div class="thumbnail-item {% if loop.first %}active{% endif %}">
-                                        <img src="{{ asset('images/maquinaria/' ~ filename) }}" class="img-fluid" alt="Miniatura de {{ maquina.nombre }}">
+                                        <img src="{{ asset('images/' ~ filename) }}" class="img-fluid" alt="Miniatura de {{ maquina.nombre }}">
                                     </div>
                                 {% endfor %}
                             {% else %}
@@ -227,7 +227,7 @@
                         <div class="main-image-container">
                             {% if maquina.imagenes is not empty %}
                                 {# Muestra la primera imagen como la principal #}
-                                <img src="{{ asset('images/maquinaria/' ~ maquina.imagenes[0]) }}" class="main-product-image" alt="{{ maquina.nombre }}">
+                                <img src="{{ asset('images/' ~ maquina.imagenes[0]) }}" class="main-product-image" alt="{{ maquina.nombre }}">
                             {% else %}
                                 {# Placeholder si no hay imágenes #}
                                 <i class="fas fa-image fa-5x placeholder-icon"></i>

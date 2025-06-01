@@ -8,3 +8,7 @@ echo ">>> Cargando fixture de roles <<<";
 bin/console doctrine:fixtures:load --group="fixtureRoles" --append
 echo ">>> Cargando fixture de gerentes <<<";
 bin/console doctrine:fixtures:load --group="fixtureGerentes" --append
+echo ">>> Cargando fixture de sucursales <<<";
+bin/console doctrine:fixtures:load --group="fixtureSucursales" --append
+echo ">>> Cargando fixture de maquinaria <<<";
+bin/console doctrine:fixtures:load --group="fixtureMaquinaria" --append
