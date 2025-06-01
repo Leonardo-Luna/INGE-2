@@ -273,20 +273,12 @@
 
                     {% if not maquina.enReparacion %}
                         <form action="#" method="POST" class="mb-2">
-                            <a href="{{ path('app_maquina_fechas', {'id': maquina.id}) }}" class="btn btn-buy mb-2">
-  Alquilar ahora
-</a>
+                            <a href="{{ path('app_maquina_fechas', {'id': maquina.id}) }}" class="btn btn-buy mb-2">Alquilar ahora</a>
                         </form>
-                        <button type="button" class="btn btn-add-cart">Agregar a mi lista de deseos</button>
                     {% else %}
                         <button type="button" class="btn btn-secondary btn-buy" disabled>No disponible para alquiler</button>
                     {% endif %}
 
-                    <div class="seller-info">
-                        <p>Vendido por <strong>Alquil.ar</strong></p>
-                        <p><i class="fas fa-medal me-2"></i> Mercadolíder | <span class="text-success"> con +10mil alquileres por mes</span></p>
-                        <small class="text-muted">Hacemos Factura A y B.</small>
-                    </div>
                 </div>
             </div>
 
