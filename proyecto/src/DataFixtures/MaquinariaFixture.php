@@ -32,7 +32,7 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquinaS760->setDiasReembolso(5);
         $maquinaS760->setReembolsoPenalizado(30);
         $maquinaS760->setUbicacion($sucursalSanti1);
-        $maquinaS760->addImagen("fixtures/maquinaria/S760.png");
+        $maquinaS760->addImagen("fixtures/m/S760.png");
         $manager->persist($maquinaS760);
 
         $maquina5070E = new Maquina();
@@ -47,7 +47,7 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquina5070E->setDiasReembolso(3);
         $maquina5070E->setReembolsoPenalizado(100);
         $maquina5070E->setUbicacion($sucursalMati);
-        $maquina5070E->addImagen("fixtures/maquinaria/5070E.png");
+        $maquina5070E->addImagen("fixtures/m/5070E.png");
         $manager->persist($maquina5070E);
 
         $maquinaDB50 = new Maquina();
@@ -62,7 +62,7 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquinaDB50->setDiasReembolso(75);
         $maquinaDB50->setReembolsoPenalizado(70);
         $maquinaDB50->setUbicacion($sucursalSanti2);
-        $maquinaDB50->addImagen("fixtures/maquinaria/5070E.png");
+        $maquinaDB50->addImagen("fixtures/m/5070E.png");
         $manager->persist($maquinaDB50);
 
         $manager->flush();

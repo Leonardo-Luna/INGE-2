@@ -9,8 +9,6 @@
 /var/
 /vendor/
 /migrations/
-/public/images/maquinaria
-/public/images/sucursales
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
