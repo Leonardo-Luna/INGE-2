@@ -50,7 +50,7 @@ final class MaquinaController extends AbstractController
                                 $targetDirectory,
                                 $newFilename
                             );
-                            $currentImageFilenames[] = $newFilename; // Añade el nuevo nombre a la lista
+                            $currentImageFilenames[] = "maquinaria/" . $newFilename; // Añade el nuevo nombre a la lista
                         } catch (FileException $e) {
                             $this->addFlash('error', 'Error al subir la imagen: ' . $e->getMessage());
                         }
