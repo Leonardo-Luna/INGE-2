@@ -41,7 +41,7 @@ security:
     access_control:
             - { path: ^/token, roles: ROLE_GERENTE }
             - { path: ^/administracion, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
-            - { path: ^/maquina/, roles: ROLE_CLIENTE }
+            - { path: ^/maquina, roles: ROLE_AUTENTICADO }
             
 when@test:
     security:
