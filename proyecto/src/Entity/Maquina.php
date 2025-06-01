@@ -54,12 +54,12 @@ class Maquina
     #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'Maquina', orphanRemoval: true)]
     private Collection $reservas;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Sucursal $ubicacion = null;
-
     #[ORM\Column(nullable: true)]
     private array $imagenes = [];
+
+    #[ORM\ManyToOne(inversedBy: 'maquinas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Sucursal $ubicacion = null;
 
     public function __construct()
     {
@@ -233,17 +233,7 @@ class Maquina
         return $this;
     }
 
-    public function getUbicacion(): ?Sucursal
-    {
-        return $this->ubicacion;
-    }
-
-    public function setUbicacion(Sucursal $ubicacion): static
-    {
-        $this->ubicacion = $ubicacion;
-
-        return $this;
-    }
+ 
 
     public function getImagenes(): array
     {
@@ -260,6 +250,18 @@ class Maquina
     public function addImagen($imagen): static
     {
         $this->imagenes[] = $imagen;
+
+        return $this;
+    }
+
+    public function getUbicacion(): ?Sucursal
+    {
+        return $this->ubicacion;
+    }
+
+    public function setUbicacion(?Sucursal $ubicacion): static
+    {
+        $this->ubicacion = $ubicacion;
 
         return $this;
     }

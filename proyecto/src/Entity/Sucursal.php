@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SucursalRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SucursalRepository::class)]
@@ -30,6 +32,17 @@ class Sucursal
 
     #[ORM\Column(nullable: true)]
     private ?float $longitud = null;
+
+    /**
+     * @var Collection<int, Maquina>
+     */
+    #[ORM\OneToMany(targetEntity: Maquina::class, mappedBy: 'ubicacion')]
+    private Collection $maquinas;
+
+    public function __construct()
+    {
+        $this->maquinas = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,6 +117,36 @@ class Sucursal
     public function setLongitud(?float $longitud): static
     {
         $this->longitud = $longitud;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Maquina>
+     */
+    public function getMaquinas(): Collection
+    {
+        return $this->maquinas;
+    }
+
+    public function addMaquina(Maquina $maquina): static
+    {
+        if (!$this->maquinas->contains($maquina)) {
+            $this->maquinas->add($maquina);
+            $maquina->setUbicacion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMaquina(Maquina $maquina): static
+    {
+        if ($this->maquinas->removeElement($maquina)) {
+            // set the owning side to null (unless already changed)
+            if ($maquina->getUbicacion() === $this) {
+                $maquina->setUbicacion(null);
+            }
+        }
 
         return $this;
     }

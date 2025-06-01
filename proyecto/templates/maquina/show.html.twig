@@ -271,11 +271,8 @@
                         {% endif %}
                     </div>
 
-                    {% if not maquina.enReparacion %}
-                        <form action="#" method="POST" class="mb-2">
-                            <button type="submit" class="btn btn-buy mb-2">Alquilar ahora</button>
-                        </form>
-                        <button type="button" class="btn btn-add-cart">Agregar a mi lista de deseos</button>
+                    {% if not maquina.enReparacion %} 
+                        <a href="{{ path('app_reserva_todas', {'id': maquina.id}) }}" class="btn btn-buy mb-2">Alquilar ahora</a>
                     {% else %}
                         <button type="button" class="btn btn-secondary btn-buy" disabled>No disponible para alquiler</button>
                     {% endif %}

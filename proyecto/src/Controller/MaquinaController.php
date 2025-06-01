@@ -29,8 +29,7 @@ final class MaquinaController extends AbstractController
 
             // Aquí debes decidir cómo vas a guardar las rutas de las imágenes asociadas a esta máquina.
             // Opción 1 (Recomendada para este enfoque): Un campo JSON en la entidad Maquina
-            // Si ya agregaste la propiedad 'imagenFilenames' de tipo JSON en Maquina
-            // y generaste la migración como discutimos antes:
+
             $currentImageFilenames = $maquina->getImagenes() ?? []; // Carga las existentes si las hay
 
             if ($imagenesSubidas) {
@@ -54,7 +53,6 @@ final class MaquinaController extends AbstractController
                             $currentImageFilenames[] = $newFilename; // Añade el nuevo nombre a la lista
                         } catch (FileException $e) {
                             $this->addFlash('error', 'Error al subir la imagen: ' . $e->getMessage());
-                            // Podrías considerar hacer un rollback o eliminar la máquina si la subida es crítica
                         }
                     }
                 }
@@ -74,7 +72,7 @@ final class MaquinaController extends AbstractController
         ]);
     }
 
-    #[Route('/maquina/{id}', name: 'app_maquina_show')]
+    #[Route('/administracion/maquina/{id}', name: 'app_maquina_show')]
     public function show(Maquina $maquina): Response
     {
         // La inyección de dependencias de Symfony automáticamente
