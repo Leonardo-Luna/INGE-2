@@ -14,18 +14,8 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile; 
 
 final class MaquinaController extends AbstractController
-#{
-#    #[Route('/maquina', name: 'app_maquina')]
-#    public function index(): Response
-#    {
-#        return $this->render('maquina/nueva.html.twig', [
-#            'controller_name' => 'MaquinaController',
-#        ]);
-#    }
-#}
-
 {
-    #[Route('/maquina/nueva', name: 'app_maquina_nueva')]
+    #[Route('/administracion/maquina/nueva', name: 'app_maquina_nueva')]
     public function nueva(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $maquina = new Maquina();

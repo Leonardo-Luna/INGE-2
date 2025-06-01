@@ -16,7 +16,7 @@
                             <a class="nav-link" href="{{ path('app_index') }}">Sucursales</a>
                         </li>
                         <li class="nav-item mx-md-2">
-                            <a class="nav-link" href="">Catálogo</a>
+                            <a class="nav-link" href="{{ path('app_catalogo') }}">Catálogo</a>
                         </li>
                         {% if is_granted("ROLE_GERENTE") %}
                             <li class="nav-item mx-md-2">

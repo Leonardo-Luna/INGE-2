@@ -23,7 +23,7 @@ final class UsuariosController extends AbstractController
                                 private StringService $stringService,
                                 private UserPasswordHasherInterface $passwordHasher) { }
 
-    #[Route('/usuarios/nuevo-cliente', name: 'app_usuarios_nuevo_cliente')]
+    #[Route('/administracion/usuarios/nuevo-cliente', name: 'app_usuarios_nuevo_cliente')]
     public function NuevoCliente(Request $request): Response
     {
 

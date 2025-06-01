@@ -40,9 +40,8 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
             - { path: ^/token, roles: ROLE_GERENTE }
-            - { path: ^/usuarios, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
-            - { path: ^/maquina, roles: ROLE_GERENTE }
-            - { path: ^/reserva/todas, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
+            - { path: ^/administracion, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
+            - { path: ^/maquina/, roles: ROLE_CLIENTE }
             
 when@test:
     security:
