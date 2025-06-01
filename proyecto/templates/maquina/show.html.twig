@@ -273,7 +273,9 @@
 
                     {% if not maquina.enReparacion %}
                         <form action="#" method="POST" class="mb-2">
-                            <button type="submit" class="btn btn-buy mb-2">Alquilar ahora</button>
+                            <a href="{{ path('app_maquina_fechas', {'id': maquina.id}) }}" class="btn btn-buy mb-2">
+  Alquilar ahora
+</a>
                         </form>
                         <button type="button" class="btn btn-add-cart">Agregar a mi lista de deseos</button>
                     {% else %}

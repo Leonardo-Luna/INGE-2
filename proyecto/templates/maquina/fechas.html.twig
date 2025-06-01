@@ -1,0 +1,106 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Seleccionar Reserva{% endblock %}
+
+{% block content %}
+<style>
+  .calendar-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .calendar-info {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #333;
+  }
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+  .flatpickr-day.occupied {
+    background-color: #f44336 !important; /* rojo */
+    color: white !important;
+    cursor: not-allowed;
+  }
+  
+</style>
+
+<div class="calendar-container">
+  <h1>Reservar máquina: {{ maquina.nombre }}</h1>
+  <p class="calendar-info">Mínimo de días requeridos: <strong>{{ maquina.minimoDias }}</strong></p>
+
+  <form method="POST" action="{{ path('reserva_nueva', { id: maquina.id }) }}">
+    <label for="fecha_inicio">Seleccionar intervalo de fechas:</label><br>
+    <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio">
+    <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin" hidden>
+
+    <div class="error" id="error-msg"></div>
+
+    <button type="submit" id="submit-btn">Seleccionar reserva</button>
+  </form>
+</div>
+
+<script>
+  const reservas = {{ reservas|map(r => {
+    fechaInicio: r.fechaInicio|date('Y-m-d'),
+    fechaFin: r.fechaFin|date('Y-m-d')
+})|json_encode|raw }};
+  const minimoDias = {{ maquina.minimoDias }};
+  const errorMsg = document.getElementById("error-msg");
+  const fechaInicioInput = document.getElementById("fecha_inicio");
+  const fechaFinInput = document.getElementById("fecha_fin");
+  const submitBtn = document.getElementById("submit-btn");
+
+  const fechasOcupadas = [];
+
+  for (const r of reservas) {
+    const start = new Date(r.fechaInicio);
+    const end = new Date(r.fechaFin);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      fechasOcupadas.push(d.toISOString().split("T")[0]);
+    }
+  }
+
+  flatpickr("#fecha_inicio", {
+  mode: "range",
+  dateFormat: "d-m-Y",
+  disable: fechasOcupadas,
+  minDate: "today",
+  onDayCreate: function(dObj, dStr, fp, dayElem) {
+    const date = dayElem.dateObj.toISOString().split("T")[0];
+    if (fechasOcupadas.includes(date)) {
+      dayElem.classList.add("occupied");
+    }
+  },
+  onChange: function(selectedDates, dateStr, instance) {
+    errorMsg.textContent = "";
+
+    if (selectedDates.length === 2) {
+      const inicio = selectedDates[0];
+      const fin = selectedDates[selectedDates.length-1];
+      const dias = (fin - inicio) / (1000 * 60 * 60 * 24) + 1;
+
+      for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
+        const dStr = d.toISOString().split("T")[0];
+        if (fechasOcupadas.includes(d.toISOString())) {
+          errorMsg.textContent = "El intervalo contiene fechas ocupadas.";
+          submitBtn.disabled = true;
+          return;
+        }
+      }
+
+      if (dias < minimoDias) {
+        errorMsg.textContent = `Debes reservar al menos ${minimoDias} días.`;
+        submitBtn.disabled = true;
+        return;
+      }
+
+      // guardar fechas en inputs ocultos
+      fechaInicioInput.value = dateStr.split(" to ")[0];
+      fechaFinInput.value = dateStr.split(" to ")[1];
+      submitBtn.disabled = false;
+    }
+  }
+});
+</script>
+{% endblock %}

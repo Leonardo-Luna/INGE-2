@@ -15,17 +15,19 @@ final class ReservaController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $manager) { }
 
-    #[Route('/reserva/{id}', name: 'app_reserva_todas')]
+    #[Route('/reserva/{id}', name: 'reserva_nueva')]
     public function index(int $id, Request $request): Response
     {
         $maquina = $this->manager->getRepository(Maquina::class)->find($id);
         $reserva = new Reserva();
 
-        $reserva->setFechaInicio(new \DateTime('2025-06-01'));
-        $reserva->setFechaFin(new \DateTime('2025-06-09'));
+        $fechaInicio = new \DateTime($request->request->get('fecha_inicio'));
+        $fechaFin = new \DateTime($request->request->get('fecha_fin'));
 
-        $fechaInicio = $reserva->getFechaInicio();
-        $fechaFin = $reserva->getFechaFin();
+        $reserva->setFechaInicio($fechaInicio);
+        $reserva->setFechaFin($fechaFin);
+
+       
 
         $reserva->setEstado("Pendiente");
         $reserva->setMaquina($maquina);
