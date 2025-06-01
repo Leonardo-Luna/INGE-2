@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 use App\Entity\Reserva;
-use App\Controller\MaquinaController;
 use App\Entity\Maquina;
 use App\Form\MaquinaType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -71,18 +70,7 @@ final class MaquinaController extends AbstractController
         return $this->render('maquina/nueva.html.twig', [
             'form' => $form, 
         ]);
-    }
-      #[Route('/maquina/display', name: 'app_maquina_display')]
-    public function display(EntityManagerInterface $entityManager): Response
-    {
-        $maquinas = $entityManager->getRepository(Maquina::class)->findAll();
-        return $this->render('maquina/display.html.twig', [
-            'maquinas' => $maquinas,
-        
-        ]);
-    }
-
-   
+    }   
 
     #[Route('/maquina/{id}', name: 'app_maquina_show')]
     public function show(Maquina $maquina): Response
@@ -97,7 +85,7 @@ final class MaquinaController extends AbstractController
         ]);
     }
 
-         #[Route('/maquina/{id}/fechas', name: 'app_maquina_fechas')]
+    #[Route('/maquina/{id}/fechas', name: 'app_maquina_fechas')]
     public function fechas(EntityManagerInterface $entityManager, Maquina $maquina): Response
     {
         // La inyección de dependencias de Symfony automáticamente
