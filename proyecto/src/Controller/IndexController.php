@@ -29,8 +29,6 @@ final class IndexController extends AbstractController
 
         $maquinas = $this->manager->getRepository(Maquina::class)->filtrarDisponibles();
 
-#        dd($maquinas);
-
         return $this->render('index/catalogo.html.twig', [
             'maquinas' => $maquinas,
         ]);
