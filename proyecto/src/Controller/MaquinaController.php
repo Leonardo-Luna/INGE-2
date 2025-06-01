@@ -15,18 +15,8 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile; 
 
 final class MaquinaController extends AbstractController
-#{
-#    #[Route('/maquina', name: 'app_maquina')]
-#    public function index(): Response
-#    {
-#        return $this->render('maquina/nueva.html.twig', [
-#            'controller_name' => 'MaquinaController',
-#        ]);
-#    }
-#}
-
 {
-    #[Route('/maquina/nueva', name: 'app_maquina_nueva')]
+    #[Route('/administracion/maquina/nueva', name: 'app_maquina_nueva')]
     public function nueva(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $maquina = new Maquina();
@@ -40,8 +30,7 @@ final class MaquinaController extends AbstractController
 
             // Aquí debes decidir cómo vas a guardar las rutas de las imágenes asociadas a esta máquina.
             // Opción 1 (Recomendada para este enfoque): Un campo JSON en la entidad Maquina
-            // Si ya agregaste la propiedad 'imagenFilenames' de tipo JSON en Maquina
-            // y generaste la migración como discutimos antes:
+
             $currentImageFilenames = $maquina->getImagenes() ?? []; // Carga las existentes si las hay
 
             if ($imagenesSubidas) {
@@ -65,7 +54,6 @@ final class MaquinaController extends AbstractController
                             $currentImageFilenames[] = $newFilename; // Añade el nuevo nombre a la lista
                         } catch (FileException $e) {
                             $this->addFlash('error', 'Error al subir la imagen: ' . $e->getMessage());
-                            // Podrías considerar hacer un rollback o eliminar la máquina si la subida es crítica
                         }
                     }
                 }
@@ -105,7 +93,7 @@ final class MaquinaController extends AbstractController
 
         return $this->render('maquina/show.html.twig', [
             'maquina' => $maquina,
-        
+            'maquinaId' => $maquina->getId(),
         ]);
     }
 

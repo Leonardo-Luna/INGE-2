@@ -40,4 +40,14 @@ class MaquinaRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function filtrarDisponibles() {
+        $qb = $this->createQueryBuilder('m');
+
+        $qb->select('m')
+            ->where('m.enReparacion = false');
+
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
 }

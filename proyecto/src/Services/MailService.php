@@ -36,7 +36,7 @@ class MailService {
             ->text('Se ha detectado un inicio de sesión desde tu cuenta de gerente.')
             ->html('<p>Tu código de inicio de sesión en dos pasos es <b>' . $code . '</b>. No lo compartas con nadie.</p>');
 
-     //   $sent = $this->mailer->send($email);
+        #$sent = $this->mailer->send($email);
 
     }
 

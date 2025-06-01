@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Maquina;
 use App\Services\MapService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,13 +12,27 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class IndexController extends AbstractController
 {
-    public function __construct(private MapService $mapService) { }
+    public function __construct(private MapService $mapService,
+                                private EntityManagerInterface $manager) { }
 
     #[Route('/', name: 'app_index')]
     public function index(Request $request): Response
     {
         // Acá iría las cosas de sucursales, que es nuestro index
         return $this->render('index/index.html.twig', [
+        ]);
+    }
+
+    #[Route('/catalogo', name: 'app_catalogo')]
+    public function catalogo(): Response
+    {
+
+        $maquinas = $this->manager->getRepository(Maquina::class)->filtrarDisponibles();
+
+#        dd($maquinas);
+
+        return $this->render('index/catalogo.html.twig', [
+            'maquinas' => $maquinas,
         ]);
     }
 
