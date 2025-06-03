@@ -37,6 +37,16 @@ final class IndexController extends AbstractController
         ]);
     }
 
+    #[Route('/mi-perfil', name: 'app_perfil')]
+    public function perfil(): Response
+    {
+        $user = $this->getUser();
+
+        return $this->render('index/mi-perfil.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
     #[Route('/test/mapa', name: 'app_mapa')]
     public function testMapa(Request $request): Response
     {

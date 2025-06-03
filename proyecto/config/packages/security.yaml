@@ -43,6 +43,8 @@ security:
             - { path: ^/administracion, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
             - { path: ^/maquina, roles: ROLE_AUTENTICADO }
             - { path: ^/reserva, roles: ROLE_AUTENTICADO }
+            - { path: ^/mi-perfil, roles: ROLE_AUTENTICADO }
+            - { path: ^/mis-reservas, roles: ROLE_AUTENTICADO }
             
 when@test:
     security:

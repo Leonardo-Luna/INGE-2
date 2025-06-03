@@ -20,7 +20,7 @@
                         </li>
                         {% if is_granted("ROLE_GERENTE") %}
                             <li class="nav-item mx-md-2">
-                                <a class="nav-link" href="">Gerencia</a>
+                                <a class="nav-link" href="{{ path('app_admin') }}">Gerencia</a>
                             </li>
                         {% endif %}
                         {% if is_granted("ROLE_EMPLEADO") %}
@@ -35,9 +35,9 @@
             <nav class="topbar__auth navbar navbar-expand-md navbar-light">
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNavRight">
                     <ul class="navbar-nav">
-                        {% if is_granted('ROLE_CLIENTE') %}
+                        {% if is_granted('ROLE_AUTENTICADO') %}
                             <li class="nav-item mx-md-2">
-                                <a class="nav-link" href="">Mi perfil</a>
+                                <a class="nav-link" href="{{ path('app_perfil') }}">Mi perfil</a>
                             </li>
                         {% endif %}
 

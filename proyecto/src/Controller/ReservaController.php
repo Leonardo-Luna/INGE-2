@@ -15,7 +15,29 @@ final class ReservaController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $manager) { }
 
-    #[Route('/reserva/{id}', name: 'reserva_nueva')]
+    #[Route('/mis-reservas', name: 'app_mis_reservas')]
+    public function misReservas(Request $request): Response
+    {
+        $user = $this->getUser();
+
+        $reservas = $this->manager->getRepository(Reserva::class)->filtrarPropias($user); # Método custom para mostrar propias :D
+
+        return $this->render('reserva/listar-propias.html.twig', [
+            "reservas" => $reservas,
+        ]);
+    }
+
+    #[Route('/administracion/reservas', name: 'app_reservas')]
+    public function listarReservas(Request $request): Response
+    {
+        $reservas = $this->manager->getRepository(Reserva::class)->findAll();
+
+        return $this->render('reserva/listar-todas.html.twig', [
+            "reservas" => $reservas,
+        ]);
+    }
+
+    #[Route('/reserva/{id}', name: 'app_reserva_nueva')]
     public function index(int $id, Request $request): Response
     {
         $maquina = $this->manager->getRepository(Maquina::class)->find($id);
@@ -25,9 +47,7 @@ final class ReservaController extends AbstractController
         $fechaFin = new \DateTime($request->request->get('fecha_fin'));
 
         $reserva->setFechaInicio($fechaInicio);
-        $reserva->setFechaFin($fechaFin);
-
-       
+        $reserva->setFechaFin($fechaFin);    
 
         $reserva->setEstado("Pendiente");
         $reserva->setMaquina($maquina);

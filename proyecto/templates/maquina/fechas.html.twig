@@ -6,33 +6,116 @@
 <style>
   .calendar-container {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 3rem auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+  }
+  h1 {
+    color: #007bff;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600;
   }
   .calendar-info {
-    margin-bottom: 1rem;
-    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #555;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .calendar-info strong {
+    color: #28a745;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
     color: #333;
+    font-size: 1rem;
+  }
+  .form-control {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-sizing: border-box;
+  }
+  .form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
   }
   .error {
-    color: red;
-    margin-top: 10px;
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1.25rem;
+    margin-top: 1.5rem;
+    text-align: center;
+    font-weight: 500;
   }
   .flatpickr-day.occupied {
-    background-color: #f44336 !important; /* rojo */
+    background-color: #f44336 !important;
     color: white !important;
     cursor: not-allowed;
   }
-  
+  .flatpickr-day.occupied.startRange,
+  .flatpickr-day.occupied.endRange,
+  .flatpickr-day.occupied.inRange {
+    background-color: #e0281b !important;
+  }
+  .flatpickr-calendar {
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      border-radius: 8px;
+  }
+  #submit-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    margin-top: 2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.3rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+  }
+  #submit-btn:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  #submit-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 </style>
 
 <div class="calendar-container">
-  <h1>Reservar máquina: {{ maquina.nombre }}</h1>
+  <h1>Reservar máquina: <span>{{ maquina.nombre }}</span></h1>
   <p class="calendar-info">Mínimo de días requeridos: <strong>{{ maquina.minimoDias }}</strong></p>
 
-  <form method="POST" action="{{ path('reserva_nueva', { id: maquina.id }) }}">
-    <label for="fecha_inicio">Seleccionar intervalo de fechas:</label><br>
-    <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio">
-    <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin">
+  <form method="POST" action="{{ path('app_reserva_nueva', { id: maquina.id }) }}">
+    <label for="fecha_inicio" class="form-label">Seleccionar intervalo de fechas:</label><br>
+    <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio (dd-mm-aaaa)" class="form-control">
+    <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin (dd-mm-aaaa)" class="form-control">
 
     <div class="error" id="error-msg"></div>
 

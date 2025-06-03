@@ -1,0 +1,61 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Gerencia - Panel de Gestión{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="text-center display-4 fw-bold text-dark mb-5">Panel de Gestión</h2>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3 p-4">
+                <h2 class="h4 text-center mb-4">Acciones Principales</h2>
+                <div class="row row-cols-1 g-3">
+                    <div class="col">
+                        <a href="{{ path('app_usuarios_nuevo_cliente') }}" class="btn btn-lg btn-primary w-100 py-3">
+                            <i class="bi bi-person-plus-fill me-2"></i> Registrar Cliente
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ path('app_maquina_nueva') }}" class="btn btn-lg btn-light w-100 py-3">
+                            <i class="bi bi-gear-fill me-2"></i> Cargar Maquinaria
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ path('app_admin') }}" class="btn btn-lg btn-primary w-100 py-3">
+                            <i class="bi bi-shop-window me-2"></i> Cargar Sucursal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3 p-4">
+                <h2 class="h4 text-center mb-4">Ver Listados</h2>
+                <div class="row row-cols-1 g-3">
+                    <div class="col">
+                        <a href="{{ path('app_admin') }}" class="btn btn-lg btn-primary w-100 py-3">
+                            <i class="bi bi-people-fill me-2"></i> Listar Usuarios
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ path('app_admin') }}" class="btn btn-lg btn-light w-100 py-3">
+                            <i class="bi bi-tools me-2"></i> Listar Maquinaria
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="{{ path('app_mis_reservas') }}" class="btn btn-lg btn-primary w-100 py-3">
+                            <i class="bi bi-calendar-check-fill me-2"></i> Listar Reservas (Totales)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

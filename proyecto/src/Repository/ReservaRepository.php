@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Reserva;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +41,17 @@ class ReservaRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    
+    public function filtrarPropias(User $user) {
+    
+        $qb = $this->createQueryBuilder('r');
+
+        $qb->select('r')
+            ->where('r.usuario = :usuario')
+
+            ->setParameter('usuario', $user);
+
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
 }

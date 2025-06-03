@@ -1,0 +1,64 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Todas las Reservas{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="text-center display-4 fw-bold text-dark mb-5">Listado de Reservas</h2>
+
+    {% if reservas is empty %}
+        <div class="alert alert-info text-center" role="alert">
+            No hay reservas registradas en el sistema.
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for reserva in reservas %}
+                <div class="col">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <div class="card-header bg-primary text-white py-3 px-4 rounded-top-3 d-flex justify-content-between align-items-center">
+                            <h3 class="h5 mb-0">Reserva #{{ reserva.id }}</h3>
+                            <span class="badge bg-{{ reserva.estado|lower == 'aprobada' ? 'success' : (reserva.estado|lower == 'pendiente' ? 'warning' : (reserva.estado|lower == 'cancelada' ? 'danger' : 'secondary')) }} fs-6 py-2 px-3">
+                                {{ reserva.estado|capitalize }}
+                            </span>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <h5 class="text-primary mb-3"><i class="bi bi-calendar-range me-2"></i> Período</h5>
+                            <p class="mb-1"><small class="text-muted">Desde:</small> <span class="fw-semibold">{{ reserva.fechaInicio|date('d/m/Y') }}</span></p>
+                            <p class="mb-3"><small class="text-muted">Hasta:</small> <span class="fw-semibold">{{ reserva.fechaFin|date('d/m/Y') }}</span></p>
+
+                            <h5 class="text-success mb-3"><i class="bi bi-currency-dollar me-2"></i> Costo Total</h5>
+                            <p class="fs-4 fw-bold">${{ (reserva.costoTotal / 100)|number_format(2, ',', '.') }}</p>
+
+                            <h5 class="text-secondary mb-3"><i class="bi bi-gear-fill me-2"></i> Máquina</h5>
+                            <p class="mb-1 fw-bold">{{ reserva.maquina.nombre ?? 'Máquina no disponible' }}</p>
+                            <p class="card-text text-muted small">{{ reserva.maquina.descripcion ?? 'Sin descripción.' }}</p>
+
+                            <hr class="my-3">
+                            <h5 class="text-dark mb-3"><i class="bi bi-person-fill me-2"></i> Usuario</h5>
+                            <p class="mb-1"><small class="text-muted">Nombre:</small> {{ reserva.usuario.nombre ?? 'N/A' }} {{ reserva.usuario.apellido ?? '' }}</p>
+                            <p class="mb-0"><small class="text-muted">Email:</small> {{ reserva.usuario.email ?? 'N/A' }}</p>
+                            {# Acá se podría agregar la calificación cuando se tenga eso hecho :D #}
+                        </div>
+
+                        <div class="card-footer bg-light border-0 py-3 d-flex justify-content-center">
+
+                            <a href="" class="btn btn-outline-primary btn-sm me-2">
+                                <i class="bi bi-person-fill me-1"></i> Ver Cliente
+                            </a>
+
+                            {% if reserva.estado|lower in ['pendiente', 'aprobada'] %}
+                                <a href="" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-x-circle me-1"></i> Cancelar
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
