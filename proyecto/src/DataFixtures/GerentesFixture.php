@@ -18,6 +18,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
     {
         $rolGerente = $manager->getRepository(Rol::class)->find(Rol::GERENTE)->getNombre();
         $rolAutenticado = $manager->getRepository(Rol::class)->find(Rol::AUTENTICADO)->getNombre();
+        $rolCilente = $manager->getRepository(Rol::class)->find(Rol::CLIENTE)->getNombre();
         
         $gerenteLuigi = new User();
         $gerenteLuigi->setNombre("Luigi");
@@ -46,6 +47,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $testingLeo->setEmail("lunaleonardo031@gmail.com");
         $testingLeo->setPassword($this->passwordHasher->hashPassword($testingLeo, "abc123"));
         $testingLeo->addRole($rolAutenticado);
+        $testingLeo->addRole($rolCilente);
         $manager->persist($testingLeo);
 
         $manager->flush();
