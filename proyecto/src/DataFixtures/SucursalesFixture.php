@@ -16,8 +16,8 @@ class SucursalesFixture extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $sucursal1 = new Sucursal();
-        $sucursal1->setNombre("Calle 60 entre 5 y 6");
-        $sucursal1->setDireccion("Calle 60 531");
+        $sucursal1->setNombre("Avenida 60 entre 5 y 6");
+        $sucursal1->setDireccion("Avenida 60 531");
         $sucursal1->setCiudad("La Plata");
         $sucursal1->setHorario("8:00 a 19:00");
 
@@ -30,8 +30,8 @@ class SucursalesFixture extends Fixture implements FixtureGroupInterface
         ###
 
         $sucursal2 = new Sucursal();
-        $sucursal2->setNombre("Diagonal 79 entre 1 y 2");
-        $sucursal2->setDireccion("Diagonal 79 660");
+        $sucursal2->setNombre("Calle 2 entre 59 y 60");
+        $sucursal2->setDireccion("Calle 2 1313");
         $sucursal2->setCiudad("La Plata");
         $sucursal2->setHorario("8:00 a 20:00");
 

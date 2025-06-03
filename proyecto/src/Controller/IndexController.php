@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Maquina;
+use App\Entity\Sucursal;
 use App\Services\MapService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,8 +19,10 @@ final class IndexController extends AbstractController
     #[Route('/', name: 'app_index')]
     public function index(Request $request): Response
     {
-        // Acá iría las cosas de sucursales, que es nuestro index
-        return $this->render('index/index.html.twig', [
+        $sucursales = $this->manager->getRepository(Sucursal::class)->findAll();
+
+        return $this->render('index/sucursales.html.twig', [
+            "sucursales" => $sucursales,
         ]);
     }
 

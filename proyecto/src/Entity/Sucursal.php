@@ -99,7 +99,7 @@ class Sucursal
 
     public function getLatitud(): ?float
     {
-        return $this->Latitud;
+        return $this->latitud;
     }
 
     public function setLatitud(?float $latitud): static

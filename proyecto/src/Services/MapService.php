@@ -18,7 +18,7 @@ class MapService {
         $query = sprintf(
             '%s, %s, %s, %s',
             $direccion ?? '',
-            'La Plata',
+            'Partido de La Plata',
             'Buenos Aires',
             'Argentina'
         );

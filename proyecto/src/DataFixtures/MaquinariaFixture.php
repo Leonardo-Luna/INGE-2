@@ -16,8 +16,8 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
 
     public function load(ObjectManager $manager): void
     {
-        $sucursalSanti1 = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Calle 60 531']);
-        $sucursalSanti2 = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Diagonal 79 660']);
+        $sucursalSanti1 = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Avenida 60 531']);
+        $sucursalSanti2 = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Calle 2 1313']);
         $sucursalMati = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Calle 2 1470']);
 
         $maquinaS760 = new Maquina();
@@ -57,7 +57,7 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquinaDB50->setCostoPorDia(30000);
         $maquinaDB50->setAnio(2025);
         $maquinaDB50->setMinimoDias(50);
-        $maquinaDB50->setTipo("Motor a gas");
+        $maquinaDB50->setTipo("Motor eléctrico");
         $maquinaDB50->setReembolsoNormal(25);
         $maquinaDB50->setDiasReembolso(75);
         $maquinaDB50->setReembolsoPenalizado(70);
