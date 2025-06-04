@@ -12,3 +12,5 @@ echo ">>> Cargando fixture de sucursales <<<";
 bin/console doctrine:fixtures:load --group="fixtureSucursales" --append
 echo ">>> Cargando fixture de maquinaria <<<";
 bin/console doctrine:fixtures:load --group="fixtureMaquinaria" --append
+echo ">>> Cargando fixture de Estados <<<";
+bin/console doctrine:fixtures:load --group="fixtureEstados" --append

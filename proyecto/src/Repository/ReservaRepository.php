@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Maquina;
 use App\Entity\Reserva;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -50,6 +51,20 @@ class ReservaRepository extends ServiceEntityRepository
             ->where('r.usuario = :usuario')
 
             ->setParameter('usuario', $user);
+
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
+    
+    public function filtrarPorMaquinaYEstado(Maquina $maquina, string $estado) {
+        $qb = $this->createQueryBuilder('r');
+
+        $qb->select('r')
+            ->where('r.maquina = :maquina')
+            ->andWhere('r.estado = :estado')
+            
+            ->setParameter('maquina', $maquina)
+            ->setParameter('estado', $estado);
 
         $query = $qb->getQuery();
         return $query->getResult();

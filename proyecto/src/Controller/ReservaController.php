@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\EstadoReserva;
 use App\Entity\Maquina;
 use App\Entity\Reserva;
 use App\Entity\User;
@@ -49,7 +50,9 @@ final class ReservaController extends AbstractController
         $reserva->setFechaInicio($fechaInicio);
         $reserva->setFechaFin($fechaFin);    
 
-        $reserva->setEstado("Pendiente");
+        $estadoFaltaPago = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FALTA_PAGO)->getEstado();
+        
+        $reserva->setEstado($estadoFaltaPago);
         $reserva->setMaquina($maquina);
 
         $intervalo = $fechaInicio->diff($fechaFin);

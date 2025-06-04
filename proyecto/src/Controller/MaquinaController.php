@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Controller;
+
+use App\Entity\EstadoReserva;
 use App\Entity\Reserva;
 use App\Entity\Maquina;
 use App\Form\MaquinaType;
@@ -15,8 +17,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class MaquinaController extends AbstractController
 {
+
+    public function __construct(private EntityManagerInterface $entityManager) { }
+
     #[Route('/administracion/maquina/nueva', name: 'app_maquina_nueva')]
-    public function nueva(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function nueva(Request $request, SluggerInterface $slugger): Response
     {
         $maquina = new Maquina();
         $form = $this->createForm(MaquinaType::class, $maquina);
@@ -60,8 +65,8 @@ final class MaquinaController extends AbstractController
 
             // Actualiza la entidad Maquina con los nuevos nombres de archivo
             $maquina->setImagenes($currentImageFilenames);
-            $entityManager->persist($maquina);
-            $entityManager->flush(); // Vuelve a guardar para actualizar los nombres de archivo
+            $this->entityManager->persist($maquina);
+            $this->entityManager->flush(); // Vuelve a guardar para actualizar los nombres de archivo
 
             $this->addFlash('success', 'Máquina creada y imágenes subidas correctamente.');
             return $this->redirectToRoute('app_maquina_nueva', [], Response::HTTP_SEE_OTHER);
@@ -86,12 +91,14 @@ final class MaquinaController extends AbstractController
     }
 
     #[Route('/maquina/{id}/fechas', name: 'app_maquina_fechas')]
-    public function fechas(EntityManagerInterface $entityManager, Maquina $maquina): Response
+    public function fechas(Maquina $maquina): Response
     {
         // La inyección de dependencias de Symfony automáticamente
         // buscará la Maquina con el ID proporcionado en la URL.
         // Si no la encuentra, lanzará un 404.
-        $reservas = $entityManager->getRepository(Reserva::class)->findBy(['maquina' => $maquina]);
+        $estado = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+        $reservas = $this->entityManager->getRepository(Reserva::class)->filtrarPorMaquinaYEstado($maquina, $estado);
+
         return $this->render('maquina/fechas.html.twig', [
             'reservas' => $reservas,
             'maquina' => $maquina
