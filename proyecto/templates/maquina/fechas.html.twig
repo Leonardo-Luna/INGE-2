@@ -1,5 +1,12 @@
 {% extends 'layout/base.html.twig' %}
 
+{% block imports %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/rangePlugin.js"></script>
+{% endblock %}
+
 {% block title %}Seleccionar Reserva{% endblock %}
 
 {% block content %}
@@ -9,8 +16,13 @@
 
   <form method="POST" action="{{ path('app_reserva_nueva', { id: maquina.id }) }}">
     <label for="fecha_inicio" class="form-label">Seleccionar intervalo de fechas:</label><br>
+<<<<<<< HEAD
     <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio" class="form-control">
     <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin" class="form-control" hidden>
+=======
+    <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio (dd-mm-aaaa)" class="form-control">
+    <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin (dd-mm-aaaa)" class="form-control" hidden>
+>>>>>>> 4cf4ac707a4ff327c55d9068a8e4f08dcaedbd00
 
     <div class="error" id="error-msg"></div>
 
@@ -44,46 +56,59 @@
   }
 
   flatpickr("#fecha_inicio", {
-  mode: "range",
-  dateFormat: "d-m-Y",
-  disable: fechasOcupadas,
-  minDate: "today",
-  onDayCreate: function(dObj, dStr, fp, dayElem) {
-    const date = dayElem.dateObj.toISOString().split("T")[0];
-    if (fechasOcupadas.includes(date)) {
-      dayElem.classList.add("occupied");
-    }
-  },
-  onChange: function(selectedDates, dateStr, instance) {
-    errorMsg.textContent = "";
+    mode: "range",
+    dateFormat: "d-m-Y",
+    disable: fechasOcupadas,
+    minDate: "today",
+    onDayCreate: function(dObj, dStr, fp, dayElem) {
+      const date = dayElem.dateObj.toISOString().split("T")[0];
+      if (fechasOcupadas.includes(date)) {
+        dayElem.classList.add("occupied");
+      }
+    },
+    onChange: function(selectedDates, dateStr, instance) {
+      errorMsg.textContent = "";
 
-    if (selectedDates.length === 2) {
-      const inicio = selectedDates[0];
-      const fin = selectedDates[selectedDates.length-1];
-      const dias = (fin - inicio) / (1000 * 60 * 60 * 24) + 1;
+      if (selectedDates.length === 2) {
+        const inicio = selectedDates[0];
+        const fin = selectedDates[selectedDates.length-1];
+        const dias = (fin - inicio) / (1000 * 60 * 60 * 24) + 1;
 
-      for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
-        const dStr = d.toISOString().split("T")[0];
-        if (fechasOcupadas.includes(d.toISOString())) {
+        // Check if any selected date is occupied
+        let hasOccupiedDatesInSelection = false;
+        for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
+          const dStr = d.toISOString().split("T")[0];
+          if (fechasOcupadas.includes(dStr)) { // Changed d.toISOString() to dStr
+            hasOccupiedDatesInSelection = true;
+            break;
+          }
+        }
+
+        if (hasOccupiedDatesInSelection) {
           errorMsg.textContent = "El intervalo contiene fechas ocupadas.";
           submitBtn.disabled = true;
           return;
         }
-      }
 
-      if (dias < minimoDias) {
-        errorMsg.textContent = `Debes reservar al menos ${minimoDias} días.`;
+        if (dias < minimoDias) {
+          errorMsg.textContent = `Debes reservar al menos ${minimoDias} días.`;
+          submitBtn.disabled = true;
+          return;
+        }
+
+        // Guardar fechas en inputs ocultos
+        const datesArray = dateStr.split(" to ");
+        fechaInicioInput.value = datesArray[0];
+        fechaFinInput.value = datesArray[1] || datesArray[0]; // Set fechaFin to fechaInicio if only one date selected (shouldn't happen with mode: "range" but good for robustness)
+        submitBtn.disabled = false;
+      } else {
+        // If less than 2 dates are selected (e.g., user cleared selection or only picked one date)
+        fechaInicioInput.value = "";
+        fechaFinInput.value = "";
         submitBtn.disabled = true;
-        return;
       }
-
-      // guardar fechas en inputs ocultos
-      fechaInicioInput.value = dateStr.split(" to ")[0];
-      fechaFinInput.value = dateStr.split(" to ")[1];
-      submitBtn.disabled = false;
     }
-  }
-});
+  });
 </script>
 {% endblock %}
 
