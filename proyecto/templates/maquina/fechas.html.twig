@@ -1,12 +1,5 @@
 {% extends 'layout/base.html.twig' %}
 
-{% block imports %}
-    {{ parent() }}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/rangePlugin.js"></script>
-{% endblock %}
-
 {% block title %}Seleccionar Reserva{% endblock %}
 
 {% block content %}
@@ -28,6 +21,7 @@
 {% endblock %}
 
 {% block javascripts %}
+{{ parent() }}
 <script src="{{ asset('flatpickr/flatpickr.js') }}"></script>
 <script>
   const reservas = {{ reservas|map(r => {
@@ -108,7 +102,9 @@
 {% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('flatpickr/flatpickr.css') }}" />
+
+{{ parent() }}
+<link rel="stylesheet" href="{{ asset('flatpickr/flatpickr.css') }}" />
 <style>
   .calendar-container {
     max-width: 600px;
