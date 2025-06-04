@@ -16,13 +16,8 @@
 
   <form method="POST" action="{{ path('app_reserva_nueva', { id: maquina.id }) }}">
     <label for="fecha_inicio" class="form-label">Seleccionar intervalo de fechas:</label><br>
-<<<<<<< HEAD
     <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio" class="form-control">
     <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin" class="form-control" hidden>
-=======
-    <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio (dd-mm-aaaa)" class="form-control">
-    <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin (dd-mm-aaaa)" class="form-control" hidden>
->>>>>>> 4cf4ac707a4ff327c55d9068a8e4f08dcaedbd00
 
     <div class="error" id="error-msg"></div>
 
