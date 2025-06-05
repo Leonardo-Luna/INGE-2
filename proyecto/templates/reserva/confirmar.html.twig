@@ -1,43 +1,68 @@
 {% extends 'layout/base.html.twig' %}
 
-{% block title %}Alquil.AR{% endblock %}
-
+{% block title %}Confirmar Reserva{% endblock %}
 
 {% block content %}
-
- <h1>Confirmar reserva</h1>
-
+<div class="main-container"> {# Contenedor principal con flexbox para las dos columnas #}
+    {# Columna izquierda: Información de la Máquina #}
+    <div class="info-section">
+        <h1>Confirmar Reserva</h1>
  <div style="display: flex; justify-content: space-between; gap: 40px; margin-top: 20px;">
         <!-- Columna izquierda -->
         <div style="width: 48%;">
-            <h2>{{ maquina.nombre }}</h2>
+        <h2>{{ maquina.nombre }}</h2>
 
-            {% if maquina.imagenes is not empty %}
-                <img src="{{ asset('images/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px;">
-            {% else %}
-                <p>No hay imagen disponible.</p>
-            {% endif %}
+        {% if maquina.imagenes is not empty %}
+            <img src="{{ asset('images/maquinaria/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" class="maquina-imagen">
+        {% else %}
+            <p>No hay imagen disponible.</p>
+        {% endif %}
 
-            <p><strong>Descripción:</strong> {{ maquina.descripcion }}</p>
-        </div>
+        <p><strong>Descripción:</strong> {{ maquina.descripcion }}</p>
+        {# Puedes añadir más detalles de la máquina si lo deseas, como su ubicación, etc. #}
+    </div>
 
-        <!-- Columna derecha -->
-        <div style="width: 48%; border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
-            <h3>Datos de la reserva</h3>
-            <p><strong>Fechas:</strong> {{ reserva.fechaInicio|date('d/m/Y') }} – {{ reserva.fechaFin|date('d/m/Y') }}</p>
-            <p><strong>Días:</strong> {{ reserva.fechaInicio.diff(reserva.fechaFin).days }}</p>
-            <p><strong>Costo total:</strong> ${{ reserva.costoTotal }}</p>
-            <p> Reembolso si cancelas antes del  {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{reserva.montoReembolso}}</p>
-            <p> Reembolso si cancelas despues del  {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{reserva.ReembolsoPenalizado}}</p>
+    {# Columna derecha: Datos de la Reserva y Botones #}
+    <div class="details-section">
+        <h3>Datos de la reserva</h3>
+        <p><strong>Fechas:</strong> {{ reserva.fechaInicio|date('d/m/Y') }} – {{ reserva.fechaFin|date('d/m/Y') }}</p>
+        {# Calculamos los días aquí mismo si reserva.fechaInicio y reserva.fechaFin son DateTimeInterface #}
+        <p><strong>Días:</strong> {{ reserva.fechaInicio.diff(reserva.fechaFin).days + (reserva.fechaInicio.format('Y-m-d') == reserva.fechaFin.format('Y-m-d') ? 1 : 0) }}</p>
+
+                {# <img src="{{ asset('images/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px;"> #}
+
+        {# Mostrar el desglose del costo si el recargo es mayor a 0 #}
+        {% if recargoMontoDisplay > 0 %}
+            <p><strong>Costo base:</strong> ${{ (costoFinalDisplay - recargoMontoDisplay)|number_format(2, ',', '.') }}</p>
+            <p><strong>Recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas):</strong> ${{ recargoMontoDisplay|number_format(2, ',', '.') }}</p>
+        {% else %}
+            <p><strong>Sin recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas)</strong></p>
+        {% endif %}
 
             <div style="margin-top: 30px;">
                 <button style="display: block; width: 100%; padding: 10px; margin-bottom: 10px; background-color: #f0ad4e; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer;">
                     Aplicar cupón
                 </button>
                 <div id="walletBrick_container"></div>
-            </div>
+
+        {# Mostrar el costo total final (ya calculado y guardado en la reserva) #}
+        <p><strong>Costo total:</strong> <span class="costo-total-final">${{ costoFinalDisplay|number_format(2, ',', '.') }}</span></p>
+
+        <p> Reembolso si cancelas antes del  {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{reserva.montoReembolso|number_format(2, ',', '.')}}</p>
+        <p> Reembolso si cancelas después del  {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{reserva.ReembolsoPenalizado|number_format(2, ',', '.')}}</p>
+
+        <div class="buttons-container">
+            <button class="btn btn-warning">Aplicar cupón</button>
+
+            {# Formulario para pagar/confirmar #}
+            {# Asegúrate de que este formulario envía a la ruta que procesa el pago real,
+               que ahora debe ser app_reservas_confirmar si es el método que cambia el estado y finaliza. #}
+            <form action="{{ path('app_reservas_confirmar', {'id': reserva.id}) }}" method="post">
+                <button type="submit" class="btn btn-success">Pagar y Confirmar</button>
+            </form>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
@@ -54,4 +79,135 @@
             }
         });
     </script>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Estilos generales para el contenedor principal */
+    .main-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 40px; /* Espacio entre las columnas */
+        margin: 3rem auto;
+        max-width: 1000px; /* Ancho máximo similar al de tu calendario */
+        padding: 0 20px; /* Padding horizontal para evitar que toque los bordes */
+    }
+
+    /* Estilos para las secciones de información y detalles */
+    .info-section, .details-section {
+        width: 48%; /* Casi la mitad para cada columna */
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+    }
+
+    /* Estilos para los títulos y subtítulos */
+    h1, h2, h3 {
+        color: #007bff; /* Azul primario */
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: center; /* Centrar títulos */
+        font-weight: 600;
+    }
+    h2 {
+        font-size: 1.8rem;
+        margin-top: 0;
+    }
+    h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Estilos para párrafos de información */
+    p {
+        font-size: 1.1rem;
+        color: #555;
+        line-height: 1.5;
+        margin-bottom: 0.8rem;
+    }
+    p strong {
+        color: #333;
+    }
+
+    /* Estilo para la imagen de la máquina */
+    .maquina-imagen {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: block; /* Asegura que no haya espacio extra debajo */
+        object-fit: cover; /* Para que la imagen cubra el área sin distorsionarse */
+        max-height: 300px; /* Limita la altura de la imagen si es demasiado grande */
+    }
+
+    /* Estilo para el costo total final */
+    .costo-total-final {
+        font-size: 1.4em; /* Más grande que el texto normal */
+        color: #d9534f; /* Color rojo para destacar */
+        font-weight: bold;
+    }
+
+    /* Contenedor para botones */
+    .buttons-container {
+        margin-top: 30px;
+    }
+
+    /* Estilos para los botones */
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 1rem 1.25rem;
+        margin-bottom: 10px; /* Espacio entre botones */
+        border: none;
+        border-radius: 0.3rem;
+        font-size: 1.15rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra base para los botones */
+    }
+
+    .btn:hover {
+        transform: translateY(-2px); /* Efecto hover */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Sombra más pronunciada en hover */
+    }
+
+    /* Colores específicos para los botones */
+    .btn-warning { /* Botón Aplicar Cupón */
+        background-color: #f0ad4e;
+        color: white;
+    }
+    .btn-warning:hover {
+        background-color: #ec971f;
+    }
+
+    .btn-success { /* Botón Pagar y Confirmar */
+        background-color: #5cb85c;
+        color: white;
+    }
+    .btn-success:hover {
+        background-color: #449d44;
+    }
+
+    /* Estilos responsive */
+    @media (max-width: 768px) {
+        .main-container {
+            flex-direction: column; /* Apilar columnas en pantallas pequeñas */
+            gap: 20px;
+        }
+        .info-section, .details-section {
+            width: 100%; /* Ocupar todo el ancho */
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            font-size: 1.8rem;
+        }
+        p {
+            font-size: 1rem;
+        }
+    }
+</style>
 {% endblock %}

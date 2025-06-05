@@ -54,6 +54,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'usuario', orphanRemoval: true)]
     private Collection $reservas;
 
+    #[ORM\Column(options: ["default" => 5])]
+    private ?int $valoracionTotal = 5;
+
+    #[ORM\Column(options: ["default" => 1])]
+    private ?int $cantValoraciones = 1;
+
     public function __construct()
     {
         $this->reservas = new ArrayCollection();
@@ -239,6 +245,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $reserva->setUsuario(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getValoracionTotal(): ?int
+    {
+        return $this->valoracionTotal;
+    }
+
+    public function setValoracionTotal(int $valoracionTotal): static
+    {
+        $this->valoracionTotal = $valoracionTotal;
+
+        return $this;
+    }
+
+    public function getCantValoraciones(): ?int
+    {
+        return $this->cantValoraciones;
+    }
+
+    public function setCantValoraciones(int $cantValoraciones): static
+    {
+        $this->cantValoraciones = $cantValoraciones;
 
         return $this;
     }
