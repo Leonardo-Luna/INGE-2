@@ -63,4 +63,15 @@ final class UsuariosController extends AbstractController
         ]);
     }
 
+
+    #[Route('/administracion/usuarios/{id}', name: 'app_visualizar_cliente')]
+    public function VisualizarCliente(int $id): Response
+    {   
+        $user = $this->manager->getRepository(User::class)->find($id);
+
+        return $this->render('usuarios/visualizar-cliente.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
 }

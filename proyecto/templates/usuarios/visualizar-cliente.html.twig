@@ -1,4 +1,3 @@
-
 {% extends 'layout/base.html.twig' %}
 {% block title %}Alquil.AR{% endblock %}
 
@@ -24,20 +23,15 @@
     <div class="acciones">
     
       {% if 'ROLE_CLIENTE' in user.roles %}
-        <div class="info-box2">
-        <p> Ver historiales</p>
-        <a href="app_mis_reservas" class="btn"> Mis reservas</a>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Mis alquileres</a>
+      <div class="info-box2">
+        <p> Gestionar <p>
+        <a href="app_mis_reservas" class="btn"> Reservas</a>
+        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Alquileres</a>
+        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Datos</a>
+        <b REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Eliminar</b>
       {% endif %}
       </div>
       
-    <div class="info-box2">
-      <p> Modificar datos</p>
-      <div>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Cambiar contraseña</a>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Editar perfil</a>
-      </div>
-      </div>
     </div>
   </div>
 
@@ -82,6 +76,21 @@
     }
     .btn:hover {
       background-color: #0056b3;
+    }
+
+    .info-box2 b {
+        background-color: red;
+        padding-left:35px;
+        padding-right:35px;
+        margin-left:47%;
+    }
+
+    .info-box2 b:hover {
+        background-color: red;
+        padding-left:35px;
+        padding-right:35px;
+        margin-left:47%;
+        background-color:rgb(158, 0, 0);
     }
   </style>
 {% endblock %}
