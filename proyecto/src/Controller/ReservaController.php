@@ -104,32 +104,8 @@ final class ReservaController extends AbstractController
         $this->manager->persist($reserva);
         $this->manager->flush();
 
-        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
-        $client = new PreferenceClient();
-        $preference = $client->create([
-            "items" => [
-                [
-                    "title" => "Reserva de Maquina",
-                    "quantity" => 1,
-                    "unit_price" => $reserva->getCostoTotal(),
-                ],
-            ],
-            "statement_descriptor" => "Alquil.AR",
-            "external_reference" => $reserva->getId(),
-            //"back_urls" => [
-              //  "success" => $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], true),
-              //  "failure" => $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], true),
-              //  "pending" => $this->generateUrl('app_reserva_pendiente', ['id' => $reserva->getId()], true),
-            // ],
-            //"auto_return" => "approved",
-            //"notification_url" => $this->generateUrl('app_webhook', [], true),
-        ]);
-
-        return $this->render('reserva/confirmar.html.twig', [
-            'maquina' => $maquina,
-            'reserva' => $reserva,
-            'preferenceId' => $preference->id,
-        ]);
+        return $this->redirectToRoute('app_reservas_confirmar', ['id' => $reserva->getId()]);
+        
     }
 
 
@@ -137,8 +113,7 @@ final class ReservaController extends AbstractController
     public function confirmarReserva(
         Reserva $reserva,
         EntityManagerInterface $entityManager,
-        Request $request
-    ): Response {
+        Request $request): Response {
         // Verificar que la reserva pertenezca al usuario actual o tenga un estado 'pendiente' adecuado
         if ($reserva->getUsuario() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Esta reserva no te pertenece.');
@@ -147,7 +122,7 @@ final class ReservaController extends AbstractController
         // Si la reserva ya está confirmada o pagada, redirigir
         if ($reserva->getEstado() !== 'FALTA DE PAGO') {
             $this->addFlash('error', 'La reserva ya ha sido procesada.');
-            return $this->redirectToRoute('app_mis_reservas');
+            //return $this->redirectToRoute('app_mis_reservas');
         }
 
         //ya lo calcule, podria no hacerlo se supone que es por consistencia de que no hayan cambiando las cosas
@@ -173,36 +148,54 @@ final class ReservaController extends AbstractController
         $recargoMonto = $costoOriginal * $recargoPorcentaje;
         $costoFinalConRecargo = $costoOriginal + $recargoMonto;
 
+        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
+        $client = new PreferenceClient();
+        $preference = $client->create([
+            "items" => [
+                [
+                    "title" => "Reserva de Maquina",
+                    "quantity" => 1,
+                    "unit_price" => $costoFinalConRecargo,
+                ],
+            ],
+            "statement_descriptor" => "Alquil.AR",
+            "external_reference" => $reserva->getId(),
+            //"back_urls" => [
+            //  "success" => $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], true),
+            //  "failure" => $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], true),
+            //  "pending" => $this->generateUrl('app_reserva_pendiente', ['id' => $reserva->getId()], true),
+            // ],
+            //"auto_return" => "approved",
+            //"notification_url" => $this->generateUrl('app_webhook', [], true),
+        ]);
+
         // --- Lógica de confirmación (si el botón de pago fue presionado) ---
         if ($request->isMethod('POST')) {
-            // Por ejemplo, enviar $reserva->getCostoTotal() (que ya tiene el recargo) a la API de pago.
+            
+        $pagoExitoso = true; // <-- ¡REEMPLAZAR CON LA LOGICA DE MERCADO PAGO!
+        if ($pagoExitoso) {
+            // Actualizar el estado de la reserva a CONFIRMADA
+            $estadoConfirmada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+            
+            $reserva->setEstado($estadoConfirmada);
+            // Opcional: registrar la fecha de confirmación
+            // $reserva->setFechaConfirmacion(new \DateTimeImmutable());
 
-            // Simulo un pago exitoso
-            $pagoExitoso = true; // <-- ¡REEMPLAZAR CON LA LOGICA DE MERCADO PAGO!
+            $this->manager->flush(); // Solo necesitamos hacer flush, ya que la reserva ya está siendo manejada
 
-            if ($pagoExitoso) {
-                // Actualizar el estado de la reserva a CONFIRMADA
-                $estadoConfirmada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-                
-                $reserva->setEstado($estadoConfirmada);
-                // Opcional: registrar la fecha de confirmación
-                // $reserva->setFechaConfirmacion(new \DateTimeImmutable());
-
-                $this->manager->flush(); // Solo necesitamos hacer flush, ya que la reserva ya está siendo manejada
-
-                $this->addFlash('success', 'Tu reserva ha sido confirmada y pagada con éxito. Costo final: $' . number_format($reserva->getCostoTotal(), 2, ',', '.'));
-                return $this->redirectToRoute('app_mis_reservas');
-            } else {
-                $this->addFlash('error', 'Hubo un problema al procesar tu pago. Por favor, inténtalo de nuevo.');
-                // Redirigir de nuevo a la página de confirmación actual
-                return $this->redirectToRoute('app_reservas_confirmar', ['id' => $reserva->getId()]);
-            }
+            $this->addFlash('success', 'Tu reserva ha sido confirmada y pagada con éxito. Costo final: $' . number_format($reserva->getCostoTotal(), 2, ',', '.'));
+            return $this->redirectToRoute('app_mis_reservas');
+        } else {
+            $this->addFlash('error', 'Hubo un problema al procesar tu pago. Por favor, inténtalo de nuevo.');
+            // Redirigir de nuevo a la página de confirmación actual
+            return $this->redirectToRoute('app_reservas_confirmar', ['id' => $reserva->getId()]);
         }
-
+    }
 
         return $this->render('reserva/confirmar.html.twig', [
             'maquina' => $reserva->getMaquina(),
             'reserva' => $reserva, // La entidad Reserva se pasa completa
+            'preferenceId' => $preference->id,
             'costoFinalDisplay' => $costoFinalConRecargo, // Este es el valor que mostrarás como "Costo total"
             'recargoMontoDisplay' => $recargoMonto, // Para mostrar el detalle del recargo
             'valoracionPromedio' => $valoracionPromedio, // Para depuración o información adicional
