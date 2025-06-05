@@ -5,9 +5,8 @@
 
 {% block content %}
 
-  <h1>Confirmar reserva</h1>
+ <h1>Confirmar reserva</h1>
 
-    
  <div style="display: flex; justify-content: space-between; gap: 40px; margin-top: 20px;">
         <!-- Columna izquierda -->
         <div style="width: 48%;">
@@ -35,11 +34,24 @@
                 <button style="display: block; width: 100%; padding: 10px; margin-bottom: 10px; background-color: #f0ad4e; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer;">
                     Aplicar cupón
                 </button>
-
-                <button style="display: block; width: 100%; padding: 10px; background-color: #5cb85c; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer;">
-                    Pagar
-                </button>
+                <div id="walletBrick_container"></div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script>
+        const mp = new MercadoPago('APP_USR-a8939531-6298-4a18-8a19-820c941ab804', {
+            locale: 'es-AR'
+        });
+
+        mp.bricks().create("wallet", "walletBrick_container", {
+            initialization: {
+                preferenceId: '{{preferenceId}}',
+            }
+        });
+    </script>
 {% endblock %}

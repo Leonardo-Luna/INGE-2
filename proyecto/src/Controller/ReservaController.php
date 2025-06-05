@@ -11,6 +11,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Preference\PreferenceClient;
+use MercadoPago\Preference;
 
 final class ReservaController extends AbstractController
 {
@@ -74,9 +77,31 @@ final class ReservaController extends AbstractController
         $this->manager->persist($reserva);
         $this->manager->flush();
 
+        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
+        $client = new PreferenceClient();
+        $preference = $client->create([
+            "items" => [
+                [
+                    "title" => "Reserva de Maquina",
+                    "quantity" => 1,
+                    "unit_price" => $reserva->getCostoTotal(),
+                ],
+            ],
+            "statement_descriptor" => "Alquil.AR",
+            "external_reference" => $reserva->getId(),
+            //"back_urls" => [
+              //  "success" => $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], true),
+              //  "failure" => $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], true),
+              //  "pending" => $this->generateUrl('app_reserva_pendiente', ['id' => $reserva->getId()], true),
+            // ],
+            //"auto_return" => "approved",
+            //"notification_url" => $this->generateUrl('app_webhook', [], true),
+        ]);
+
         return $this->render('reserva/confirmar.html.twig', [
             'maquina' => $maquina,
-            'reserva' => $reserva
+            'reserva' => $reserva,
+            'preferenceId' => $preference->id,
         ]);
     }
 }
