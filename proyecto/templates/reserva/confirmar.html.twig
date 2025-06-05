@@ -11,7 +11,7 @@
 
         {% if maquina.imagenes is not empty %}
             {# Asumiendo que maquina.imagenes[0] es la ruta relativa de la imagen #}
-            <img src="{{ asset('images/maquinaria/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" class="maquina-imagen">
+            <img src="{{ asset('images/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" class="maquina-imagen">
         {% else %}
             <p>No hay imagen disponible.</p>
         {% endif %}
