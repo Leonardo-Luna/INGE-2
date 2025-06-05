@@ -101,14 +101,14 @@ final class ReservaController extends AbstractController
         $this->manager->persist($reserva);
         $this->manager->flush();
 
-        //return $this->redirectToRoute('app_reservas_confirmar', ['id' => $reserva->getId()]);
-        return $this->render('reserva/confirmar.html.twig', [
-            'maquina' => $maquina,
-            'reserva' => $reserva,
-            'costoFinalDisplay' => $costoFinalConRecargo, // El costo que se mostrará al usuario
-            'recargoMontoDisplay' => $recargoMonto,       // El monto del recargo para mostrarlo como detalle
-            'valoracionPromedio' => $valoracionPromedio,  // Para mostrar la valoración y justificar el recargo
-        ]);
+        return $this->redirectToRoute('app_reservas_confirmar', ['id' => $reserva->getId()]);
+        #return $this->render('reserva/confirmar.html.twig', [
+        #    'maquina' => $maquina,
+        #    'reserva' => $reserva,
+        #    'costoFinalDisplay' => $costoFinalConRecargo, // El costo que se mostrará al usuario
+        #    'recargoMontoDisplay' => $recargoMonto,       // El monto del recargo para mostrarlo como detalle
+        #    'valoracionPromedio' => $valoracionPromedio,  // Para mostrar la valoración y justificar el recargo
+        #]);
     }
 
 
@@ -122,9 +122,9 @@ final class ReservaController extends AbstractController
         if ($reserva->getUsuario() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Esta reserva no te pertenece.');
         }
-
+        
         // Si la reserva ya está confirmada o pagada, redirigir
-        if ($reserva->getEstado() !== 'pendiente') {
+        if ($reserva->getEstado() !== 'FALTA DE PAGO') {
             $this->addFlash('error', 'La reserva ya ha sido procesada.');
             return $this->redirectToRoute('app_mis_reservas');
         }
@@ -161,11 +161,8 @@ final class ReservaController extends AbstractController
 
             if ($pagoExitoso) {
                 // Actualizar el estado de la reserva a CONFIRMADA
-                $estadoConfirmada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CONFIRMADA);
-                //esto no se que onda
-                if (!$estadoConfirmada) {
-                    throw new \RuntimeException('Estado de reserva "CONFIRMADA" no encontrado. Asegúrate de que existe con ID ' . EstadoReserva::CONFIRMADA);
-                }
+                $estadoConfirmada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+                
                 $reserva->setEstado($estadoConfirmada);
                 // Opcional: registrar la fecha de confirmación
                 // $reserva->setFechaConfirmacion(new \DateTimeImmutable());
@@ -182,7 +179,6 @@ final class ReservaController extends AbstractController
         }
 
 
-        // --- Renderizar la plantilla con el costo actualizado y el detalle del recargo ---
         return $this->render('reserva/confirmar.html.twig', [
             'maquina' => $reserva->getMaquina(),
             'reserva' => $reserva, // La entidad Reserva se pasa completa
