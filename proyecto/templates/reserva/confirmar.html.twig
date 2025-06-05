@@ -14,7 +14,7 @@
             <h2>{{ maquina.nombre }}</h2>
 
             {% if maquina.imagenes is not empty %}
-                <img src="{{ asset('images/maquinaria/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px;">
+                <img src="{{ asset('images/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px;">
             {% else %}
                 <p>No hay imagen disponible.</p>
             {% endif %}
