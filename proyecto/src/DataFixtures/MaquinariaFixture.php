@@ -18,7 +18,7 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
     {
         $sucursalSanti1 = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Avenida 60 531']);
         $sucursalSanti2 = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Calle 2 1313']);
-        $sucursalMati = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Calle 2 1470']);
+        $sucursalMati = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => 'Avenida Alvear 548']);
 
         $maquinaS760 = new Maquina();
         $maquinaS760->setNombre("Cosechadora S760");

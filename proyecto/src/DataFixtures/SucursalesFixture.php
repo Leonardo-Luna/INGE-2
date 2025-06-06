@@ -44,17 +44,30 @@ class SucursalesFixture extends Fixture implements FixtureGroupInterface
         ###
 
         $sucursal3 = new Sucursal();
-        $sucursal3->setNombre("Calle 2 entre 62 y 63");
-        $sucursal3->setDireccion("Calle 2 1470");
-        $sucursal3->setCiudad("La Plata");
+        $sucursal3->setNombre("Sucursal Tandil");
+        $sucursal3->setDireccion("Avenida Alvear 548");
+        $sucursal3->setCiudad("Partido De Tandil");
         $sucursal3->setHorario("13:00 a 15:00");
 
-        $coords = $this->mapService->calcularCoordenadas($sucursal3->getDireccion());
+        $coords = $this->mapService->calcularCoordenadasGeneral($sucursal3->getDireccion(), $sucursal3->getCiudad());
 
         $sucursal3->setLatitud($coords['lat']);
         $sucursal3->setLongitud($coords['lon']);
         $manager->persist($sucursal3);
 
+        ###
+
+        $sucursal4 = new Sucursal();
+        $sucursal4->setNombre("Sucursal Lobos");
+        $sucursal4->setDireccion("Presidente Juan Domingo Perón 482");
+        $sucursal4->setCiudad("Lobos");
+        $sucursal4->setHorario("10:30 a 11:00 (solo los martes)");
+
+        $coords = $this->mapService->calcularCoordenadasGeneral($sucursal4->getDireccion(), $sucursal4->getCiudad());
+
+        $sucursal4->setLatitud($coords['lat']);
+        $sucursal4->setLongitud($coords['lon']);
+        $manager->persist($sucursal4);
         $manager->flush();
     }
 

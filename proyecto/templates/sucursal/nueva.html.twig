@@ -1,0 +1,65 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="card shadow-sm rounded-lg mx-auto" style="max-width: 600px; width: 90vw; margin-top: 60px;">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="ri-building-line me-2"></i> Registro de Sucursal</h4>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="form-group mb-3">
+                    {{ form_label(form.nombre, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nombre, {'attr': {'class': 'form-control', 'placeholder': 'Ingrese el nombre de la sucursal'}}) }}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form_label(form.direccion, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.direccion, {'attr': {'class': 'form-control', 'placeholder': 'Ingrese la dirección'}}) }}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form_label(form.ciudad, "Partido", {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.ciudad, {'attr': {'class': 'form-control', 'placeholder': 'Ingrese el partido'}}) }}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form_label(form.horario, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.horario, {'attr': {'class': 'form-control', 'placeholder': 'Ingrese el horario de atención'}}) }}
+                </div>
+
+                {{ form_rest(form) }}
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success">
+                        <i class="ri-save-line me-1"></i> Registrar Sucursal
+                    </button>
+                    <a href="{{ path('app_admin') }}" class="btn btn-secondary">
+                        <i class="ri-arrow-go-back-line me-1"></i> Cancelar
+                    </a>
+                </div>
+            {{ form_end(form, { render_rest: false }) }}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const campoCiudad = document.querySelector('#{{ form.ciudad.vars.id }}');
+
+    campoCiudad.addEventListener('blur', function () {
+        const capitalizado = campoCiudad.value
+            .toLowerCase()
+            .replace(/\b\w/g, letra => letra.toUpperCase());
+
+        campoCiudad.value = capitalizado;
+    });
+});
+</script>
+{% endblock %}
