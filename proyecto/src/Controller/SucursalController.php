@@ -24,10 +24,9 @@ final class SucursalController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()) {  
 
-            $verificarExistencia = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => $nuevaSucursal->getDireccion()]);
-            $verificarExistencia2 = $this->manager->getRepository(Sucursal::class)->findOneBy(['ciudad' => $nuevaSucursal->getCiudad()]);
+            $verificarExistencia = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => $nuevaSucursal->getDireccion(), 'ciudad' => $nuevaSucursal->getCiudad()]);
 
-            if($verificarExistencia && $verificarExistencia2) {
+            if($verificarExistencia ) {
                 $this->addFlash('error', 'Ya existe una sucursal con esa direccion.');
                 return $this->redirectToRoute('app_crear_sucursal');       
             }
