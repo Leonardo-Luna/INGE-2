@@ -69,16 +69,16 @@ final class IndexController extends AbstractController
         ]);
     }
 
-    #[Route('/test/mapa', name: 'app_mapa')]
-    public function testMapa(Request $request): Response
-    {
-        $direccion = "Calle 64 525";
+    // #[Route('/test/mapa', name: 'app_mapa')]
+    // public function testMapa(Request $request): Response
+    // {
+    //     $direccion = "Calle 64 525";
 
-        $coordenadas = $this->mapService->calcularCoordenadas($direccion);
+    //     $coordenadas = $this->mapService->calcularCoordenadas($direccion);
 
-        return $this->render('index/mapa.html.twig', [
-            'lat' => $coordenadas['lat'] ?? '',
-            'lon' => $coordenadas['lon'] ?? '',
-        ]);
-    }
+    //     return $this->render('index/mapa.html.twig', [
+    //         'lat' => $coordenadas['lat'] ?? '',
+    //         'lon' => $coordenadas['lon'] ?? '',
+    //     ]);
+    // }
 }

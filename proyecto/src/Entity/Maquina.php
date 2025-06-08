@@ -51,7 +51,7 @@ class Maquina
     /**
      * @var Collection<int, Reserva>
      */
-    #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'maquina', orphanRemoval: true)] // Corregido 'Maquina' a 'maquina' en mappedBy
+    #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'maquina', orphanRemoval: true)]
     private Collection $reservas;
 
     #[ORM\Column(nullable: true)]
@@ -59,7 +59,7 @@ class Maquina
 
     #[ORM\ManyToOne(inversedBy: 'maquinas')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Sucursal $ubicacion = null; // Relación con Sucursal
+    private ?Sucursal $ubicacion = null;
 
     public function __construct()
     {
