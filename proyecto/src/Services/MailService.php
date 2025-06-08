@@ -55,6 +55,20 @@ class MailService {
 
     }
 
+    public function EnviarCancelacionSinCuponYSinPolitica($nombreMaquina, $total, $to) {
+
+        $email = (new Email())
+            ->from(new Address('alquilar@leostrange.live','Alquil.AR'))
+            ->to($to)
+            ->replyTo('ivtech.unlp@gmail.com')
+            ->priority(Email::PRIORITY_HIGH)
+            ->subject('Alquil.AR | Cancelación de reserva')
+            ->text('Tu cuenta de usuario ha sido eliminada.')
+            ->html('<p>Tu cuenta de usuario ha sido eliminada, acércate con este e-mail a tu sucursal más cercana para solicitar tu reembolso de la máquina. <b>' . $nombreMaquina . '</b> por un total de <b>' . $total . '</b>.</p>');
+        $sent = $this->mailer->send($email);           
+
+    }
+
     public function reembolso($monto, $to) {
 
         $email = (new Email())

@@ -95,7 +95,7 @@ final class SesionesController extends AbstractController
 
         $existeUsuario->setToken2FA($token2FA); # Se setea el código contra el cual comparar
         $this->manager->flush();
-        # $this->mailService->Enviar2FA($code, $to); # Este método existe y funciona, pero para no mandar 1000 mails mejor dejarlo así a menos que se quiera probar :D
+        $this->mailService->Enviar2FA($code, $to); # Este método existe y funciona, pero para no mandar 1000 mails mejor dejarlo así a menos que se quiera probar :D
     }
 
 }

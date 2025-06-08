@@ -60,6 +60,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ["default" => 1])]
     private ?int $cantValoraciones = 1;
 
+    #[ORM\Column]
+    private ?bool $eliminado = false;
+
     public function __construct()
     {
         $this->reservas = new ArrayCollection();
@@ -269,6 +272,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCantValoraciones(int $cantValoraciones): static
     {
         $this->cantValoraciones = $cantValoraciones;
+
+        return $this;
+    }
+
+    public function isEliminado(): ?bool
+    {
+        return $this->eliminado;
+    }
+
+    public function setEliminado(bool $eliminado): static
+    {
+        $this->eliminado = $eliminado;
 
         return $this;
     }
