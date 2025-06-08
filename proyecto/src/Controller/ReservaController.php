@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Services\MailService;
 use App\Entity\EstadoReserva;
 use App\Entity\Maquina;
 use App\Entity\Reserva;
@@ -14,10 +15,11 @@ use Symfony\Component\HttpFoundation\Request;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Preference;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class ReservaController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $manager) { }
+    public function __construct(private EntityManagerInterface $manager,private MailService $mailService) { }
 
     #[Route('/mis-reservas', name: 'app_mis_reservas')]
     public function misReservas(Request $request): Response
@@ -30,6 +32,29 @@ final class ReservaController extends AbstractController
             "reservas" => $reservas,
         ]);
     }
+
+    #[Route('/reservas/eliminar', name: 'app_eliminar_reserva', methods: ['POST'])]
+    public function eliminarReserva(Request $request, EntityManagerInterface $entityManager): JsonResponse
+{
+    $id = $request->request->get('idR');
+    $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+
+    $hoy = new \DateTime();
+    if  ($hoy < $reserva->getFechaReembolsoPenalizado()){
+        $monto = $reserva->getMontoReembolso();
+    }
+    else{
+        $monto = $reserva->getReembolsoPenalizado();
+    }
+    $usuario = $this->getUser();
+    $this->mailService->enviarPassword($monto, $usuario->getEmail());
+
+    $entityManager->remove($reserva);
+    $entityManager->flush();
+
+    return new JsonResponse(['success' => true]);
+}
+
 
     #[Route('/administracion/reservas', name: 'app_reservas')]
     public function listarReservas(Request $request): Response
@@ -49,12 +74,6 @@ final class ReservaController extends AbstractController
 
         $fechaInicio = new \DateTime($request->request->get('fecha_inicio'));
         $fechaFin = new \DateTime($request->request->get('fecha_fin'));
-
-        //lo dejo por las dudas pero creo que no puede darse por el uso del flatpicker
-        #if ($fechaInicio > $fechaFin) {
-        #    $this->addFlash('error', 'La fecha de inicio no puede ser posterior a la fecha de fin.');
-        #    return $this->redirectToRoute('app_maquina_detalle', ['id' => $maquina->getId()]);
-        #}
 
         $reserva->setFechaInicio($fechaInicio);
         $reserva->setFechaFin($fechaFin);
@@ -108,6 +127,7 @@ final class ReservaController extends AbstractController
         
     }
 
+ 
 
     #[Route('/reservas/{id}/confirmar', name: 'app_reservas_confirmar', methods: ['GET', 'POST'])]
     public function confirmarReserva(
@@ -201,4 +221,6 @@ final class ReservaController extends AbstractController
             'valoracionPromedio' => $valoracionPromedio, // Para depuración o información adicional
         ]);
     }
+
+
 }

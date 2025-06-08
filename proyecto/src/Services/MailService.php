@@ -54,4 +54,19 @@ class MailService {
        $sent = $this->mailer->send($email);           
 
     }
+
+    public function reembolso($monto, $to) {
+
+        $email = (new Email())
+            ->from(new Address('alquilar@leostrange.live', 'Alquil.AR'))
+            ->to($to)
+            ->replyTo('ivtech.unlp@gmail.com')
+            ->priority(Email::PRIORITY_HIGH)
+            ->subject('Alquil.AR | Confirmacion de reembolso')
+            ->text('¡Gracias por usar Alquil.AR!')
+            ->html('<p> Por la cancelacion de tu reserva te corresponde un reembolso por un monto de: <b>' . $monto . '</b>. Presentate con este correo en tu sucursal mas cercana para recibir tu dinero</p>');
+
+        $sent = $this->mailer->send($email);
+        # Se almacena en una variable porque puede usarse para debugging, no es necesario 👍 
+    }
 }

@@ -69,4 +69,7 @@ class ReservaRepository extends ServiceEntityRepository
         $query = $qb->getQuery();
         return $query->getResult();
     }
+
+
+
 }

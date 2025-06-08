@@ -36,7 +36,7 @@ final class SucursalController extends AbstractController
             $coords = $this->mapService->calcularCoordenadasGeneral($nuevaSucursal->getDireccion(), $nuevaSucursal->getCiudad());
 
             if (!is_array($coords) || !isset($coords['lat'], $coords['lon'])) {
-            $this->addFlash('error', 'La dirección es inválida.');
+            $this->addFlash('error', 'La direccion no corresponde a una direccion valida dentro de la Provincia de Buenos Aires');
             return $this->redirectToRoute('app_crear_sucursal');
             }
 
