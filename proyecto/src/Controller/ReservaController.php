@@ -14,7 +14,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
-use MercadoPago\Preference;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class ReservaController extends AbstractController
@@ -26,10 +25,22 @@ final class ReservaController extends AbstractController
     {
         $user = $this->getUser();
 
-        $reservas = $this->manager->getRepository(Reserva::class)->filtrarPropias($user); # Método custom para mostrar propias :D
+        $reservas = $this->manager->getRepository(Reserva::class)->filtrarReservasPropias($user); # Método custom para mostrar propias :D
 
         return $this->render('reserva/listar-propias.html.twig', [
             "reservas" => $reservas,
+        ]);
+    }
+
+    #[Route('/mis-alquileres', name: 'app_mis_alquileres')]
+    public function misAlquileres(Request $request): Response
+    {
+        $user = $this->getUser();
+
+        $alquileres = $this->manager->getRepository(Reserva::class)->filtrarAlquileresPropios($user);
+
+        return $this->render('reserva/listar-alquileres-propios.html.twig', [
+            "alquileres" => $alquileres,
         ]);
     }
 
@@ -93,7 +104,7 @@ final class ReservaController extends AbstractController
 
         $usuario = $this->getUser();
         if (!$usuario instanceof User) {
-            throw $this->createAccessDeniedException('No hay usuario autenticado.');
+            throw $this->createAccessDeniedException('Necesitás iniciar sesión para poder acceder a esta URL.');
         }
 
         $reserva->setUsuario($usuario);
@@ -130,10 +141,7 @@ final class ReservaController extends AbstractController
  
 
     #[Route('/reservas/{id}/confirmar', name: 'app_reservas_confirmar', methods: ['GET', 'POST'])]
-    public function confirmarReserva(
-        Reserva $reserva,
-        EntityManagerInterface $entityManager,
-        Request $request): Response {
+    public function confirmarReserva(Reserva $reserva, Request $request): Response {
         // Verificar que la reserva pertenezca al usuario actual o tenga un estado 'pendiente' adecuado
         if ($reserva->getUsuario() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Esta reserva no te pertenece.');
@@ -142,7 +150,7 @@ final class ReservaController extends AbstractController
         // Si la reserva ya está confirmada o pagada, redirigir
         if ($reserva->getEstado() !== 'FALTA DE PAGO') {
             $this->addFlash('error', 'La reserva ya ha sido procesada.');
-            //return $this->redirectToRoute('app_mis_reservas');
+            return $this->redirectToRoute('app_mis_reservas');
         }
 
         //ya lo calcule, podria no hacerlo se supone que es por consistencia de que no hayan cambiando las cosas
