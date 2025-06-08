@@ -47,7 +47,7 @@ final class ReservaController extends AbstractController
         $monto = $reserva->getReembolsoPenalizado();
     }
     $usuario = $this->getUser();
-    $this->mailService->enviarPassword($monto, $usuario->getEmail());
+    $this->mailService->reembolso($monto, $usuario->getEmail());
 
     $entityManager->remove($reserva);
     $entityManager->flush();
