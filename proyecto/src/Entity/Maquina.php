@@ -51,7 +51,7 @@ class Maquina
     /**
      * @var Collection<int, Reserva>
      */
-    #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'Maquina', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Reserva::class, mappedBy: 'maquina', orphanRemoval: true)] // Corregido 'Maquina' a 'maquina' en mappedBy
     private Collection $reservas;
 
     #[ORM\Column(nullable: true)]
@@ -59,7 +59,7 @@ class Maquina
 
     #[ORM\ManyToOne(inversedBy: 'maquinas')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Sucursal $ubicacion = null;
+    private ?Sucursal $ubicacion = null; // Relación con Sucursal
 
     public function __construct()
     {
@@ -224,7 +224,6 @@ class Maquina
     public function removeReserva(Reserva $reserva): static
     {
         if ($this->reservas->removeElement($reserva)) {
-            // set the owning side to null (unless already changed)
             if ($reserva->getMaquina() === $this) {
                 $reserva->setMaquina(null);
             }
@@ -232,8 +231,6 @@ class Maquina
 
         return $this;
     }
-
- 
 
     public function getImagenes(): array
     {

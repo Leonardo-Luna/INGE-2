@@ -142,7 +142,6 @@ class Sucursal
     public function removeMaquina(Maquina $maquina): static
     {
         if ($this->maquinas->removeElement($maquina)) {
-            // set the owning side to null (unless already changed)
             if ($maquina->getUbicacion() === $this) {
                 $maquina->setUbicacion(null);
             }
