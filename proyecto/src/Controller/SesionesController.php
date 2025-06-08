@@ -27,11 +27,14 @@ final class SesionesController extends AbstractController
 
     #[Route('/verificar', name: 'app_sesiones_verificar')]
     public function VerificarGerente() {
-        if($this->authChecker->isGranted('ROLE_GERENTE')) {
-            
-            $usuario = $this->getUser();
-            $this->EnviarToken($usuario);
+        $usuario = $this->getUser();
 
+        if($usuario->isEliminado()) {
+            return $this->redirectToRoute('app_sesiones_logout');
+        }
+
+        if($this->authChecker->isGranted('ROLE_GERENTE')) {
+            $this->EnviarToken($usuario);
             return $this->redirectToRoute('app_sesiones_token', ['id' => $usuario->getId()]);
         }
 
