@@ -1,0 +1,113 @@
+{# templates/sucursal/editar.html.twig #}
+
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Editar Sucursal{% endblock %}
+
+{% block content %}
+  <div class="perfil-container">
+    <h1>Editar Sucursal: {{ sucursal.nombre }}</h1>
+
+    {{ form_start(form, {'attr': {'class': 'form-edit'}}) }}
+
+        <div class="form-group mb-3">
+            {{ form_label(form.nombre, 'Nombre:', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nombre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nombre) }}
+        </div>
+
+        <div class="form-group mb-3">
+            {{ form_label(form.direccion, 'Dirección:', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.direccion, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.direccion) }}
+        </div>
+
+        <div class="form-group mb-3">
+            {{ form_label(form.ciudad, 'Ciudad:', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.ciudad, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.ciudad) }}
+        </div>
+
+        <div class="form-group mb-3">
+            {{ form_label(form.horario, 'Horario de Atención:', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.horario, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.horario) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Guardar Cambios</button>
+        <a href="{{ path('app_visualizar_sucursal', {'id': sucursal.id}) }}" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
+
+    {{ form_end(form) }}
+  </div>
+
+  {% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endfor %}
+
+  <style>
+    .perfil-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: .5rem;
+        font-weight: bold;
+    }
+    .form-control {
+        width: 100%;
+        padding: .5rem .75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    .form-control:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+    }
+    .btn {
+        display: inline-block;
+        padding: 0.6rem 1rem;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        cursor: pointer;
+        border: none;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+    }
+    .btn-secondary:hover {
+        background-color: #5c636a;
+    }
+    .ms-2 {
+        margin-left: 0.5rem;
+    }
+    .mt-3 {
+        margin-top: 1rem;
+    }
+  </style>
+{% endblock %}

@@ -75,7 +75,44 @@ final class SucursalController extends AbstractController
         ]);
     }
 
-   
+     #[Route('/administracion/sucursal/editar/{id}', name: 'app_editar_sucursal')]
+    public function editarSucursal(Request $request, Sucursal $sucursal, EntityManagerInterface $entityManager): Response
+    {
+
+        $form = $this->createForm(SucursalType::class, $sucursal);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $verificarExistencia = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => $sucursal->getDireccion(), 'ciudad' => $sucursal->getCiudad()]);
+
+            if($verificarExistencia ) {
+                $this->addFlash('warning', 'Ya existe una sucursal con esa direccion.');
+                return $this->redirectToRoute('app_editar_sucursal',['id' => $sucursal->getId()]);       
+            }
+
+            $coords = $this->mapService->calcularCoordenadasGeneral($sucursal->getDireccion(), $sucursal->getCiudad());
+
+            if (!is_array($coords) || !isset($coords['lat'], $coords['lon'])) {
+                $this->addFlash('warning', 'La direccion no corresponde a una direccion valida dentro de la Provincia de Buenos Aires');
+                return $this->redirectToRoute('app_editar_sucursal',['id' => $sucursal->getId()]);
+            }
+
+            $sucursal->setLatitud($coords['lat']);
+            $sucursal->setLongitud($coords['lon']);
+
+            $entityManager->flush(); 
+
+            $this->addFlash('success', '¡Sucursal actualizada con éxito!');
+
+            // Redirige a la página de visualización de la sucursal 
+            return $this->redirectToRoute('app_administrar_sucursal', ['id' => $sucursal->getId()]);
+        }
+
+        return $this->render('sucursal/editar.html.twig', [
+            'sucursal' => $sucursal, // Pasar la sucursal para que la plantilla Twig pueda acceder a sus datos (nombre, etc.)
+            'form' => $form,
+        ]);
+    }
 
 
 }
