@@ -82,14 +82,13 @@ final class UsuariosController extends AbstractController
 
         if($user->getId() == $this->getUser()->getId()) { # Usuario propio
             $this->addFlash('error', 'No puede elimianr tu propio usuario.'); # No nos lo pidieron, pero creo que corresponde?
-            $this->redirectToRoute('app_catalogo'); # CAMBIAR ESTA TAMBIEN POR EL LISTADO ! !? ?!? !$I$R SN 
+            return $this->redirectToRoute('app_usuarios'); 
         }
 
         if($user->isEliminado()) { # Usuario ya eliminado
             $this->addFlash('success', 'El usuario ya se encuentra eliminado.');
-            $this->redirectToRoute('app_catalogo'); ## tambien cambiar poe lelistado la puta madre
+            return $this->redirectToRoute('app_usuarios'); 
         }
-    
         if($user) {
             $reservas = $user->getReservas();
             $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA)->getEstado();
@@ -111,7 +110,18 @@ final class UsuariosController extends AbstractController
             $this->addFlash('error', 'Se produjo un error al eliminar el usuario');
         }
 
-        return $this->redirectToRoute('app_catalogo'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+        return $this->redirectToRoute('app_usuarios');
+    
     }
 
-}
+    #[Route('/administracion/usuarios', name: 'app_usuarios')]
+    public function listarUsuarios(Request $request): Response
+    {
+        $users = $this->manager->getRepository(User::class)->findActiveUsers();
+
+        return $this->render('usuarios/listar-todos.html.twig', [
+            "users" => $users,
+        ]);
+    }
+
+}  
