@@ -1,6 +1,5 @@
 {# templates/maquina/nueva.html.twig #}
-{% extends 'layout/base.html.twig' %} {# ¡Cambiado a layout/base.html.twig! #}
-
+{% extends 'layout/base.html.twig' %} 
 {% block title %}Cargar Nueva Máquina{% endblock %}
 
 {% block content %} 
@@ -17,28 +16,46 @@
 
     <div class="card shadow-sm rounded-lg mx-auto" style="max-width: 600px; width: 90vw; margin-top: 60px;">
         <div class="card-header bg-primary text-white">
-            <h4 class="mb-0"><i class="ri-add-line me-2"></i> Cargar Nueva Máquina</h4> {# Icono de agregar, puedes cambiarlo #}
+            <h4 class="mb-0"><i class="ri-add-line me-2"></i> Cargar Nueva Máquina</h4> 
         </div>
         <div class="card-body">
             {{ form_start(form) }}
                 <div class="form-group mb-3">
                     {{ form_label(form.Nombre, 'Nombre de la Máquina', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.Nombre, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.Nombre, {'attr': {'class': 'form-control',
+                                                          'required': 'required',
+                                                          'oninvalid': "this.setCustomValidity('Por favor, ingresa el nombre de la máquina.')",
+                                                          'oninput': "this.setCustomValidity('')"}}) }}
                     {{ form_errors(form.Nombre) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.Marca, 'Marca', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.Marca, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.Marca, {'attr': {'class': 'form-control', 
+                                                'required': 'required',
+                                                'oninvalid': "this.setCustomValidity('Por favor, ingresa la marca de la máquina.')",
+                                                'oninput': "this.setCustomValidity('')"}}) }}
                     {{ form_errors(form.Marca) }}
                 </div>
-                <div class="form-group mb-3">
+                <div class="form-group mb-3">{#onkeypress limite a numero del 0 al 9 y un punto para decimales#}
                     {{ form_label(form.costoPorDIa, 'Costo por Día', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.costoPorDIa, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.costoPorDIa, {'attr': {'class': 'form-control',
+                                                      'type': 'number',
+                                                      'required': 'required',
+                                                      'min' : '1',
+                                                      'value' : '1',
+                                                      'oninvalid': "this.setCustomValidity('Por favor, ingresa el costo por dia de la máquina.')",
+                                                      'oninput': "this.setCustomValidity('')",
+                                                      'onkeypress': 'return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46' 
+                                    }}) 
+                    }}
                     {{ form_errors(form.costoPorDIa) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.Descripcion, 'Descripción', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.Descripcion, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.Descripcion, {'attr': {'class': 'form-control',
+                                                      'required': 'required',
+                                                      'oninvalid': "this.setCustomValidity('Por favor, ingresa la descripción de la máquina.')",
+                                                      'oninput': "this.setCustomValidity('')"}}) }}
                     {{ form_errors(form.Descripcion) }}
                 </div>
                 <div class="form-check mb-3 ms-4"> {# Puedes ajustar 'ms-4' para el margen a la derecha #}
@@ -48,17 +65,35 @@
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.Anio, 'Año', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.Anio, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.Anio, {'attr': {'class': 'form-control',
+                                                        'type': 'number',
+                                                        'pattern': '\\d{4}',
+                                                        'required': 'required',
+                                                        'oninvalid': "this.setCustomValidity('Por favor, ingresa el año de la máquina.')",
+                                                        'oninput': "this.setCustomValidity('')",
+                                                        'onkeypress': 'return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46'
+                                    }})
+                    }}
                     {{ form_errors(form.Anio) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.minimoDias, 'Mínimo de Días', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.minimoDias, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.minimoDias, {'attr': {'class': 'form-control',
+                                                            'required': 'required',
+                                                            'type' : 'number',
+                                                            'values' : '1',
+                                                            'oninvalid': "this.setCustomValidity('Por favor, ingresa el minimo de dias de la máquina.')",
+                                                            'oninput': "this.setCustomValidity('')",
+                                                            'onkeypress': 'return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46'
+                                }})
+                    }}
                     {{ form_errors(form.minimoDias) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.Tipo, 'Tipo de Máquina', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.Tipo, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.Tipo, {'attr': {'class': 'form-control','required': 'required',
+                                                        'oninvalid': "this.setCustomValidity('Por favor, ingresa el tipo de la máquina.')",
+                                                        'oninput': "this.setCustomValidity('')"}}) }}
                     {{ form_errors(form.Tipo) }}
                 </div>
                 <div class="form-group mb-3">
@@ -68,22 +103,40 @@
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.ubicacion, 'Sucursal', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.ubicacion, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.ubicacion, {'attr': {'class': 'form-control','oninvalid': "this.setCustomValidity('Por favor, seleccione un elemento.')",
+                                                        'oninput': "this.setCustomValidity('')"}}) }}
                     {{ form_errors(form.ubicacion) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.reembolsoNormal, 'Reembolso Normal (%)', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.reembolsoNormal, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.reembolsoNormal, {'attr': {'class': 'form-control','type' : 'number',
+                                                            'values' : '1',
+                                                            'min' : '1',
+                                                            'max': '100',
+                                                            'step' : '1',
+                                                            'oninvalid': "this.setCustomValidity('Por favor, ingresa el reembolso de la máquina.')",
+                                                            'oninput': "this.setCustomValidity('')",}}) }}
                     {{ form_errors(form.reembolsoNormal) }}
                 </div>
                <div class="form-group mb-3">
                     {{ form_label(form.diasReembolso, 'Días para Reembolso', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.diasReembolso, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.diasReembolso, {'attr': {'class': 'form-control',
+                                                                  'type' : 'number',
+                                                                  'values' : '1',
+                                                                  'oninvalid': "this.setCustomValidity('Por favor, ingresa los dias para un reembolso normal de la máquina.')",
+                                                                  'oninput': "this.setCustomValidity('')",
+                                                                  'onkeypress': 'return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46'}}) }}
                     {{ form_errors(form.diasReembolso) }}
                 </div>
                 <div class="form-group mb-3">
                     {{ form_label(form.reembolsoPenalizado, 'Reembolso Penalizado (%)', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.reembolsoPenalizado, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_widget(form.reembolsoPenalizado, {'attr': {'class': 'form-control','type' : 'number',
+                                                            'values' : '1',
+                                                            'min' : '1',
+                                                            'max': '100',
+                                                            'step' : '1',
+                                                            'oninvalid': "this.setCustomValidity('Por favor, ingresa el reembolso penalizado de la máquina.')",
+                                                            'oninput': "this.setCustomValidity('')",}}) }}
                     {{ form_errors(form.reembolsoPenalizado) }}
                 </div>
 
