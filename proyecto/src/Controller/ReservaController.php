@@ -64,7 +64,17 @@ final class ReservaController extends AbstractController
     $entityManager->flush();
 
     return new JsonResponse(['success' => true]);
-}
+}   
+    #[Route('/reserva/eliminar/{id}', name: 'reserva_eliminar', methods: ['POST'])]
+    public function eliminar(int $id, EntityManagerInterface $entityManager): JsonResponse
+    {
+    $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+
+    $entityManager->remove($reserva);
+    $entityManager->flush();
+
+    return new JsonResponse(['success' => true]);
+    }
 
 
     #[Route('/administracion/reservas', name: 'app_reservas')]

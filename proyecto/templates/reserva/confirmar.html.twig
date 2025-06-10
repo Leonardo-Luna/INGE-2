@@ -56,10 +56,12 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
+    
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script>
         // La PUBLIC KEY debe ser pasada desde el controlador.
@@ -77,19 +79,23 @@
                 initialization: {
                     preferenceId: preferenceId,
                 },
-                // Si necesitas callbacks para eventos del brick, añádelos aquí:
-                // callbacks: {
-                //     onReady: () => {
-                //         console.log('Wallet Brick listo para usar.');
-                //     },
-                //     onError: (error) => {
-                //         console.error('Error al inicializar Wallet Brick:', error);
-                //         const container = document.getElementById('walletBrick_container');
-                //         if (container) {
-                //             container.innerHTML = '<p style="color: red;">No se pudo cargar el método de pago. Inténtalo de nuevo más tarde.</p>';
-                //         }
-                //     }
-                // }
+                 callbacks: {
+                    onSubmit: () => {
+                    salidaForzada = false;
+                    return Promise.resolve(); // continuar con el flujo normal del pago
+                     },
+                     onReady: () => {
+                         console.log('Wallet Brick listo para usar.');
+                         
+                     },
+                     onError: (error) => {
+                         console.error('Error al inicializar Wallet Brick:', error);
+                         const container = document.getElementById('walletBrick_container');
+                         if (container) {
+                             container.innerHTML = '<p style="color: red;">No se pudo cargar el método de pago. Inténtalo de nuevo más tarde.</p>';
+                         }
+                     }
+                 }
             });
         } else {
             console.error("Error: No se pudo cargar Mercado Pago. Falta la Public Key o el Preference ID.");
@@ -98,6 +104,15 @@
                 container.innerHTML = '<p style="color: red;">No se pudo cargar el método de pago. Por favor, asegúrate de que las claves de Mercado Pago estén configuradas correctamente.</p>';
             }
         }
+    let salidaForzada = true;
+        window.addEventListener('beforeunload', (e) => {
+    if (salidaForzada) {
+        navigator.sendBeacon('/reserva/eliminar/{{reserva.id}}');
+    }
+  
+});
+
+
     </script>
 {% endblock %}
 

@@ -23,7 +23,7 @@
     <div class="acciones">
        
 
-      <a REDIRECCION:"Esto estaria bueno que rediriga al catalogo con el filtro por sucursal ya seleccionado" class="btn">Ver máquinas</a> 
+      <a onClick= redirigirACatalogo({{sucursal.id}}) class="btn">Ver máquinas</a> 
     </div>
       <h3>Ubicación</h3>
 <div id="map" style="height: 300px; width: 538px; border-radius: 10px; margin-top: 20px;"></div>
@@ -41,6 +41,11 @@
     L.marker([lat, lng]).addTo(map)
         .bindPopup('{{ sucursal.nombre|e('js') }}')
         .openPopup();
+
+  function redirigirACatalogo(sucursalId) {
+    const url = `/catalogo?search=&tipo=&sucursal=${encodeURIComponent(sucursalId)}`;
+    window.location.href = url;
+}
 </script>
   </div>
 
