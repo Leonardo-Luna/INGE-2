@@ -52,7 +52,7 @@ class ReservaRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->neq('r.estado', ':estadoAprobada')) # NEQ = not equals
 
             ->setParameter('usuario', $user)
-            ->setParameter('estadoAprobada', 'APROBADA');
+            ->setParameter('estadoAprobada', 'APROBADO');
 
         $query = $qb->getQuery();
         return $query->getResult();
@@ -67,7 +67,7 @@ class ReservaRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->eq('r.estado', ':estadoAprobada')) # EQ = equals
             
             ->setParameter('usuario', $user)
-            ->setParameter('estadoAprobada', 'APROBADA');
+            ->setParameter('estadoAprobada', 'APROBADO');
 
         $query = $qb->getQuery();
         return $query->getResult();

@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Rol;
 use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -28,16 +29,18 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteLuigi->setPassword($this->passwordHasher->hashPassword($gerenteLuigi, 'abc123'));
         $gerenteLuigi->addRole($rolAutenticado);
         $gerenteLuigi->addRole($rolGerente);
+        $gerenteLuigi->setFechaNacimiento(new DateTime('01/01/2000'));
         $manager->persist($gerenteLuigi);
 
         $gerenteMario = new User();
         $gerenteMario->setNombre("Mario");
         $gerenteMario->setApellido("Mario");
         $gerenteMario->setDni("12345678");
-        $gerenteMario->setEmail("leonardo.luna212972@alumnos.info.unlp.edu.ar"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
+        $gerenteMario->setEmail("ivtech.unlp@gmail.com"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
         $gerenteMario->setPassword($this->passwordHasher->hashPassword($gerenteMario, 'abc123'));
         $gerenteMario->addRole($rolAutenticado);
-        $gerenteMario->addRole($rolCilente);
+        $gerenteMario->addRole($rolGerente);
+        $gerenteMario->setFechaNacimiento(new DateTime('01/01/2000'));
         $manager->persist($gerenteMario);
 
         // $testingLeo = new User();

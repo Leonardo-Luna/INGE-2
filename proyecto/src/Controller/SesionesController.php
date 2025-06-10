@@ -30,6 +30,7 @@ final class SesionesController extends AbstractController
         $usuario = $this->getUser();
 
         if($usuario->isEliminado()) {
+            $this->addFlash('error', 'Credenciales incorrectas.');
             return $this->redirectToRoute('app_sesiones_logout');
         }
 
@@ -68,7 +69,7 @@ final class SesionesController extends AbstractController
                 $tiempoLogin = new DateTime();
                 $segundosPasados = abs($tiempoLogin->getTimestamp() - $expiracion->getTimestamp());
                 $minutosPasados = $segundosPasados / 60;
-                if($minutosPasados > 5) { # Token expirado
+                if($minutosPasados > 2) { # Token expirado
                     $this->EnviarToken($usuario);
                     $this->addFlash('error', 'El token ingresado ha expirado, revisa tu casilla de correo para obtener el nuevo.');
                     return $this->redirectToRoute('app_sesiones_token', ['id' => $id]);

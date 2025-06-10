@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -33,7 +35,10 @@ class RegistrarClienteType extends AbstractType
                  'pattern' => '\d{7,8}', // solo números, 7 u 8 dígitos
                  'title' => 'El DNI debe tener 7 u 8 números sin puntos ni letras',
                 ],
-         ])
+            ])
+            ->add('fechaNacimiento', DateType::class, [
+                'required' => true,
+            ])
             ;
     }
 

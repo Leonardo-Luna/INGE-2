@@ -53,6 +53,15 @@
                     }}) }}
                     {{ form_errors(form.dni) }}
                 </div>
+                <div class="form-group mb-3">{#DNI estaba manejado no encontre donde lo limite de aca tmb#}
+                    {{ form_label(form.fechaNacimiento, null, {'label': 'Fecha de nacimiento', 'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.fechaNacimiento, {'attr': {'class': 'form-control', 'placeholder': 'Ingresa la fecha de nacimiento del cliente',
+                                                        'required' :'requiered',
+                                                        'oninvalid' :"this.setCustomValidity('Por favor, ingresa la edad del cliente.')",
+                                                        'oninput':"this.setCustomValidity('')"
+                    }}) }}
+                    {{ form_errors(form.dni) }}
+                </div>
                 {{ form_rest(form) }}
                 <div class="mt-4 d-flex justify-content-between">
                     <button type="submit" class="btn btn-success">

@@ -13,7 +13,7 @@ class EstadosFixture extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $estadoAprobada = new EstadoReserva();
-        $estadoAprobada->setEstado("APROBADA");
+        $estadoAprobada->setEstado("APROBADO");
         $estadoAprobada->setDescripcion("Estado para las reservas que hayan sido pagadas (el único tipo que se tiene en cuenta en el calendario.");
         $manager->persist($estadoAprobada);
 
