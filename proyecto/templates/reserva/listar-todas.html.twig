@@ -18,7 +18,7 @@
                     <div class="card shadow-sm border-0 rounded-3 h-100">
                         <div class="card-header bg-primary text-white py-3 px-4 rounded-top-3 d-flex justify-content-between align-items-center">
                             <h3 class="h5 mb-0">Reserva #{{ reserva.id }}</h3>
-                            <span class="badge bg-{{ reserva.estado|lower == 'aprobada' ? 'success' : (reserva.estado|lower == 'pendiente' ? 'warning' : (reserva.estado|lower == 'cancelada' ? 'danger' : 'secondary')) }} fs-6 py-2 px-3">
+                            <span class="badge bg-{{ reserva.estado|lower == 'aprobado' ? 'success' : (reserva.estado|lower == 'pendiente' ? 'warning' : (reserva.estado|lower == 'cancelada' ? 'danger' : 'secondary')) }} fs-6 py-2 px-3">
                                 {{ reserva.estado|capitalize }}
                             </span>
                         </div>
@@ -48,7 +48,7 @@
                                 <i class="bi bi-person-fill me-1"></i> Ver información personal
                             </a>
 
-                            {% if reserva.estado|lower in ['pendiente', 'aprobada'] %}
+                            {% if reserva.estado|lower in ['pendiente', 'aprobado'] %}
                                 <a href="" class="btn btn-outline-danger btn-sm">
                                     <i class="bi bi-x-circle me-1"></i> Cancelar
                                 </a>
