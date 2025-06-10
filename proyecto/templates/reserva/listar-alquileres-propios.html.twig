@@ -37,7 +37,7 @@
                         </div>
 
                         <div class="card-footer bg-light border-0 py-3 d-flex justify-content-center">
-                                <button class="btn btn-outline-danger btn-sm btn-cancelar" id="{{ alquiler.id }}">
+                                <button onClick="return confirm('¿Estás seguro de que quieres eliminar la reserva?')" class="btn btn-outline-danger btn-sm btn-cancelar" id="{{ alquiler.id }}">
                                 <i class="bi bi-x-circle me-1"></i> Cancelar
                                 </button>
                         </div>
@@ -47,5 +47,32 @@
         </div>
     {% endif %}
 </div>
-
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script>
+document.querySelectorAll('.btn-cancelar').forEach(boton => {
+    boton.addEventListener('click', () => {
+        event.preventDefault();
+        const idR = boton.id;    
+        fetch('/reservas/eliminar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: new URLSearchParams({idR: Number(idR)})
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                boton.closest('.col').remove();
+            } else {
+                alert('Error al cancelar: ' + data.message);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}
