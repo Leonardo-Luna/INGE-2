@@ -14,8 +14,11 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-semibold text-primary mb-2">{{ sucursal.nombre }}</h5>
                         <p class="card-text text-muted mb-3">{{ sucursal.direccion }}</p>
-
-                        <a href="{{ path('app_visualizar_sucursal', { id: sucursal.id }) }}" class="btn btn-outline-primary btn-sm mt-auto stretched-link">Ver sucursal</a>
+                        {% if is_granted('ROLE_GERENTE') %}
+                            <a href="{{ path('app_administrar_sucursal', { id: sucursal.id }) }}" class="btn btn-outline-primary btn-sm mt-auto stretched-link">Ver sucursal</a>
+                        {% else %}
+                            <a href="{{ path('app_visualizar_sucursal', { id: sucursal.id }) }}" class="btn btn-outline-primary btn-sm mt-auto stretched-link">Ver sucursal</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -241,7 +241,9 @@ final class ReservaController extends AbstractController
                 $estadoConfirmada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
                 $reserva->setEstado($estadoConfirmada);
                 $this->manager->flush();
-
+                #funcion del mailer que manda el mail que todo salio bien :)
+                #falta testear, proba cargar en la db un usuario real con tu email y que te lo mande 
+                #$this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaIncio());
                 $this->addFlash('success', 'Pago aprobado. Tu reserva ha sido confirmada.');
             } else {
                 $this->addFlash('error', 'El pago no fue aprobado. Estado actual: ' . $payment->status);
