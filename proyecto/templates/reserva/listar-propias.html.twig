@@ -36,11 +36,12 @@
                             <p class="card-text text-muted small">{{ reserva.maquina.descripcion ?? 'Sin descripción.' }}</p>
                         </div>
 
-                        <div class="card-footer bg-light border-0 py-3 d-flex justify-content-center">
+                        {% if reserva.estado|lower in ['aprobado'] %}
+                            <div class="card-footer bg-light border-0 py-3 d-flex justify-content-center">
                                 <button class="btn btn-outline-danger btn-sm btn-cancelar" id="{{ reserva.id }}">
                                 <i class="bi bi-x-circle me-1"></i> Cancelar
-                                </button>
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

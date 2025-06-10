@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class ReservaController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $manager,private MailService $mailService) { }
+    public function __construct(private EntityManagerInterface $manager, private MailService $mailService) { }
 
     #[Route('/mis-reservas', name: 'app_mis_reservas')]
     public function misReservas(Request $request): Response
@@ -49,6 +49,8 @@ final class ReservaController extends AbstractController
 {
     $id = $request->request->get('idR');
     $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+    $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
+
 
     $hoy = new \DateTime();
     if  ($hoy < $reserva->getFechaReembolsoPenalizado()){
@@ -60,18 +62,20 @@ final class ReservaController extends AbstractController
     $usuario = $this->getUser();
     $this->mailService->reembolso($monto, $usuario->getEmail());
 
-    $entityManager->remove($reserva);
+    $reserva->setEstado($estadoCancelada->getEstado());
     $entityManager->flush();
 
     return new JsonResponse(['success' => true]);
 }   
     #[Route('/reserva/eliminar/{id}', name: 'reserva_eliminar', methods: ['POST'])]
-    public function eliminar(int $id, EntityManagerInterface $entityManager): JsonResponse
+    public function eliminar(int $id): JsonResponse
     {
-    $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+    $reserva = $this->manager->getRepository(Reserva::class)->findOneById($id);
+    $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
 
-    $entityManager->remove($reserva);
-    $entityManager->flush();
+    $reserva->setEstado($estadoCancelada->getEstado());
+    
+    $this->manager->flush();
 
     return new JsonResponse(['success' => true]);
     }

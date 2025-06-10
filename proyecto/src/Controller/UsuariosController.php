@@ -43,6 +43,14 @@ final class UsuariosController extends AbstractController
                 return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
             }
 
+            $nacimiento = $nuevoUsuario->getFechaNacimiento();
+            $hoy = new \DateTime();
+            $edad = $hoy->diff($nacimiento)->y;
+            if ($edad < 18) {
+                $this->addFlash('error', 'El cliente debe ser mayor de 18 años para tener una cuenta en el sistema.');
+                return $this->redirectToRoute('app_usuarios_nuevo_cliente');
+            }
+
             $nuevoUsuario->addRole($rolAutenticado->getNombre());
             $nuevoUsuario->addRole($rolCliente->getNombre());
 

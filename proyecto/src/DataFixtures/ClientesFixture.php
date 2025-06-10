@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Rol;
 use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -28,6 +29,7 @@ class ClientesFixture extends Fixture implements FixtureGroupInterface
         $clientePepe->addRole($rolAutenticado);
         $clientePepe->addRole($rolCilente);
         $clientePepe->setValoracionTotal(5);
+        $clientePepe->setFechaNacimiento(new DateTime('01/01/2000'));
         $manager->persist($clientePepe);
 
         $clientePedro = new User();
@@ -39,6 +41,7 @@ class ClientesFixture extends Fixture implements FixtureGroupInterface
         $clientePedro->addRole($rolAutenticado);
         $clientePedro->addRole($rolCilente);
         $clientePedro->setValoracionTotal(3);
+        $clientePedro->setFechaNacimiento(new DateTime('01/01/2000'));
         $manager->persist($clientePedro);
 
         $clientePipo = new User();
@@ -49,11 +52,12 @@ class ClientesFixture extends Fixture implements FixtureGroupInterface
         $clientePipo->setPassword($this->passwordHasher->hashPassword($clientePipo, "abc123"));
         $clientePipo->addRole($rolAutenticado);
         $clientePipo->addRole($rolCilente);
+        $clientePipo->setFechaNacimiento(new DateTime('01/01/2000'));
         $clientePipo->setValoracionTotal(2);
         $manager->persist($clientePipo);
 
         $clientePato = new User();
-        $clientePato->setNombre("Pipo");
+        $clientePato->setNombre("Pato");
         $clientePato->setApellido("Pérez");
         $clientePato->setDni("12345678");
         $clientePato->setEmail("pato@gmail.com");
@@ -61,6 +65,7 @@ class ClientesFixture extends Fixture implements FixtureGroupInterface
         $clientePato->addRole($rolAutenticado);
         $clientePato->addRole($rolCilente);
         $clientePato->setValoracionTotal(1);
+        $clientePato->setFechaNacimiento(new DateTime('01/01/2000'));
         $manager->persist($clientePato);
 
         $manager->flush();
