@@ -81,7 +81,7 @@ final class UsuariosController extends AbstractController
         $user = $this->manager->getRepository(User::class)->find($id);
 
         if($user->getId() == $this->getUser()->getId()) { # Usuario propio
-            $this->addFlash('error', 'No puede elimianr tu propio usuario.'); # No nos lo pidieron, pero creo que corresponde?
+            $this->addFlash('error', 'No puede eliminar tu propio usuario.'); # No nos lo pidieron, pero creo que corresponde?
             $this->redirectToRoute('app_catalogo'); # CAMBIAR ESTA TAMBIEN POR EL LISTADO ! !? ?!? !$I$R SN 
         }
 
@@ -112,6 +112,36 @@ final class UsuariosController extends AbstractController
         }
 
         return $this->redirectToRoute('app_catalogo'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+    }
+
+    #[Route('/administracion/usuarios/editar/{id}', name: 'app_listar_usuarios')]
+    public function EditarUsuario(int $id, Request $request): Response
+    {
+        $user = $this->manager->getRepository(User::class)->find($id);
+
+        if(!$user) {
+            $this->addFlash('error', 'El usuario no existe.');
+            return $this->redirectToRoute('app_catalogo'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+        }
+
+        if($user->isEliminado()) {
+            $this->addFlash('error', 'El usuario se encuentra eliminado y no puede ser editado.');
+            return $this->redirectToRoute('app_catalogo'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+        }
+
+        $form = $this->createForm(RegistrarClienteType::class, $user);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $this->manager->flush();
+            $this->addFlash('success', 'Usuario editado exitosamente.');
+            return $this->redirectToRoute('app_catalogo'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+        }
+
+        return $this->render('usuarios/editar-cliente.html.twig', [
+            'form' => $form,
+            'user' => $user,
+        ]);
     }
 
 }
