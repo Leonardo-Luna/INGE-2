@@ -45,9 +45,18 @@
                             <td>{{ user.email }}</td>
                             <td>{{ user.nombre | default('N/A') }}</td> 
                             <td>
-                                {% for role in user.roles %}
-                                    <span class="badge bg-primary">{{ role  }}</span>
-                                {% endfor %}
+                                {% set roleNames = {
+    'ROLE_AUTENTICADO': 'Autenticado',
+    'ROLE_GERENTE': 'Gerente',
+    'ROLE_EMPLEADO': 'Empleado',
+    'ROLE_CLIENTE': 'Cliente'
+} %}
+
+{% for role in user.roles %}
+    {% if roleNames[role] is defined %}
+        <span class="badge bg-primary">{{ roleNames[role] }}</span>
+    {% endif %}
+{% endfor %}
                             </td>
                             <td class="acciones-col">
                                 <div class="btn-group-actions">
