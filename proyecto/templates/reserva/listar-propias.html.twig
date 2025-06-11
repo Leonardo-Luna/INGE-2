@@ -29,7 +29,7 @@
                             <p class="mb-3"><small class="text-muted">Hasta:</small> <span class="fw-semibold">{{ reserva.fechaFin|date('d/m/Y') }}</span></p>
 
                             <h5 class="text-success mb-3"><i class="bi bi-currency-dollar me-2"></i> Costo Total</h5>
-                            <p class="fs-4 fw-bold">${{ (reserva.costoTotal / 100)|number_format(2, ',', '.') }}</p>
+                            <p class="fs-4 fw-bold">${{ reserva.costoTotal|number_format(2, ',', '.') }}</p>
 
                             <h5 class="text-secondary mb-3"><i class="bi bi-gear-fill me-2"></i> Máquina</h5>
                             <p class="mb-1 fw-bold">{{ reserva.maquina.nombre ?? 'Máquina no disponible' }}</p>
