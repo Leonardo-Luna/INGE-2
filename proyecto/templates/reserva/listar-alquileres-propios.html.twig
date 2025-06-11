@@ -73,7 +73,7 @@
     {{ parent() }}
     
     <script>
-document.querySelectorAll('.btn-cancelar').forEach(boton => {
+    document.querySelectorAll('.btn-cancelar').forEach(boton => {
     boton.addEventListener('click', () => {
         event.preventDefault();
         const idR = boton.id;    
@@ -95,35 +95,7 @@ document.querySelectorAll('.btn-cancelar').forEach(boton => {
             }
         });
     });
-});
-
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-
-    <script>
-    document.querySelectorAll('.btn-cancelar').forEach(boton => {
-        boton.addEventListener('click', (event) => {
-            event.preventDefault();
-            const id = boton.id;
-            fetch('/alquileres/eliminar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: new URLSearchParams({ id: Number(id) })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    boton.closest('.col').remove();
-                } else {
-                    alert('Error al cancelar: ' + data.message);
-                }
-            });
-        });
     });
     </script>
+{% endblock %}
 {% endblock %}

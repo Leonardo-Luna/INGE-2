@@ -238,25 +238,9 @@ final class ReservaController extends AbstractController
 
         $this->addFlash('success', 'Pago aprobado. Tu reserva ha sido confirmada.');
 
-        if ($paymentId) {
-            $payment = $client->get($paymentId);
+        $this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaIncio());
 
-            if ($payment->status === 'approved') {
-                $estadoConfirmada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-                $reserva->setEstado($estadoConfirmada);
-                $this->manager->flush();
-                #funcion del mailer que manda el mail que todo salio bien :)
-                #falta testear, proba cargar en la db un usuario real con tu email y que te lo mande 
-                #$this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaIncio());
-                $this->addFlash('success', 'Pago aprobado. Tu reserva ha sido confirmada.');
-            } else {
-                $this->addFlash('error', 'El pago no fue aprobado. Estado actual: ' . $payment->status);
-            }
-        } else {
-            $this->addFlash('error', 'No se recibió el ID de pago.');
-        }
-
-     return $this->redirectToRoute('app_mis_alquileres');
+        return $this->redirectToRoute('app_mis_alquileres');
     }   
 
     #[Route('/reservas/{id}/error', name: 'app_reserva_error')]
@@ -270,7 +254,6 @@ final class ReservaController extends AbstractController
         $this->addFlash('warning', 'Tu pago está pendiente. Te notificaremos cuando se confirme.');
         return $this->redirectToRoute('app_mis_reservas');
     }
-        
 
     #[Route('/webhook/mercadopago', name: 'app_webhook', methods: ['POST'])]
     public function webhookMercadoPago(Request $request): Response {
@@ -306,7 +289,6 @@ final class ReservaController extends AbstractController
         }
         $reserva->setEstado($estado);
         $this->manager->flush();
-
         return new Response('Webhook procesado', Response::HTTP_OK);
 }
 
