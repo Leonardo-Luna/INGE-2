@@ -154,7 +154,7 @@ final class UsuariosController extends AbstractController
             $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
             if($verificarExistencia&& $verificarExistencia->getId() != $id) { # Si existe otro usuario con el mismo email y no es el mismo usuario
                 $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
-                return $this->redirectToRoute('app_usuarios_editar', ['id' => $id]); 
+                return $this->redirectToRoute('app_listar_usuarios', ['id' => $id]); 
             }
             $this->manager->flush();
             $this->addFlash('success', 'Usuario editado exitosamente.');

@@ -63,7 +63,7 @@
                                     <a href="{{ path('app_visualizar_cliente', {'id': user.id}) }}" class="btn btn-sm btn-info" title="Ver Detalles">
                                         <i class="fas fa-eye"></i> Visualizar
                                     </a>
-                                    <a href="{{ path('app_index', {'id': user.id}) }}" class="btn btn-sm btn-warning" title="Editar Usuario">
+                                    <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-sm btn-warning" title="Editar Usuario">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
                                     {% if 'ROLE_GERENTE' not in user.roles %}

@@ -35,7 +35,7 @@
       <p> Modificar datos</p>
       <div>
         <a href="{{ path('app_reset_password') }}" class="btn">Cambiar contraseña</a>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Editar perfil</a>
+        <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn">Editar perfil</a>
       </div>
       </div>
     </div>

@@ -27,7 +27,7 @@
         <p> Gestionar <p>
         <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn" hidden> Reservas</a>
         <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn" hidden >Alquileres</a>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Modificar datos</a>
+        <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn">Modificar datos</a>
         {% if 'ROLE_GERENTE' not in user.roles %}
                                     <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
