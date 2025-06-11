@@ -47,29 +47,56 @@ final class ReservaController extends AbstractController
 
     #[Route('/reservas/eliminar', name: 'app_eliminar_reserva', methods: ['GET','POST'])]
     public function eliminarReserva(Request $request, EntityManagerInterface $entityManager): JsonResponse
-{
-    $id = $request->request->get('idR');
-    $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
-    $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
+    {
+        $id = $request->request->get('idR');
+        $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+        $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
 
 
-    $hoy = new \DateTime();
-    if  ($hoy < $reserva->getFechaReembolsoPenalizado()){
-        $monto = $reserva->getMontoReembolso();
-    }
-    else{
-        $monto = $reserva->getReembolsoPenalizado();
-    }
-    $usuario = $this->getUser();
-    if($monto > 0){
-    $this->mailService->reembolso($monto, $usuario->getEmail());
+        $hoy = new \DateTime();
+        if  ($hoy < $reserva->getFechaReembolsoPenalizado()){
+            $monto = $reserva->getMontoReembolso();
+        }
+        else{
+            $monto = $reserva->getReembolsoPenalizado();
+        }
+        $usuario = $this->getUser();
+        if($monto > 0){
+        $this->mailService->reembolso($monto, $usuario->getEmail());
+        }
+
+        $reserva->setEstado($estadoCancelada->getEstado());
+        $entityManager->flush();
+        $this->redirectToRoute('app_mis_alquileres');
+        return new JsonResponse(['success' => true]);
     }
 
-    $reserva->setEstado($estadoCancelada->getEstado());
-    $entityManager->flush();
-    $this->redirectToRoute('app_mis_alquileres');
-    return new JsonResponse(['success' => true]);
-}   
+    #[Route('/reservas/eliminar/{id}', name: 'app_eliminar_reserva_id', methods: ['GET','POST'])]
+    public function eliminarReservaID($id, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+        $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
+
+
+        $hoy = new \DateTime();
+        if  ($hoy < $reserva->getFechaReembolsoPenalizado()){
+            $monto = $reserva->getMontoReembolso();
+        }
+        else{
+            $monto = $reserva->getReembolsoPenalizado();
+        }
+        $usuario = $this->getUser();
+        if($monto > 0){
+        $this->mailService->reembolso($monto, $usuario->getEmail());
+        }
+
+        $reserva->setEstado($estadoCancelada->getEstado());
+        $entityManager->flush();
+
+        $this->addFlash('error', 'Se canceló la reserva exitosamente.');
+        return $this->redirectToRoute('app_mis_alquileres');
+    }
+
     #[Route('/reserva/eliminar/{id}', name: 'reserva_eliminar', methods: ['POST'])]
     public function eliminar(int $id): JsonResponse
     {
