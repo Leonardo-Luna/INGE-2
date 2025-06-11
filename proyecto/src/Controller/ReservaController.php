@@ -72,7 +72,7 @@ final class ReservaController extends AbstractController
     }
 
     #[Route('/reservas/eliminar/{id}', name: 'app_eliminar_reserva_id', methods: ['GET','POST'])]
-    public function eliminarReservaID($id, Request $request, EntityManagerInterface $entityManager): Response
+    public function eliminarReservaID(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
         $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
         $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
@@ -94,7 +94,7 @@ final class ReservaController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('error', 'Se canceló la reserva exitosamente.');
-        return $this->redirectToRoute('app_mis_alquileres');
+        return $this->redirectToRoute('app_reservas');
     }
 
     #[Route('/reserva/eliminar/{id}', name: 'reserva_eliminar', methods: ['POST'])]
