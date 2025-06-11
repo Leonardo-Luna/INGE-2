@@ -61,8 +61,9 @@ final class ReservaController extends AbstractController
         $monto = $reserva->getReembolsoPenalizado();
     }
     $usuario = $this->getUser();
+    if($monto > 0){
     $this->mailService->reembolso($monto, $usuario->getEmail());
-
+    }
 
     $reserva->setEstado($estadoCancelada->getEstado());
     $entityManager->flush();
