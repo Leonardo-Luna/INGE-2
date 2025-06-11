@@ -45,7 +45,7 @@ final class ReservaController extends AbstractController
         ]);
     }
 
-    #[Route('/reservas/eliminar', name: 'app_eliminar_reserva', methods: ['POST'])]
+    #[Route('/reservas/eliminar', name: 'app_eliminar_reserva', methods: ['GET','POST'])]
     public function eliminarReserva(Request $request, EntityManagerInterface $entityManager): JsonResponse
 {
     $id = $request->request->get('idR');
@@ -61,11 +61,13 @@ final class ReservaController extends AbstractController
         $monto = $reserva->getReembolsoPenalizado();
     }
     $usuario = $this->getUser();
+    if($monto > 0){
     $this->mailService->reembolso($monto, $usuario->getEmail());
+    }
 
     $reserva->setEstado($estadoCancelada->getEstado());
     $entityManager->flush();
-
+    $this->redirectToRoute('app_mis_alquileres');
     return new JsonResponse(['success' => true]);
 }   
     #[Route('/reserva/eliminar/{id}', name: 'reserva_eliminar', methods: ['POST'])]

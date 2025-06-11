@@ -107,20 +107,12 @@
                                                         'oninput': "this.setCustomValidity('')"}}) }}
                     {{ form_errors(form.ubicacion) }}
                 </div>
+
+                {# ************************************************************************* #}
                 <div class="form-group mb-3">
-                    {{ form_label(form.reembolsoNormal, 'Reembolso Normal (%)', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.reembolsoNormal, {'attr': {'class': 'form-control','type' : 'number',
-                                                            'values' : '1',
-                                                            'min' : '1',
-                                                            'max': '100',
-                                                            'step' : '1',
-                                                            'oninvalid': "this.setCustomValidity('Por favor, ingresa el reembolso de la máquina.')",
-                                                            'oninput': "this.setCustomValidity('')",}}) }}
-                    {{ form_errors(form.reembolsoNormal) }}
-                </div>
-               <div class="form-group mb-3">
-                    {{ form_label(form.diasReembolso, 'Días para Reembolso', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.diasReembolso, {'attr': {'class': 'form-control',
+                    {{ form_label(form.diasReembolso, 'Días para Reembolso (0 si es sin reembolso)', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.diasReembolso, {'attr': {
+                                                                  'class': 'form-control',
                                                                   'type' : 'number',
                                                                   'values' : '1',
                                                                   'oninvalid': "this.setCustomValidity('Por favor, ingresa los dias para un reembolso normal de la máquina.')",
@@ -128,17 +120,34 @@
                                                                   'onkeypress': 'return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46'}}) }}
                     {{ form_errors(form.diasReembolso) }}
                 </div>
-                <div class="form-group mb-3">
-                    {{ form_label(form.reembolsoPenalizado, 'Reembolso Penalizado (%)', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.reembolsoPenalizado, {'attr': {'class': 'form-control','type' : 'number',
-                                                            'values' : '1',
-                                                            'min' : '1',
-                                                            'max': '100',
-                                                            'step' : '1',
-                                                            'oninvalid': "this.setCustomValidity('Por favor, ingresa el reembolso penalizado de la máquina.')",
-                                                            'oninput': "this.setCustomValidity('')",}}) }}
-                    {{ form_errors(form.reembolsoPenalizado) }}
+
+                {# ************************************************************************* #}
+                {# Estos son los campos que se mostrarán/ocultarán #}
+                <div id="reembolso_fields" style="display: none;"> {# <-- Contenedor con ID y oculto por defecto #}
+                    <div class="form-group mb-3">
+                        {{ form_label(form.reembolsoNormal, 'Reembolso Normal (%)', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.reembolsoNormal, {'attr': {'class': 'form-control','type' : 'number',
+                                                                'values' : '0',
+                                                                'min' : '0',
+                                                                'max': '100',
+                                                                'step' : '1',
+                                                                'oninvalid': "this.setCustomValidity('Por favor, ingresa el reembolso de la máquina.')",
+                                                                'oninput': "this.setCustomValidity('')",}}) }}
+                        {{ form_errors(form.reembolsoNormal) }}
+                    </div>
+                   <div class="form-group mb-3">
+                        {{ form_label(form.reembolsoPenalizado, 'Reembolso Penalizado (%)', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.reembolsoPenalizado, {'attr': {'class': 'form-control','type' : 'number',
+                                                                'values' : '0',
+                                                                'min' : '0',
+                                                                'max': '100',
+                                                                'step' : '1',
+                                                                'oninvalid': "this.setCustomValidity('Por favor, ingresa el reembolso penalizado de la máquina.')",
+                                                                'oninput': "this.setCustomValidity('')",}}) }}
+                        {{ form_errors(form.reembolsoPenalizado) }}
+                    </div>
                 </div>
+                {# ************************************************************************* #}
 
                 <div class="mt-4 text-end">
                     <button class="btn btn-success" type="submit">
@@ -148,4 +157,43 @@
             {{ form_end(form) }}
         </div>
     </div>
+
+    {# ************************************************************************* #}
+    {# Script JavaScript al final del bloque de contenido #}
+    {% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Usa form.diasReembolso.vars.id para obtener el ID real generado por Symfony
+            const diasReembolsoField = document.getElementById('{{ form.diasReembolso.vars.id }}');
+            const reembolsoFieldsContainer = document.getElementById('reembolso_fields');
+
+            function toggleReembolsoFields() {
+                // console.log('Valor de diasReembolso:', diasReembolsoField.value); // Para depurar
+                // console.log('Valor numérico:', parseFloat(diasReembolsoField.value)); // Para depurar
+
+                // Convertir a número y verificar si es un número válido y mayor que 0
+                const valueAsNumber = parseFloat(diasReembolsoField.value);
+                if (!isNaN(valueAsNumber) && valueAsNumber > 0) {
+                    reembolsoFieldsContainer.style.display = 'block'; // Mostrar
+                } else {
+                    reembolsoFieldsContainer.style.display = 'none';  // Ocultar
+                    // Opcional: limpiar los valores y quitar 'required' si el campo se oculta
+                    {% if form.reembolsoNormal is defined %}
+                        document.getElementById('{{ form.reembolsoNormal.vars.id }}').value = '0';
+                        document.getElementById('{{ form.reembolsoNormal.vars.id }}').removeAttribute('required');
+                    {% endif %}
+                    {% if form.reembolsoPenalizado is defined %}
+                        document.getElementById('{{ form.reembolsoPenalizado.vars.id }}').value = '0';
+                        document.getElementById('{{ form.reembolsoPenalizado.vars.id }}').removeAttribute('required');
+                    {% endif %}
+                }
+            }
+
+            diasReembolsoField.addEventListener('input', toggleReembolsoFields);
+
+            // Ejecutar la función una vez al cargar la página (para el estado inicial)
+            toggleReembolsoFields();
+        });
+    </script>
+{% endblock %}
 {% endblock %}

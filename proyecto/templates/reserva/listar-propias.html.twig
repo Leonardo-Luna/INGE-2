@@ -4,6 +4,9 @@
 
 {% block content %}
 
+
+
+
 <div class="container my-5">
     <h2 class="text-center display-4 fw-bold text-dark mb-5">Listado de Reservas</h2>
 
@@ -69,6 +72,7 @@ document.querySelectorAll('.btn-cancelar').forEach(boton => {
         .then(data => {
             if (data.success) {
                 boton.closest('.col').remove();
+                lert("clave");
             } else {
                 alert('Error al cancelar: ' + data.message);
             }
