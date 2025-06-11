@@ -290,8 +290,8 @@
                     <li class="col-md-6"><i class="fas fa-cogs me-2"></i> <strong>Tipo:</strong> {{ maquina.tipo ?: 'No especificado' }}</li>
                     <li class="col-md-6"><i class="fas fa-calendar-check me-2"></i> <strong>Año de fabricación:</strong> {{ maquina.anio }}</li>
                     <li class="col-md-6"><i class="fas fa-calendar-day me-2"></i> <strong>Mínimo de días de alquiler:</strong> {{ maquina.minimoDias }} días</li>
-                    <li class="col-md-6"><i class="fas fa-hand-holding-usd me-2"></i> <strong>Reembolso normal:</strong> {{ maquina.reembolsoNormal }}%</li>
-                    <li class="col-md-6"><i class="fas fa-gavel me-2"></i> <strong>Reembolso penalizado:</strong> {{ maquina.reembolsoPenalizado ?: 'N/A' }}%</li>
+                    <li class="col-md-6"><i class="fas fa-hand-holding-usd me-2"></i> <strong>Reembolso normal por dia :</strong> ${{ maquina.reembolsoNormal }}</li>
+                    <li class="col-md-6"><i class="fas fa-gavel me-2"></i> <strong>Reembolso penalizado por dia :</strong> ${{ maquina.reembolsoPenalizado ?: 'N/A' }}</li>
                     <li class="col-md-6"><i class="fas fa-map-marker-alt me-2"></i> <strong>Ubicación:</strong> {{ maquina.ubicacion ? maquina.ubicacion.nombre : 'No asignada' }}</li>
                     <li class="col-md-6"><i class="fas fa-check-circle me-2"></i> <strong>Estado:</strong> {% if maquina.enReparacion %}<span class="text-danger">En Reparación</span>{% else %}<span class="text-success">Operativa</span>{% endif %}</li>
                 </ul>
@@ -307,9 +307,9 @@
                     <i class="fas fa-file-invoice-dollar me-2"></i> Detalles de Políticas de Reembolso
                 </div>
                 <div class="card-body p-4">
-                    <p>El porcentaje de reembolso normal aplicable es del <strong>{{ maquina.reembolsoNormal }}%</strong>.</p>
+                    <p>El reembolso normal equivale a  <strong>${{ maquina.reembolsoNormal }}</strong> por cada dia de alquiler.</p>
                     <p>Para optar al reembolso normal, la cancelación debe realizarse con al menos <strong>{{ maquina.diasReembolso }} días de antelación</strong> a la fecha de inicio de la reserva.</p>
-                    <p>En caso de no cumplir con el preaviso, se aplicará un reembolso penalizado del <strong>{{ maquina.reembolsoPenalizado ?: 'No aplica' }}%</strong>.</p>
+                    <p>En caso de cancelar la reserva con menos de la antelacion especificada, el reembolso equivaldra a <strong>${{ maquina.reembolsoPenalizado ?: 'No aplica' }}</strong>.</p>
                     <p class="text-muted small">Para más información sobre las políticas de cancelación y reembolso, por favor contacte a nuestro soporte.</p>
                 </div>
             </div>

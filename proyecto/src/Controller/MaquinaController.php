@@ -65,6 +65,13 @@ final class MaquinaController extends AbstractController
 
             // Actualiza la entidad Maquina con los nuevos nombres de archivo
             $maquina->setImagenes($currentImageFilenames);
+
+            $aux = $maquina->getReembolsoNormal();
+            $maquina->setReembolsoNormal(($aux/100)*$maquina->getCostoPorDia());
+
+            $aux = $maquina->getReembolsoPenalizado();
+            $maquina->setReembolsoPenalizado(($aux/100)*$maquina->getCostoPorDia());
+
             $this->entityManager->persist($maquina);
             $this->entityManager->flush(); // Vuelve a guardar para actualizar los nombres de archivo
 
