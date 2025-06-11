@@ -25,10 +25,17 @@
       {% if 'ROLE_CLIENTE' in user.roles %}
       <div class="info-box2">
         <p> Gestionar <p>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn"> Reservas</a>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Alquileres</a>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Datos</a>
-        <b REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Eliminar</b>
+        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn" hidden> Reservas</a>
+        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn" hidden >Alquileres</a>
+        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn">Modificar datos</a>
+        {% if 'ROLE_GERENTE' not in user.roles %}
+                                    <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </form>
+                                    {% endif %}
       {% endif %}
       </div>
       
