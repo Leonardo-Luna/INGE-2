@@ -148,8 +148,6 @@ final class ReservaController extends AbstractController
 
         $reserva->setCostoTotal($costoFinalConRecargo);
 
-        $reserva->setFechaCreacion(new \DateTime());
-
         $this->manager->persist($reserva);
         $this->manager->flush();
 
