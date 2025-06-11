@@ -132,6 +132,8 @@ final class ReservaController extends AbstractController
 
         $reserva->setCostoTotal($costoFinalConRecargo);
 
+        $reserva->setFechaCreacion(new \DateTime());
+
         $this->manager->persist($reserva);
         $this->manager->flush();
 
@@ -267,12 +269,9 @@ final class ReservaController extends AbstractController
         // Cambiar estado según resultado
         if ($status === 'approved') {
             $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-        } elseif ($status === 'pending') {
-            $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::PENDIENTE)->getEstado();
         } else {
-            $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::RECHAZADA)->getEstado();
+            $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FALTA_PAGO)->getEstado();
         }
-
         $reserva->setEstado($estado);
         $this->manager->flush();
 
@@ -282,3 +281,5 @@ final class ReservaController extends AbstractController
 
 
 }
+
+
