@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\EstadoReserva;
 use App\Entity\Rol;
 use App\Entity\User;
-use App\Form\RegistrarClienteType;
+use App\Form\EditarUsuarioType;
 use App\Repository\RolRepository;
 use App\Services\MailService;
 use App\Services\StringService;
@@ -147,10 +147,15 @@ final class UsuariosController extends AbstractController
             return $this->redirectToRoute('app_usuarios'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
         }
 
-        $form = $this->createForm(RegistrarClienteType::class, $user);
+        $form = $this->createForm(EditarUsuarioType::class, $user);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
+            $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+            if($verificarExistencia&& $verificarExistencia->getId() != $id) { # Si existe otro usuario con el mismo email y no es el mismo usuario
+                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
+                return $this->redirectToRoute('app_usuarios_editar', ['id' => $id]); 
+            }
             $this->manager->flush();
             $this->addFlash('success', 'Usuario editado exitosamente.');
             return $this->redirectToRoute('app_usuarios'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
