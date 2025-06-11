@@ -148,6 +148,8 @@ final class ReservaController extends AbstractController
 
         $reserva->setCostoTotal($costoFinalConRecargo);
 
+        $reserva->setFechaCreacion(new \DateTime());
+
         $this->manager->persist($reserva);
         $this->manager->flush();
 
@@ -193,6 +195,11 @@ final class ReservaController extends AbstractController
         $recargoMonto = $costoOriginal * $recargoPorcentaje;
         $costoFinalConRecargo = $costoOriginal + $recargoMonto;
 
+
+        $url = $request->getUriForPath('/reservas/' . $reserva->getId() . '/exito');
+        $successUrl = $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $failureUrl = $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
         MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
         $client = new PreferenceClient();
         $preference = $client->create([
@@ -209,8 +216,8 @@ final class ReservaController extends AbstractController
                 "success" => $successUrl,
                 "failure" => $failureUrl
              ],
-            //"auto_return" => "approved", 
-            //"notification_url" => $this->generateUrl('app_webhook', [], true),
+            "auto_return" => "approved", 
+            "notification_url" => $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
 
         return $this->render('reserva/confirmar.html.twig', [
@@ -225,16 +232,13 @@ final class ReservaController extends AbstractController
 
     #[Route('/reservas/{id}/exito', name: 'app_reserva_exito')]
     public function reservaExito(int $id, Request $request): Response {
-        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']);
-        $client = new \MercadoPago\Client\Payment\PaymentClient();
-
         $reserva = $this->manager->getRepository(Reserva::class)->find($id);
 
         if (!$reserva) {
             throw $this->createNotFoundException('Reserva no encontrada.');
         }
 
-        $paymentId = $request->query->get('payment_id');
+        $this->addFlash('success', 'Pago aprobado. Tu reserva ha sido confirmada.');
 
         if ($paymentId) {
             $payment = $client->get($paymentId);
@@ -254,7 +258,7 @@ final class ReservaController extends AbstractController
             $this->addFlash('error', 'No se recibió el ID de pago.');
         }
 
-     return $this->redirectToRoute('app_mis_reservas');
+     return $this->redirectToRoute('app_mis_alquileres');
     }   
 
     #[Route('/reservas/{id}/error', name: 'app_reserva_error')]
@@ -262,7 +266,7 @@ final class ReservaController extends AbstractController
         $this->addFlash('error', 'El pago ha fallado. No se ha confirmado tu reserva.');
         return $this->redirectToRoute('app_mis_reservas');
     }
-    /*
+
     #[Route('/reservas/{id}/pendiente', name: 'app_reserva_pendiente')]
     public function reservaPendiente(int $id): Response {
         $this->addFlash('warning', 'Tu pago está pendiente. Te notificaremos cuando se confirme.');
@@ -271,36 +275,45 @@ final class ReservaController extends AbstractController
         
 
     #[Route('/webhook/mercadopago', name: 'app_webhook', methods: ['POST'])]
-    public function webhook(Request $request): Response {
-        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']);
-        $client = new \MercadoPago\Client\Payment\PaymentClient();
-
+    public function webhookMercadoPago(Request $request): Response {
         $data = json_decode($request->getContent(), true);
 
-        if (isset($data['type']) && $data['type'] === 'payment') {
-            $paymentId = $data['data']['id'];
-            $payment = $client->get($paymentId);
-
-            $reservaId = $payment->external_reference;
-            $reserva = $this->manager->getRepository(Reserva::class)->find($reservaId);
-
-            if ($reserva) {
-                if ($payment->status === 'approved') {
-                    $estadoConfirmada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-                    $reserva->setEstado($estadoConfirmada);
-                } elseif ($payment->status === 'pending') {
-                    $estadoPendiente = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::PENDIENTE)->getEstado();
-                    $reserva->setEstado($estadoPendiente);
-                } elseif ($payment->status === 'rejected') {
-                    $estadoRechazada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::RECHAZADA)->getEstado();
-                    $reserva->setEstado($estadoRechazada);
-                }
-                $this->manager->flush();
-            }
+        if (!isset($data['type']) || $data['type'] !== 'payment') {
+            return new Response('Tipo no manejado', Response::HTTP_BAD_REQUEST);
         }
-        return new Response('OK', 200);
-    }
-    */
+
+        // Obtener el ID del pago
+        $paymentId = $data['data']['id'];
+
+        // Consultar el estado del pago a la API de MercadoPago
+        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']);
+
+        $paymentClient = new \MercadoPago\Client\Payment\PaymentClient();
+        $payment = $paymentClient->get($paymentId);
+
+        $externalReference = $payment->external_reference;
+        $status = $payment->status; // approved, pending, rejected, etc.
+
+        // Buscar la reserva por external_reference (ID que enviaste en Preference)
+        $reserva = $this->manager->getRepository(Reserva::class)->find($externalReference);
+        if (!$reserva) {
+            return new Response('Reserva no encontrada', Response::HTTP_NOT_FOUND);
+        }
+
+        // Cambiar estado según resultado
+        if ($status === 'approved') {
+            $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+        } else {
+            $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FALTA_PAGO)->getEstado();
+        }
+        $reserva->setEstado($estado);
+        $this->manager->flush();
+
+        return new Response('Webhook procesado', Response::HTTP_OK);
+}
+
 
 
 }
+
+

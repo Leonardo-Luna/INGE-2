@@ -15,6 +15,18 @@
     </div>
 
 <div class="container my-5">
+
+    {# Bloque para mostrar mensajes flash (éxito, error, etc.) #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'success' ? 'success' : (label == 'error' ? 'danger' : (label == 'warning' ? 'warning' : 'info')) }} alert-dismissible fade show d-flex align-items-center" role="alert">
+                <i class="bi {{ label == 'success' ? 'bi-check-circle-fill' : (label == 'error' ? 'bi-x-circle-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill')) }} me-2 fs-5"></i>
+                <div>{{ message }}</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
     <h2 class="text-center display-4 fw-bold text-dark mb-5">Listado de alquileres</h2>
 
     {% if alquileres is empty %}
@@ -85,8 +97,33 @@ document.querySelectorAll('.btn-cancelar').forEach(boton => {
     });
 });
 
-
-document.gestion
-</script>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+    document.querySelectorAll('.btn-cancelar').forEach(boton => {
+        boton.addEventListener('click', (event) => {
+            event.preventDefault();
+            const id = boton.id;
+            fetch('/alquileres/eliminar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({ id: Number(id) })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    boton.closest('.col').remove();
+                } else {
+                    alert('Error al cancelar: ' + data.message);
+                }
+            });
+        });
+    });
+    </script>
 {% endblock %}

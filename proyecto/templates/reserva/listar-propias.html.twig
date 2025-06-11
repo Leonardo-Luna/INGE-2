@@ -8,6 +8,17 @@
 
 
 <div class="container my-5">
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'success' ? 'success' : (label == 'error' ? 'danger' : (label == 'warning' ? 'warning' : 'info')) }} alert-dismissible fade show d-flex align-items-center" role="alert">
+                <i class="bi {{ label == 'success' ? 'bi-check-circle-fill' : (label == 'error' ? 'bi-x-circle-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill')) }} me-2 fs-5"></i>
+                <div>{{ message }}</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
     <h2 class="text-center display-4 fw-bold text-dark mb-5">Listado de Reservas</h2>
 
     {% if reservas is empty %}
