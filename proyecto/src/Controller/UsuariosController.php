@@ -39,7 +39,7 @@ final class UsuariosController extends AbstractController
             $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $nuevoUsuario->getEmail()]);
 
             if($verificarExistencia) {
-                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
+                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
                 return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
             }
 
@@ -47,7 +47,7 @@ final class UsuariosController extends AbstractController
             $hoy = new \DateTime();
             $edad = $hoy->diff($nacimiento)->y;
             if ($edad < 18) {
-                $this->addFlash('error', 'El cliente debe ser mayor de 18 años para tener una cuenta en el sistema.');
+                $this->addFlash('error', 'No se pudo registrar al cliente, debe ser mayor de 18 años para tener una cuenta en el sistema.');
                 return $this->redirectToRoute('app_usuarios_nuevo_cliente');
             }
 
@@ -63,7 +63,7 @@ final class UsuariosController extends AbstractController
             $this->manager->persist($nuevoUsuario);
             $this->manager->flush();
 
-            $this->addFlash('success', 'Usuario creado exitosamente.');
+            $this->addFlash('success', 'Cuenta creada exitosamente.');
             return $this->redirectToRoute('app_usuarios_nuevo_cliente');
         }
 
@@ -112,7 +112,7 @@ final class UsuariosController extends AbstractController
 
             $this->manager->flush();
 
-            $this->addFlash('success', 'Usuario eliminado exitosamente.');
+            $this->addFlash('success', 'Cuenta eliminada exitosamente.');
         }
         else { # ID no existente
             $this->addFlash('error', 'Se produjo un error al eliminar el usuario');

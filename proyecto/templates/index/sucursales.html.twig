@@ -23,8 +23,12 @@
                 </div>
             </div>
         {% else %}
-            <div class="col-12 text-center py-5 text-muted fs-5">
-                No hay sucursales disponibles para mostrar en este momento.
+            <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 300px;">
+                <div class="card shadow-sm border-0 rounded-3 bg-white px-4 py-4 text-center" style="max-width: 450px; width: 100%;">
+                    <div class="text-muted fs-5">
+                        Todavía no se agregó ninguna sucursal.
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
