@@ -63,7 +63,6 @@ final class ReservaController extends AbstractController
     $usuario = $this->getUser();
     $this->mailService->reembolso($monto, $usuario->getEmail());
 
-    $this->addFlash('success', 'Reserva cancelada exitosamente.');
 
     $reserva->setEstado($estadoCancelada->getEstado());
     $entityManager->flush();
