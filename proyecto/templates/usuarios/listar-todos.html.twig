@@ -66,13 +66,14 @@
                                     <a href="{{ path('app_index', {'id': user.id}) }}" class="btn btn-sm btn-warning" title="Editar Usuario">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    
+                                    {% if 'ROLE_GERENTE' not in user.roles %}
                                     <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
                                         <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
                                             <i class="fas fa-trash"></i> Eliminar
                                         </button>
                                     </form>
+                                    {% endif %}
                                 </div>    
                             </td>
                         </tr>

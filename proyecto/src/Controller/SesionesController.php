@@ -72,6 +72,7 @@ final class SesionesController extends AbstractController
                 if($minutosPasados > 2) { # Token expirado
                     $this->EnviarToken($usuario);
                     $this->addFlash('error', 'El token ingresado ha expirado, revisa tu casilla de correo para obtener el nuevo.');
+                    $this->addFlash('error', 'No pudimos autenticarte, vuelva a intentarlo.');
                     return $this->redirectToRoute('app_sesiones_token', ['id' => $id]);
                 }
                 else { # Éxito
@@ -80,6 +81,7 @@ final class SesionesController extends AbstractController
             }
             else { # Token incorrecto
                 $this->addFlash('error', 'El token ingresado es incorrecto, vuelva a intentarlo.');
+                $this->addFlash('error', 'No pudimos autenticarte, vuelva a intentarlo.');
                 return $this->redirectToRoute('app_sesiones_token', ['id' => $id]);
             }
         }
