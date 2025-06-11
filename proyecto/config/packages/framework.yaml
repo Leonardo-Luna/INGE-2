@@ -11,11 +11,7 @@ framework:
     trusted_proxies: '127.0.0.1,REMOTE_ADDR'
     trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
 
-    router:
-        request_context:
-            # No pongas base_url a menos que uses un subdirectorio
-            host: '%env(APP_HOST)%'
-            scheme: '%env(APP_SCHEME)%'
+    
 
 when@test:
     framework:
