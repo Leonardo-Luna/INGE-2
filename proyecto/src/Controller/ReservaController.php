@@ -265,7 +265,7 @@ final class ReservaController extends AbstractController
 
         $this->addFlash('success', 'Pago aprobado. Tu reserva ha sido confirmada.');
 
-        $this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaIncio());
+        $this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaInicio());
 
         return $this->redirectToRoute('app_mis_alquileres');
     }   

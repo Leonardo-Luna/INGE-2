@@ -76,7 +76,7 @@ final class SucursalController extends AbstractController
     }
 
      #[Route('/administracion/sucursal/editar/{id}', name: 'app_editar_sucursal')]
-    public function editarSucursal(Request $request, Sucursal $sucursal, EntityManagerInterface $entityManager): Response
+    public function editarSucursal(int $id, Request $request, Sucursal $sucursal, EntityManagerInterface $entityManager): Response
     {
 
         $form = $this->createForm(SucursalType::class, $sucursal);
@@ -86,8 +86,10 @@ final class SucursalController extends AbstractController
             $verificarExistencia = $this->manager->getRepository(Sucursal::class)->findOneBy(['direccion' => $sucursal->getDireccion(), 'ciudad' => $sucursal->getCiudad()]);
 
             if($verificarExistencia ) {
-                $this->addFlash('warning', 'Ya existe una sucursal con esa direccion.');
-                return $this->redirectToRoute('app_editar_sucursal',['id' => $sucursal->getId()]);       
+                if(!($id == $verificarExistencia->getId())) {
+                    $this->addFlash('warning', 'Ya existe una sucursal con esa direccion.');
+                    return $this->redirectToRoute('app_editar_sucursal',['id' => $sucursal->getId()]);       
+                }
             }
 
             $coords = $this->mapService->calcularCoordenadasGeneral($sucursal->getDireccion(), $sucursal->getCiudad());

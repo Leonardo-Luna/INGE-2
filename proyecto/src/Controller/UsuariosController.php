@@ -6,6 +6,7 @@ use App\Entity\EstadoReserva;
 use App\Entity\Rol;
 use App\Entity\User;
 use App\Form\EditarUsuarioType;
+use App\Form\RegistrarClienteType;
 use App\Repository\RolRepository;
 use App\Services\MailService;
 use App\Services\StringService;

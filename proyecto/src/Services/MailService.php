@@ -93,7 +93,7 @@ class MailService {
             ->priority(Email::PRIORITY_HIGH)
             ->subject('Alquil.AR | Confirmacion de reembolso')
             ->text('¡Gracias por usar Alquil.AR!')
-            ->html('<p> Registramos una nueva reserva a tu nombre por un monto de : $<b>' . $total . '</b>. Presentate con este correo para retirar tu <b>' . $nombreMaquina . '</b> el dia ' . $diaInicio . '<p>');
+            ->html('<p> Registramos una nueva reserva a tu nombre por un monto de : $<b>' . $total . '</b>. Presentate con este correo para retirar tu <b>' . $nombreMaquina . '</b> el dia ' . $diaInicio->format('d/m/Y') . '<p>');
 
         $sent = $this->mailer->send($email);
         # Se almacena en una variable porque puede usarse para debugging, no es necesario 👍 

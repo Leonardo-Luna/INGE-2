@@ -39,15 +39,15 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquina5070E->setNombre("Tractor 5060E");
         $maquina5070E->setMarca("John Deere");
         $maquina5070E->setDescripcion("Motor John Deere de 60 hp, 3 cilindros.");
-        $maquina5070E->setCostoPorDia(1);
+        $maquina5070E->setCostoPorDia(10);
         $maquina5070E->setAnio(2024);
         $maquina5070E->setMinimoDias(30);
         $maquina5070E->setTipo("Motor gasolero");
         $maquina5070E->setReembolsoNormal(50);
         $maquina5070E->setDiasReembolso(3);
-        $maquina5070E->setReembolsoPenalizado(100);
+        $maquina5070E->setReembolsoPenalizado(10);
         $maquina5070E->setUbicacion($sucursalMati);
-        $maquina5070E->addImagen("fixtures/m/5060E.png");
+        $maquina5070E->addImagen("fixturxes/m/5060E.png");
         $manager->persist($maquina5070E);
 
         $maquinaDB50 = new Maquina();
@@ -56,11 +56,11 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquinaDB50->setDescripcion("Dosificadores elétricos con tasa variable, desligue de hileras y pulmones de presión descendente.");
         $maquinaDB50->setCostoPorDia(30000);
         $maquinaDB50->setAnio(2025);
-        $maquinaDB50->setMinimoDias(50);
+        $maquinaDB50->setMinimoDias(5);
         $maquinaDB50->setTipo("Motor eléctrico");
-        $maquinaDB50->setReembolsoNormal(25);
+        $maquinaDB50->setReembolsoNormal(90);
         $maquinaDB50->setDiasReembolso(75);
-        $maquinaDB50->setReembolsoPenalizado(70);
+        $maquinaDB50->setReembolsoPenalizado(10);
         $maquinaDB50->setUbicacion($sucursalSanti2);
         $maquinaDB50->addImagen("fixtures/m/DB50.png");
         $manager->persist($maquinaDB50);

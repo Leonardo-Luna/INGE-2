@@ -25,7 +25,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteLuigi->setNombre("Luigi");
         $gerenteLuigi->setApellido("Mario");
         $gerenteLuigi->setDni("12345678");
-        $gerenteLuigi->setEmail("lunaleonardo031@gmail.com"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
+        $gerenteLuigi->setEmail("santiago0105@hotmail.com.ar"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
         $gerenteLuigi->setPassword($this->passwordHasher->hashPassword($gerenteLuigi, 'abc123'));
         $gerenteLuigi->addRole($rolAutenticado);
         $gerenteLuigi->addRole($rolGerente);
