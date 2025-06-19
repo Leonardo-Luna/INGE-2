@@ -8,9 +8,12 @@
   <p class="calendar-info">Mínimo de días requeridos: <strong>{{ maquina.minimoDias }}</strong></p>
 
   <form method="POST" action="{{ path('app_reserva_nueva', { id: maquina.id }) }}">
-    <label for="fecha_inicio" class="form-label">Seleccionar intervalo de fechas:</label><br>
-    <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha inicio" class="form-control">
-    <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha fin" class="form-control" hidden>
+    <label for="fecha_inicio_display" class="form-label">Seleccionar intervalo de fechas:</label><br>
+    {# Este input es el que ve el usuario #}
+    <input type="text" id="fecha_inicio_display" name="fecha_inicio_display" placeholder="Fecha inicio" class="form-control">
+    {# Estos inputs son los que se envían al servidor #}
+    <input type="hidden" id="fecha_inicio" name="fecha_inicio">
+    <input type="hidden" id="fecha_fin" name="fecha_fin">
 
     <div class="error" id="error-msg"></div>
 
@@ -30,8 +33,10 @@
 })|json_encode|raw }};
   const minimoDias = {{ maquina.minimoDias }};
   const errorMsg = document.getElementById("error-msg");
-  const fechaInicioInput = document.getElementById("fecha_inicio");
-  const fechaFinInput = document.getElementById("fecha_fin");
+  // Cambiado a fecha_inicio_display para el input visible
+  const fechaInicioDisplayInput = document.getElementById("fecha_inicio_display");
+  const fechaInicioHiddenInput = document.getElementById("fecha_inicio"); // Input oculto para el inicio
+  const fechaFinHiddenInput = document.getElementById("fecha_fin"); // Input oculto para el fin
   const submitBtn = document.getElementById("submit-btn");
 
   const fechasOcupadas = [];
@@ -44,7 +49,7 @@
     }
   }
 
-  flatpickr("#fecha_inicio", {
+  flatpickr("#fecha_inicio_display", { // Apunta al input visible
     mode: "range",
     dateFormat: "d-m-Y",
     disable: fechasOcupadas,
@@ -63,11 +68,10 @@
         const fin = selectedDates[selectedDates.length-1];
         const dias = (fin - inicio) / (1000 * 60 * 60 * 24) + 1;
 
-        // Check if any selected date is occupied
         let hasOccupiedDatesInSelection = false;
         for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
           const dStr = d.toISOString().split("T")[0];
-          if (fechasOcupadas.includes(dStr)) { // Changed d.toISOString() to dStr
+          if (fechasOcupadas.includes(dStr)) {
             hasOccupiedDatesInSelection = true;
             break;
           }
@@ -85,15 +89,21 @@
           return;
         }
 
-        // Guardar fechas en inputs ocultos
-        const datesArray = dateStr.split(" to ");
-        fechaInicioInput.value = datesArray[0];
-        fechaFinInput.value = datesArray[1] || datesArray[0]; // Set fechaFin to fechaInicio if only one date selected (shouldn't happen with mode: "range" but good for robustness)
+        // Formatea y muestra en el input visible para el usuario
+        const formattedStartDate = flatpickr.formatDate(inicio, "d-m-Y");
+        const formattedEndDate = flatpickr.formatDate(fin, "d-m-Y");
+        fechaInicioDisplayInput.value = `${formattedStartDate} to ${formattedEndDate}`;
+
+        // Asigna los valores para los inputs ocultos (formato YYYY-MM-DD para el backend)
+        fechaInicioHiddenInput.value = flatpickr.formatDate(inicio, "Y-m-d");
+        fechaFinHiddenInput.value = flatpickr.formatDate(fin, "Y-m-d");
+
         submitBtn.disabled = false;
       } else {
-        // If less than 2 dates are selected (e.g., user cleared selection or only picked one date)
-        fechaInicioInput.value = "";
-        fechaFinInput.value = "";
+        // Si se selecciona menos de 2 fechas (ej. usuario borró la selección)
+        fechaInicioDisplayInput.value = ""; // Limpia la visualización
+        fechaInicioHiddenInput.value = ""; // Limpia el input oculto de inicio
+        fechaFinHiddenInput.value = ""; // Limpia el input oculto de fin
         submitBtn.disabled = true;
       }
     }
