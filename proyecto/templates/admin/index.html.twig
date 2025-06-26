@@ -3,59 +3,72 @@
 {% block title %}Gerencia - Panel de Gestión{% endblock %}
 
 {% block content %}
-
 <div class="container my-5">
     <h2 class="text-center display-4 fw-bold text-dark mb-5">Panel de Gestión</h2>
 
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-3 p-4">
-                <h2 class="h4 text-center mb-4">Acciones Principales</h2>
-                <div class="row row-cols-1 g-3">
-                    <div class="col">
-                        <a href="{{ path('app_usuarios_nuevo_cliente') }}" class="btn btn-lg btn-primary w-100 py-3">
-                            <i class="bi bi-person-plus-fill me-2"></i> Registrar Cliente
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="{{ path('app_maquina_nueva') }}" class="btn btn-lg btn-light w-100 py-3">
-                            <i class="bi bi-gear-fill me-2"></i> Cargar Maquinaria
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="{{ path('app_crear_sucursal') }}" class="btn btn-lg btn-primary w-100 py-3">
-                            <i class="bi bi-shop-window me-2"></i> Cargar Sucursal
-                        </a>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <!-- Gestión de Maquinaria -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#maquinariaCollapse">
+                        <i class="bi bi-gear-fill me-2"></i> Gestión de Maquinaria
+                    </button>
+                    <div class="collapse" id="maquinariaCollapse">
+                        <a href="{{ path('app_maquina_nueva') }}" class="btn btn-outline-primary w-100 mb-2">Cargar Maquinaria</a>
+                        <a href="{{ path('app_admin') }}" class="btn btn-outline-primary w-100">Listar Maquinaria</a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-3 p-4">
-                <h2 class="h4 text-center mb-4">Ver Listados</h2>
-                <div class="row row-cols-1 g-3">
-                    <div class="col">
-                        <a href="{{ path('app_usuarios') }}" class="btn btn-lg btn-primary w-100 py-3">
-                            <i class="bi bi-people-fill me-2"></i> Listar Usuarios
-                        </a>
+        <!-- Gestión de Sucursales -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#sucursalesCollapse">
+                        <i class="bi bi-shop-window me-2"></i> Gestión de Sucursales
+                    </button>
+                    <div class="collapse" id="sucursalesCollapse">
+                        <a href="{{ path('app_crear_sucursal') }}" class="btn btn-outline-primary w-100">Cargar Sucursal</a>
                     </div>
-                    <div class="col">
-                        <a href="{{ path('app_admin') }}" class="btn btn-lg btn-light w-100 py-3">
-                            <i class="bi bi-tools me-2"></i> Listar Maquinaria
-                        </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestión de Usuarios -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#usuariosCollapse">
+                        <i class="bi bi-people-fill me-2"></i> Gestión de Usuarios
+                    </button>
+                    <div class="collapse" id="usuariosCollapse">
+                        <a href="{{ path('app_usuarios_nuevo_cliente') }}" class="btn btn-outline-primary w-100 mb-2">Registrar Cliente</a>
+                        <a href="{{ 'RUTA_CREAR_EMPLEADO' }}" class="btn btn-outline-primary w-100 mb-2">Registrar Empleado</a>
+                        <a href="{{ path('app_usuarios') }}" class="btn btn-outline-primary w-100">Listar Usuarios</a>
                     </div>
-                    <div class="col">
-                        <a href="{{ path('app_reservas') }}" class="btn btn-lg btn-primary w-100 py-3">
-                            <i class="bi bi-calendar-check-fill me-2"></i> Listar Reservas (Totales)
-                        </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ver Reportes -->
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#reportesCollapse">
+                        <i class="bi bi-bar-chart-fill me-2"></i> Ver Reportes
+                    </button>
+                    <div class="collapse" id="reportesCollapse">
+                        <a href="{{ path('app_reservas') }}" class="btn btn-outline-primary w-100 mb-2">Listar Reservas (Totales)</a>  <!-- No se donde poner esto, x ahora lo dejo aca :D -->
+                        <a href="{{ 'RUTA_REPORTE_MAQUINAS_POPULARES' }}" class="btn btn-outline-primary w-100 mb-2">Maquinarias más alquiladas</a>
+                        <a href="{{ 'RUTA_REPORTE_SUCURSALES_POPULARES' }}" class="btn btn-outline-primary w-100 mb-2">Sucursales más concurridas</a>
+                        <a href="{{ 'RUTA_REPORTE_CLIENTES_TOP' }}" class="btn btn-outline-primary w-100 mb-2">Clientes con más reservas</a>
+                        <a href="{{ 'RUTA_REPORTE_FINANZAS' }}" class="btn btn-outline-primary w-100">Reporte de Finanzas</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

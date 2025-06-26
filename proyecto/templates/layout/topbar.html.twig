@@ -20,7 +20,7 @@
                         </li>
                         {% if is_granted("ROLE_GERENTE") %}
                             <li class="nav-item mx-md-2">
-                                <a class="nav-link" href="{{ path('app_admin') }}">Gerencia</a>
+                                <a class="nav-link" href="{{ path('app_admin') }}">Panel de Control</a>
                             </li>
                         {% endif %}
                         {% if is_granted("ROLE_EMPLEADO") %}
