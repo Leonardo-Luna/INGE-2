@@ -47,7 +47,7 @@ security:
             - { path: ^/mi-perfil, roles: ROLE_AUTENTICADO }
             - { path: ^/mis-reservas, roles: ROLE_AUTENTICADO }
             - { path: ^/mis-alquileres, roles: ROLE_AUTENTICADO }
-            #- { path: ^/reportes, roles: ROLE_GERENTE }
+            - { path: ^/reportes, roles: ROLE_GERENTE }
             
 when@test:
     security:
