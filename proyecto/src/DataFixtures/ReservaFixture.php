@@ -18,6 +18,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $usuarioPepe = $manager->getRepository(User::class)->findOneBy(['email' => 'pepe@gmail.com']);
+        $usuarioPipo = $manager->getRepository(User::class)->findOneBy(['email' => 'pipo@gmail.com']);
         $tractor = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Tractor 5060E']);
         $estadoAprobada = $manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA);
         $estadoCancelada = $manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
@@ -32,6 +33,28 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $reserva->setFechaInicio(new DateTime('2025-06-10'));
         $reserva->setFechaFin(new DateTime('2025-06-30'));
         $manager->persist($reserva);
+
+        $reserva2 = new Reserva();
+        $reserva2->setMaquina($tractor);
+        $reserva2->setUsuario($usuarioPepe);
+        $reserva2->setCostoTotal(60000);
+        $reserva2->setMontoReembolso(300);
+        $reserva2->setFechaReembolsoPenalizado(new DateTime('2025-06-05'));
+        $reserva2->setEstado($estadoAprobada->getEstado());
+        $reserva2->setFechaInicio(new DateTime('2025-07-10'));
+        $reserva2->setFechaFin(new DateTime('2025-07-30'));
+        $manager->persist($reserva2);
+
+        $reserva3 = new Reserva();
+        $reserva3->setMaquina($tractor);
+        $reserva3->setUsuario($usuarioPipo);
+        $reserva3->setCostoTotal(60000);
+        $reserva3->setMontoReembolso(300);
+        $reserva3->setFechaReembolsoPenalizado(new DateTime('2025-06-05'));
+        $reserva3->setEstado($estadoAprobada->getEstado());
+        $reserva3->setFechaInicio(new DateTime('2025-08-10'));
+        $reserva3->setFechaFin(new DateTime('2025-08-30'));
+        $manager->persist($reserva3);
 
         $reservaCancelada = new Reserva();
         $reservaCancelada->setMaquina($tractor);
