@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\EstadoReserva;
+use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,7 +15,7 @@ final class ReportesController extends AbstractController
     public function __construct(private EntityManagerInterface $manager) {}
 
     #[Route('/reportes/mas-reservas', name: 'app_reportes_mas_reservas')]
-    public function index(): Response
+    public function masReservas(): Response
     {
         $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
         $query = $this->manager->getRepository(User::class)->getClientesMasReservas($estadoAprobada);
@@ -27,6 +28,24 @@ final class ReportesController extends AbstractController
         }
 
         return $this->render('reportes/mas-reservas.html.twig', [
+            'labels' => $labels,
+            'data' => $data,
+        ]);
+    }
+
+    #[Route('/reportes/mas-concurridas', name: 'app_reportes_mas_concurridas')]
+    public function masConcurridas(): Response
+    {
+        $query = $this->manager->getRepository(Sucursal::class)->getSucursalesMasConcurridas();
+
+        $labels = [];
+        $data = [];
+        foreach ($query as $row) {
+            $labels[] = $row[0]->getNombre();
+            $data[] = $row['reservasCount'];
+        }
+
+        return $this->render('reportes/mas-concurridas.html.twig', [
             'labels' => $labels,
             'data' => $data,
         ]);

@@ -20,6 +20,8 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $usuarioPepe = $manager->getRepository(User::class)->findOneBy(['email' => 'pepe@gmail.com']);
         $usuarioPipo = $manager->getRepository(User::class)->findOneBy(['email' => 'pipo@gmail.com']);
         $tractor = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Tractor 5060E']);
+        $cosechadora = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Cosechadora S760']);
+        $plantadora = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Plantadora Grano Grueso DB50']);
         $estadoAprobada = $manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA);
         $estadoCancelada = $manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
 
@@ -35,7 +37,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $manager->persist($reserva);
 
         $reserva2 = new Reserva();
-        $reserva2->setMaquina($tractor);
+        $reserva2->setMaquina($cosechadora);
         $reserva2->setUsuario($usuarioPepe);
         $reserva2->setCostoTotal(60000);
         $reserva2->setMontoReembolso(300);
@@ -46,7 +48,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $manager->persist($reserva2);
 
         $reserva3 = new Reserva();
-        $reserva3->setMaquina($tractor);
+        $reserva3->setMaquina($cosechadora);
         $reserva3->setUsuario($usuarioPipo);
         $reserva3->setCostoTotal(60000);
         $reserva3->setMontoReembolso(300);
@@ -57,7 +59,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $manager->persist($reserva3);
 
         $reservaCancelada = new Reserva();
-        $reservaCancelada->setMaquina($tractor);
+        $reservaCancelada->setMaquina($plantadora);
         $reservaCancelada->setUsuario($usuarioPepe);
         $reservaCancelada->setCostoTotal(60000);
         $reservaCancelada->setMontoReembolso(300);

@@ -1,0 +1,29 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+    <h2 style="text-align:center; margin-bottom: 30px;">Sucursales más concurridas</h2>
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+        <canvas id="sucursalesPieChart" width="400" height="400" style="max-width: 100%; max-height: 400px; background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);"></canvas>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('sucursalesPieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ labels|json_encode|raw }},
+                datasets: [{
+                    label: 'Reservas',
+                    data: {{ data|json_encode|raw }},
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                        '#FF9F40', '#E7E9ED', '#76B041', '#F45B69', '#5A9BD5'
+                    ],
+                }]
+            }
+        });
+    </script>
+{% endblock %}

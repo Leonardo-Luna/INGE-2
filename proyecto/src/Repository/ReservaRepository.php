@@ -87,6 +87,4 @@ class ReservaRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-
-
 }
