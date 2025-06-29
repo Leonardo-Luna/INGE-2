@@ -14,7 +14,7 @@ class EstadosFixture extends Fixture implements FixtureGroupInterface
     {
         $estadoAprobada = new EstadoReserva();
         $estadoAprobada->setEstado("APROBADO");
-        $estadoAprobada->setDescripcion("Estado para las reservas que hayan sido pagadas (el único tipo que se tiene en cuenta en el calendario.");
+        $estadoAprobada->setDescripcion("Estado para los alquileres que hayan sido pagados (el único tipo que se tiene en cuenta en el calendario).");
         $manager->persist($estadoAprobada);
 
         $estadoFaltaDePago = new EstadoReserva();
@@ -26,6 +26,11 @@ class EstadosFixture extends Fixture implements FixtureGroupInterface
         $estadoCancelada->setEstado("CANCELADA");
         $estadoCancelada->setDescripcion("Estado para las reservas que hayan sido canceladas manualmente.");
         $manager->persist($estadoCancelada);
+
+        $estadoFinalizada = new EstadoReserva();
+        $estadoFinalizada->setEstado("FINALIZADO");
+        $estadoFinalizada->setDescripcion("Estado para los alquileres que hayan finalizado y la máquina haya sido devuelta.");
+        $manager->persist($estadoFinalizada);
 
         $manager->flush();
     }

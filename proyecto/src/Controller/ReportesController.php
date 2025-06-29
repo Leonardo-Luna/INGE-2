@@ -36,7 +36,8 @@ final class ReportesController extends AbstractController
     #[Route('/reportes/mas-concurridas', name: 'app_reportes_mas_concurridas')]
     public function masConcurridas(): Response
     {
-        $query = $this->manager->getRepository(Sucursal::class)->getSucursalesMasConcurridas();
+        $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+        $query = $this->manager->getRepository(Sucursal::class)->getSucursalesMasConcurridas($estadoAprobada);
 
         $labels = [];
         $data = [];
