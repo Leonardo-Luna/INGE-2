@@ -16,16 +16,16 @@ class SucursalRepository extends ServiceEntityRepository
         parent::__construct($registry, Sucursal::class);
     }
 
-    public function getSucursalesMasConcurridas($estado): array
+    public function getSucursalesMasConcurridas(string $estadoAprobada, string $estadoFinalizado): array
     {
         return $this->createQueryBuilder('s')
             ->select('s, COUNT(r.id) AS reservasCount')
             ->leftJoin('s.maquinas', 'm')
             ->leftJoin('m.reservas', 'r')
-            ->where('r.estado = :estado')
+            ->where('r.estado IN (:estados)')
             ->groupBy('s.id')
             ->orderBy('reservasCount', 'DESC')
-            ->setParameter(':estado', $estado)
+            ->setParameter(':estados', [$estadoAprobada, $estadoFinalizado])
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();

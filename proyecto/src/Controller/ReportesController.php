@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\EstadoReserva;
+use App\Entity\Maquina;
 use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,7 +19,8 @@ final class ReportesController extends AbstractController
     public function masReservas(): Response
     {
         $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-        $query = $this->manager->getRepository(User::class)->getClientesMasReservas($estadoAprobada);
+        $estadoFinalizado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
+        $query = $this->manager->getRepository(User::class)->getClientesMasReservas($estadoAprobada, $estadoFinalizado);
 
         $labels = [];
         $data = [];
@@ -37,7 +39,8 @@ final class ReportesController extends AbstractController
     public function masConcurridas(): Response
     {
         $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-        $query = $this->manager->getRepository(Sucursal::class)->getSucursalesMasConcurridas($estadoAprobada);
+        $estadoFinalizado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
+        $query = $this->manager->getRepository(Sucursal::class)->getSucursalesMasConcurridas($estadoAprobada, $estadoFinalizado);
 
         $labels = [];
         $data = [];
@@ -47,6 +50,26 @@ final class ReportesController extends AbstractController
         }
 
         return $this->render('reportes/mas-concurridas.html.twig', [
+            'labels' => $labels,
+            'data' => $data,
+        ]);
+    }
+
+    #[Route('/reportes/mas-alquiladas', name: 'app_reportes_mas_alquiladas')]
+    public function masAlquiladas(): Response
+    {
+        $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+        $estadoFinalizado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
+        $query = $this->manager->getRepository(Maquina::class)->getMasAlquiladas($estadoAprobada, $estadoFinalizado);
+
+        $labels = [];
+        $data = [];
+        foreach ($query as $row) {
+            $labels[] = $row[0]->getNombre();
+            $data[] = $row['reservasCount'];
+        }
+
+        return $this->render('reportes/mas-alquiladas.html.twig', [
             'labels' => $labels,
             'data' => $data,
         ]);
