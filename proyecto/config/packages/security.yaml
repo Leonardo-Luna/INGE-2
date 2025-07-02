@@ -41,13 +41,13 @@ security:
     access_control:
             - { path: ^/token, roles: ROLE_GERENTE }
             - { path: ^/administracion, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
+            - { path: ^/gerencia, roles: ROLE_GERENTE }
             - { path: ^/maquina, roles: ROLE_AUTENTICADO }
             - { path: ^/reserva, roles: ROLE_AUTENTICADO }
             - { path: ^/reservas, roles: ROLE_AUTENTICADO }
             - { path: ^/mi-perfil, roles: ROLE_AUTENTICADO }
             - { path: ^/mis-reservas, roles: ROLE_AUTENTICADO }
             - { path: ^/mis-alquileres, roles: ROLE_AUTENTICADO }
-            - { path: ^/reportes, roles: ROLE_GERENTE }
             
 when@test:
     security:

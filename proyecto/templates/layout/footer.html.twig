@@ -1,31 +1,12 @@
 {% block footer %}
-<footer class="bg-light py-3 mt-auto footerClass">
+<footer class="footer py-3 bg-secondary border-top">
     <div class="container text-center">
-        <p>&copy; {{ "now"|date("Y") }} Alquil.AR - Todos los derechos reservados.</p>
-        <ul class="list-inline">
-            <li class="list-inline-item"><a href="#" class="text-muted">Política de Privacidad</a></li>
-            <li class="list-inline-item ms-3"><a href="#" class="text-muted">Términos y Condiciones</a></li>
-            <li class="list-inline-item ms-3"><a href="#" class="text-muted">Contacto</a></li>
+        <p class="mb-2 small text-white">&copy; {{ "now"|date("Y") }} Alquil.AR - Todos los derechos reservados.</p>
+        <ul class="list-inline mb-0">
+            <li class="list-inline-item"><a href="#" class="text-white small">Política de Privacidad</a></li>
+            <li class="list-inline-item ms-3"><a href="#" class="text-white small">Términos y Condiciones</a></li>
+            <li class="list-inline-item ms-3"><a href="#" class="text-white small">Contacto</a></li>
         </ul>
     </div>
 </footer>
-
-<style>
-    /* Estilos para el pie de página (footer) - Posicionamiento abajo */
-    .footerClass {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh; /* Asegura que el body ocupe al menos la altura de la ventana */
-    }
-
-    footer {
-        background-color: #f0f0f0; /* Fondo claro para el pie de página */
-        color: #555; /* Color de texto del pie de página */
-        text-align: center; /* Centrar el texto del pie de página */
-        padding: 1rem; /* Relleno superior/inferior */
-        font-size: 0.9rem;
-        border-top: 1px solid #ddd; /* Separador superior */
-        display: fixed-bottom;
-    }
-</style>
 {% endblock %}

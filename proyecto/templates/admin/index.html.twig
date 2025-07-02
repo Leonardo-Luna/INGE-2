@@ -44,6 +44,7 @@
                         <i class="bi bi-people-fill me-2"></i> Gestión de Usuarios
                     </button>
                     <div class="collapse" id="usuariosCollapse">
+                        <a href="{{ path('app_reservas') }}" class="btn btn-outline-primary w-100 mb-2">Listar Reservas (Totales)</a>  <!-- No se donde poner esto, x ahora lo dejo aca :D -->
                         <a href="{{ path('app_usuarios_nuevo_cliente') }}" class="btn btn-outline-primary w-100 mb-2">Registrar Cliente</a>
                         <a href="{{ path('app_usuarios_nuevo_empleado') }}" class="btn btn-outline-primary w-100 mb-2">Registrar Empleado</a>
                         <a href="{{ path('app_usuarios') }}" class="btn btn-outline-primary w-100">Listar Usuarios</a>
@@ -56,16 +57,11 @@
         <div class="col">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body text-center">
-                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#reportesCollapse">
-                        <i class="bi bi-bar-chart-fill me-2"></i> Ver Reportes
-                    </button>
-                    <div class="collapse" id="reportesCollapse">
-                        <a href="{{ path('app_reservas') }}" class="btn btn-outline-primary w-100 mb-2">Listar Reservas (Totales)</a>  <!-- No se donde poner esto, x ahora lo dejo aca :D -->
-                        <a href="{{ 'RUTA_REPORTE_MAQUINAS_POPULARES' }}" class="btn btn-outline-primary w-100 mb-2">Maquinarias más alquiladas</a>
-                        <a href="{{ path('app_reportes_mas_concurridas') }}" class="btn btn-outline-primary w-100 mb-2">Sucursales más concurridas</a>
-                        <a href="{{ path('app_reportes_mas_reservas') }}" class="btn btn-outline-primary w-100 mb-2">Clientes con más reservas</a>
-                        <a href="{{ 'RUTA_REPORTE_FINANZAS' }}" class="btn btn-outline-primary w-100">Reporte de Finanzas</a>
-                    </div>
+                    <a href="{{ path('app_listado_reportes') }}">
+                        <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#reportesCollapse">
+                            <i class="bi bi-bar-chart-fill me-2"></i> Ver Reportes
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>

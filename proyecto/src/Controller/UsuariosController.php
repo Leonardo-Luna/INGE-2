@@ -74,7 +74,7 @@ final class UsuariosController extends AbstractController
         ]);
     }
 
-    #[Route('/administracion/usuarios/nuevo-empleado', name: 'app_usuarios_nuevo_empleado')]
+    #[Route('/gerencia/usuarios/nuevo-empleado', name: 'app_usuarios_nuevo_empleado')]
     public function NuevoEmpleado(Request $request): Response
     {
         $nuevoUsuario = new User();

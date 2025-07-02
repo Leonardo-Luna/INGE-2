@@ -2,102 +2,44 @@
 {% block title %}Alquil.AR{% endblock %}
 
 {% block content %}
-  <div class="perfil-container">
-    <h1>
-  Perfil de {{ user.nombre }} {{ user.apellido }}
-  {% if 'ROLE_CLIENTE' in user.roles %}
-    <span style="font-size: 1rem; color: gray;">(Cliente)</span>
-  {% elseif 'ROLE_EMPLEADO' in user.roles %}
-    <span style="font-size: 1rem; color: gray;">(Empleado)</span>
-    {% elseif 'ROLE_GERENTE' in user.roles %}
-    <span style="font-size: 1rem; color: gray;">(Gerente)</span>
-  {% endif %}
-</h1>
+  <div class="container my-4">
+    <div class="card shadow">
+      <div class="card-body">
+        <h1 class="card-title">
+          Perfil de {{ user.nombre }} {{ user.apellido }}
+          {% if 'ROLE_CLIENTE' in user.roles %}
+            <span class="h6 text-muted">(Cliente)</span>
+          {% elseif 'ROLE_EMPLEADO' in user.roles %}
+            <span class="h6 text-muted">(Empleado)</span>
+          {% elseif 'ROLE_GERENTE' in user.roles %}
+            <span class="h6 text-muted">(Gerente)</span>
+          {% endif %}
+        </h1>
 
-    <div class="info-box">
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>DNI:</strong> {{ user.dni }}</p>
+        <div class="mb-4">
+          <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
+          <p class="mb-1"><strong>DNI:</strong> {{ user.dni }}</p>
+        </div>
 
-    </div>
-
-    <div class="acciones">
-    
-      {% if 'ROLE_CLIENTE' in user.roles %}
-      <div class="info-box2">
-        <p> Gestionar <p>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn" hidden> Reservas</a>
-        <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn" hidden >Alquileres</a>
-        <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn">Editar</a>
-        {% if 'ROLE_GERENTE' not in user.roles %}
-                                    <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
-                                    {% endif %}
-      {% endif %}
+        <div class="mt-4">
+          {% if 'ROLE_CLIENTE' in user.roles %}
+            <div class="border rounded p-3 mb-3 bg-light">
+              <p class="text-secondary mb-3">Gestionar</p>
+              <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn btn-primary me-2 mb-2 d-none">Reservas</a>
+              <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn btn-primary me-2 mb-2 d-none">Alquileres</a>
+              <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-secondary me-2 mb-2">Editar</a>
+              {% if 'ROLE_GERENTE' not in user.roles %}
+                <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline">
+                  <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                  <button type="submit" class="btn btn-danger btn-sm mb-2" title="Eliminar Usuario">
+                    <i class="fas fa-trash"></i> Eliminar
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
       </div>
-      
     </div>
   </div>
-
-  <style>
-    .info-box2{
-        border :solid;
-        border-color:grey;
-        border-radius: 10px;
-        padding:10px;
-    }
-
-    .info-box2 p{
-        color:grey;
-        font-size:large;
-    }
-    .perfil-container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 2rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #fafafa;
-    }
-    .info-box p {
-      margin: 0.5rem 0;
-    }
-    .acciones {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.6rem 1rem;
-      background-color: #007bff;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 4px;
-      margin-bottom:20px;
-    }
-    .btn:hover {
-      background-color: #0056b3;
-    }
-
-    .info-box2 b {
-        background-color: red;
-        padding-left:35px;
-        padding-right:35px;
-        margin-left:47%;
-    }
-
-    .info-box2 b:hover {
-        background-color: red;
-        padding-left:35px;
-        padding-right:35px;
-        margin-left:47%;
-        background-color:rgb(158, 0, 0);
-    }
-  </style>
 {% endblock %}

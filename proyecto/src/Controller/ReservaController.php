@@ -45,6 +45,17 @@ final class ReservaController extends AbstractController
         ]);
     }
 
+    #[Route('/administracion/alquileres', name: 'app_todos_alquileres')]
+    public function alquileresHistorico(Request $request): Response
+    {
+        $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+        $alquileres = $this->manager->getRepository(Reserva::class)->findBy(['estado' => $estadoAprobado]);
+
+        return $this->render('reserva/listar-alquileres-todos.html.twig', [
+            "alquileres" => $alquileres,
+        ]);
+    }
+
     #[Route('/reservas/eliminar', name: 'app_eliminar_reserva', methods: ['GET','POST'])]
     public function eliminarReserva(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {

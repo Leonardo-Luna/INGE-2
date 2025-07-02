@@ -10,7 +10,7 @@
     padding: 10px 20px;
     border-radius: 5px;
     margin: 20px 0;
-    " hidden id='eliminacion'>
+    " hidden id='sexo'>
     Reserva eliminada exitosamente
     </div>
 
@@ -59,7 +59,10 @@
                         </div>
 
                         <div class="card-footer bg-light border-0 py-3 d-flex justify-content-center">
-                                <button onClick="return confirm('¿Estás seguro de que quieres eliminar este alquiler?')" class="btn btn-outline-danger btn-sm btn-cancelar" id="{{ alquiler.id }}">
+                                <a href="{{ path('app_visualizar_cliente', {'id': alquiler.usuario.id}) }}" class="btn btn-outline-primary btn-sm me-2">
+                                    <i class="bi bi-person-fill me-1"></i> Ver información personal
+                                </a>
+                                <button onClick="return confirm('¿Estás seguro de quieres eliminar este alquiler?')" class="btn btn-outline-danger btn-sm btn-cancelar" id="{{ alquiler.id }}">
                                 <i class="bi bi-x-circle me-1"></i> Cancelar
                                 </button>
                         </div>
@@ -91,7 +94,7 @@
         .then(data => {
             if (data.success) {
                 boton.closest('.col').remove();
-                document.getElementById('eliminacion').removeAttribute('hidden');
+                document.getElementById('sexo').removeAttribute('hidden');
             } else {
                 alert('Error al cancelar: ' + data.message);
             }

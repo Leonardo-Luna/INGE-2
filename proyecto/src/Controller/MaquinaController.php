@@ -20,7 +20,7 @@ final class MaquinaController extends AbstractController
 
     public function __construct(private EntityManagerInterface $entityManager) { }
 
-    #[Route('/administracion/maquina/nueva', name: 'app_maquina_nueva')]
+    #[Route('/gerencia/maquina/nueva', name: 'app_maquina_nueva')]
     public function nueva(Request $request, SluggerInterface $slugger): Response
     {
         $maquina = new Maquina();

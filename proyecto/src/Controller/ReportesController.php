@@ -15,7 +15,7 @@ final class ReportesController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $manager) {}
 
-    #[Route('/reportes/mas-reservas', name: 'app_reportes_mas_reservas')]
+    #[Route('/gerencia/reportes/mas-reservas', name: 'app_reportes_mas_reservas')]
     public function masReservas(): Response
     {
         $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
@@ -35,7 +35,7 @@ final class ReportesController extends AbstractController
         ]);
     }
 
-    #[Route('/reportes/mas-concurridas', name: 'app_reportes_mas_concurridas')]
+    #[Route('/gerencia/reportes/mas-concurridas', name: 'app_reportes_mas_concurridas')]
     public function masConcurridas(): Response
     {
         $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
@@ -55,7 +55,7 @@ final class ReportesController extends AbstractController
         ]);
     }
 
-    #[Route('/reportes/mas-alquiladas', name: 'app_reportes_mas_alquiladas')]
+    #[Route('/gerencia/reportes/mas-alquiladas', name: 'app_reportes_mas_alquiladas')]
     public function masAlquiladas(): Response
     {
         $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
