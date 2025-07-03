@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Maquina;
 use App\Entity\Reserva;
 use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -87,6 +88,16 @@ class ReservaRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-
+    public function buscarAlquileresEntre(DateTime $fechaUno, DateTime $fechaDos, string $aprobado, string $finalizado) {
+        return $this->createQueryBuilder('r')
+            ->where('r.creacion >= :fechaUno')
+            ->andWhere('r.creacion <= :fechaDos')
+            ->andWhere('r.estado IN (:estados)')
+            ->setParameter('fechaUno', $fechaUno)
+            ->setParameter('fechaDos', $fechaDos)
+            ->setParameter('estados', [$aprobado, $finalizado])
+            ->getQuery()
+            ->getResult();
+    }
 
 }

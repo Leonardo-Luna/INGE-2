@@ -11,9 +11,9 @@ use App\Entity\Reserva;
 
 final class AdminController extends AbstractController
 {
-     public function __construct(private EntityManagerInterface $manager){ }
+    public function __construct(private EntityManagerInterface $manager,) { }
 
-    #[Route('/administracion', name: 'app_admin')]
+    #[Route('/gerencia', name: 'app_admin')]
     public function index(): Response
     {
         return $this->render('admin/index.html.twig', [
@@ -39,12 +39,6 @@ final class AdminController extends AbstractController
         return $this->render('admin/usuarios.html.twig');
     }
 
-    #[Route('/administracion/reportes', name: 'panel_reportes')]
-    public function reportes(): Response
-    {
-        return $this->render('admin/reportes.html.twig');
-    }
-
     #[Route('/administracion/reservas', name: 'app_reservas')]
     public function listarReservas(Request $request): Response
     {
@@ -55,4 +49,9 @@ final class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/gerencia/reportes', name: 'app_listado_reportes')]
+    public function listadoReportes(): Response
+    {
+        return $this->render('admin/listado-reportes.html.twig');
+    }
 }

@@ -43,6 +43,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    public function getClientesMasReservas(string $estadoAprobado, string $estadoFinalizado): array
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u, COUNT(r.id) AS reservasAprobadas')
+            ->leftJoin('u.reservas', 'r')
+            ->andWhere('r.estado IN (:estados)')
+            ->setParameter('estados', [$estadoAprobado, $estadoFinalizado])
+            ->groupBy('u.id')
+            ->orderBy('reservasAprobadas', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

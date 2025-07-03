@@ -7,6 +7,7 @@ use App\Entity\Rol;
 use App\Entity\User;
 use App\Form\EditarUsuarioType;
 use App\Form\RegistrarClienteType;
+use App\Form\RegistrarEmpleadoType;
 use App\Repository\RolRepository;
 use App\Services\MailService;
 use App\Services\StringService;
@@ -73,7 +74,52 @@ final class UsuariosController extends AbstractController
         ]);
     }
 
+    #[Route('/gerencia/usuarios/nuevo-empleado', name: 'app_usuarios_nuevo_empleado')]
+    public function NuevoEmpleado(Request $request): Response
+    {
+        $nuevoUsuario = new User();
+        $form = $this->createForm(RegistrarEmpleadoType::class, $nuevoUsuario);
+        $form->handleRequest($request);
 
+        if($form->isSubmitted() && $form->isValid()) {  
+            $rolAutenticado = $this->rolesRepository->find(Rol::AUTENTICADO);
+            $rolEmpleado = $this->rolesRepository->find(Rol::EMPLEADO);
+
+            $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $nuevoUsuario->getEmail()]);
+
+            if($verificarExistencia) {
+                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
+                return $this->redirectToRoute('app_usuarios_nuevo_empleado');       
+            }
+
+            $nacimiento = $nuevoUsuario->getFechaNacimiento();
+            $hoy = new \DateTime();
+            $edad = $hoy->diff($nacimiento)->y;
+            if ($edad < 18) {
+                $this->addFlash('error', 'No se pudo registrar al cliente, debe ser mayor de 18 años para tener una cuenta en el sistema.');
+                return $this->redirectToRoute('app_usuarios_nuevo_empleado');
+            }
+
+            $nuevoUsuario->addRole($rolAutenticado->getNombre());
+            $nuevoUsuario->addRole($rolEmpleado->getNombre());
+
+            $randomPassword = $this->stringService->generateRandomPassword();
+            $hashedPassword = $this->passwordHasher->hashPassword($nuevoUsuario, $randomPassword);
+            $nuevoUsuario->setPassword($hashedPassword);
+
+            $this->mailService->enviarPassword($randomPassword, $nuevoUsuario->getEmail());
+
+            $this->manager->persist($nuevoUsuario);
+            $this->manager->flush();
+
+            $this->addFlash('success', 'Cuenta creada exitosamente.');
+            return $this->redirectToRoute('app_usuarios_nuevo_empleado');
+        }
+
+        return $this->render('usuarios/registrar-empleado.html.twig', [
+            'form' => $form,
+        ]);
+    }
     #[Route('/administracion/usuarios/{id}', name: 'app_visualizar_cliente')]
     public function VisualizarCliente(int $id): Response
     {   
@@ -167,5 +213,4 @@ final class UsuariosController extends AbstractController
             'user' => $user,
         ]);
     }
-
 }

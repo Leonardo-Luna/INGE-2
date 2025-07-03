@@ -23,6 +23,7 @@ class EstadoReserva
     public const APROBADA = 1;
     public const FALTA_PAGO = 2;
     public const CANCELADA = 3;
+    public const FINALIZADO = 4;
 
     public function getId(): ?int
     {

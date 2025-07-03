@@ -41,6 +41,7 @@ security:
     access_control:
             - { path: ^/token, roles: ROLE_GERENTE }
             - { path: ^/administracion, roles: [ROLE_GERENTE, ROLE_EMPLEADO] }
+            - { path: ^/gerencia, roles: ROLE_GERENTE }
             - { path: ^/maquina, roles: ROLE_AUTENTICADO }
             - { path: ^/reserva, roles: ROLE_AUTENTICADO }
             - { path: ^/reservas, roles: ROLE_AUTENTICADO }

@@ -7,6 +7,7 @@ use App\Entity\EstadoReserva;
 use App\Entity\Maquina;
 use App\Entity\Reserva;
 use App\Entity\User;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,6 +42,17 @@ final class ReservaController extends AbstractController
         $alquileres = $this->manager->getRepository(Reserva::class)->filtrarAlquileresPropios($user);
 
         return $this->render('reserva/listar-alquileres-propios.html.twig', [
+            "alquileres" => $alquileres,
+        ]);
+    }
+
+    #[Route('/administracion/alquileres', name: 'app_todos_alquileres')]
+    public function alquileresHistorico(Request $request): Response
+    {
+        $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+        $alquileres = $this->manager->getRepository(Reserva::class)->findBy(['estado' => $estadoAprobado]);
+
+        return $this->render('reserva/listar-alquileres-todos.html.twig', [
             "alquileres" => $alquileres,
         ]);
     }
@@ -174,6 +186,7 @@ final class ReservaController extends AbstractController
         $costoFinalConRecargo = $costoOriginal + $recargoMonto;
 
         $reserva->setCostoTotal($costoFinalConRecargo);
+        $reserva->setCreacion(new DateTime());
 
         $this->manager->persist($reserva);
         $this->manager->flush();

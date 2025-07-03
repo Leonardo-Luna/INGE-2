@@ -14,7 +14,7 @@ final class SucursalController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $manager, private MapService $mapService) { }
 
-    #[Route('/administracion/sucursal/nueva', name: 'app_crear_sucursal')]
+    #[Route('/gerencia/sucursal/nueva', name: 'app_crear_sucursal')]
     public function crear(Request $request): Response
        {
 
@@ -75,7 +75,7 @@ final class SucursalController extends AbstractController
         ]);
     }
 
-     #[Route('/administracion/sucursal/editar/{id}', name: 'app_editar_sucursal')]
+     #[Route('/gerencia/sucursal/editar/{id}', name: 'app_editar_sucursal')]
     public function editarSucursal(int $id, Request $request, Sucursal $sucursal, EntityManagerInterface $entityManager): Response
     {
 

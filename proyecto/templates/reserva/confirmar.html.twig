@@ -3,246 +3,100 @@
 {% block title %}Confirmar Reserva{% endblock %}
 
 {% block content %}
-<div class="main-container"> {# Contenedor principal con flexbox para las dos columnas #}
-    {# Columna izquierda: Información de la Máquina #}
-    <div class="info-section">
-        <h1>Confirmar Reserva</h1>
-        <h2>{{ maquina.nombre }}</h2>
+<div class="container my-5">
+    <div class="row g-4">
+        <!-- Columna izquierda: Información de la Máquina -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title text-primary text-center fw-bold fs-2">Confirmar Reserva</h1>
+                    <h2 class="text-primary text-center fw-semibold fs-4">{{ maquina.nombre }}</h2>
+                    {% if maquina.imagenes is not empty %}
+                        <img src="{{ asset('images/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" class="img-fluid rounded mb-3 d-block mx-auto" style="object-fit:cover; max-height:300px;">
+                    {% else %}
+                        <p class="text-muted">No hay imagen disponible.</p>
+                    {% endif %}
+                    <p><strong>Descripción:</strong> {{ maquina.descripcion }}</p>
+                </div>
+            </div>
+        </div>
 
-        {% if maquina.imagenes is not empty %}
-            {# Asumiendo que maquina.imagenes[0] es la ruta relativa de la imagen #}
-            <img src="{{ asset('images/' ~ maquina.imagenes[0]) }}" alt="Imagen de la máquina" class="maquina-imagen">
-        {% else %}
-            <p>No hay imagen disponible.</p>
-        {% endif %}
+        <!-- Columna derecha: Datos de la Reserva y Opciones de Pago -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-primary text-center fw-semibold fs-5 mb-3">Datos de la reserva</h3>
+                    <p><strong>Fechas:</strong> {{ reserva.fechaInicio|date('d/m/Y') }} – {{ reserva.fechaFin|date('d/m/Y') }}</p>
+                    <p><strong>Días:</strong> {{ reserva.fechaInicio.diff(reserva.fechaFin).days + (reserva.fechaInicio.format('Y-m-d') == reserva.fechaFin.format('Y-m-d') ? 1 : 0) }}</p>
 
-        <p><strong>Descripción:</strong> {{ maquina.descripcion }}</p>
-    </div>
+                    {% if recargoMontoDisplay > 0 %}
+                        <p><strong>Costo base:</strong> ${{ (costoFinalDisplay - recargoMontoDisplay)|number_format(2, ',', '.') }}</p>
+                        <p><strong>Recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas):</strong> ${{ recargoMontoDisplay|number_format(2, ',', '.') }}</p>
+                    {% else %}
+                        <p><strong>Sin recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas)</strong></p>
+                    {% endif %}
 
-    {# Columna derecha: Datos de la Reserva y Opciones de Pago #}
-    <div class="details-section">
-        <h3>Datos de la reserva</h3>
-        <p><strong>Fechas:</strong> {{ reserva.fechaInicio|date('d/m/Y') }} – {{ reserva.fechaFin|date('d/m/Y') }}</p>
-        {# Calculamos los días aquí mismo si reserva.fechaInicio y reserva.fechaFin son DateTimeInterface #}
-        <p><strong>Días:</strong> {{ reserva.fechaInicio.diff(reserva.fechaFin).days + (reserva.fechaInicio.format('Y-m-d') == reserva.fechaFin.format('Y-m-d') ? 1 : 0) }}</p>
+                    <p>
+                        <strong>Costo total:</strong>
+                        <span class="fs-4 fw-bold text-danger">${{ costoFinalDisplay|number_format(2, ',', '.') }}</span>
+                    </p>
 
-        {# Mostrar el desglose del costo si el recargo es mayor a 0 #}
-        {% if recargoMontoDisplay > 0 %}
-            <p><strong>Costo base:</strong> ${{ (costoFinalDisplay - recargoMontoDisplay)|number_format(2, ',', '.') }}</p>
-            <p><strong>Recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas):</strong> ${{ recargoMontoDisplay|number_format(2, ',', '.') }}</p>
-        {% else %}
-            <p><strong>Sin recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas)</strong></p>
-        {% endif %}
+                    <p>Reembolso si cancelas antes del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.montoReembolso|number_format(2, ',', '.') }}</p>
+                    <p>Reembolso si cancelas después del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.reembolsoPenalizado|number_format(2, ',', '.') }}</p>
 
-        {# Mostrar el costo total final #}
-        <p><strong>Costo total:</strong> <span class="costo-total-final">${{ costoFinalDisplay|number_format(2, ',', '.') }}</span></p>
-
-        <p>Reembolso si cancelas antes del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.montoReembolso|number_format(2, ',', '.') }}</p>
-        <p>Reembolso si cancelas después del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.reembolsoPenalizado|number_format(2, ',', '.') }}</p>
-
-        <div class="buttons-container">
-            <button class="btn btn-warning">Aplicar cupón</button>
-
-            {# Contenedor para el Wallet Brick de Mercado Pago #}
-            <div id="walletBrick_container" style="margin-top: 20px;"></div>
-
-            {#
-                IMPORTANTE: El formulario de "Pagar y Confirmar" tradicional se comenta/elimina.
-                El Wallet Brick de Mercado Pago gestionará el proceso de pago.
-            #}
-            {# <form action="{{ path('app_reservas_confirmar', {'id': reserva.id}) }}" method="post">
-                <button type="submit" class="btn btn-success">Pagar y Confirmar</button>
-            </form> #}
+                    <div class="mt-4">
+                        <button class="btn btn-warning w-100 mb-2">Aplicar cupón</button>
+                        <div id="walletBrick_container" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script>
-        // La PUBLIC KEY debe ser pasada desde el controlador.
-        // Asegúrate de que el controlador está pasando la variable 'MERCADOPAGO_PUBLIC_KEY'.
-        // Si la clave no está definida o es incorrecta, el SDK no funcionará.
-        const publicKey = '{{ MERCADOPAGO_PUBLIC_KEY|default('APP_USR-a8939531-6298-4a18-8a19-820c941ab804') }}'; // Usar valor por defecto si no se pasa, idealmente, siempre pasarlo.
-        const preferenceId = '{{ preferenceId|default('') }}'; // Usar valor por defecto vacío si no se pasa.
+        const publicKey = '{{ MERCADOPAGO_PUBLIC_KEY|default('APP_USR-a8939531-6298-4a18-8a19-820c941ab804') }}';
+        const preferenceId = '{{ preferenceId|default('') }}';
 
         if (publicKey && preferenceId) {
-            const mp = new MercadoPago(publicKey, {
-                locale: 'es-AR'
-            });
-
+            const mp = new MercadoPago(publicKey, { locale: 'es-AR' });
             mp.bricks().create("wallet", "walletBrick_container", {
-                initialization: {
-                    preferenceId: preferenceId,
-                },
-                 callbacks: {
+                initialization: { preferenceId: preferenceId },
+                callbacks: {
                     onSubmit: () => {
-                    salidaForzada = false;
-                    return Promise.resolve(); // continuar con el flujo normal del pago
-                     },
-                     onReady: () => {
-                         console.log('Wallet Brick listo para usar.');
-                         
-                     },
-                     onError: (error) => {
-                         console.error('Error al inicializar Wallet Brick:', error);
-                         const container = document.getElementById('walletBrick_container');
-                         if (container) {
-                             container.innerHTML = '<p style="color: red;">No se pudo cargar el método de pago. Inténtalo de nuevo más tarde.</p>';
-                         }
-                     }
-                 }
+                        salidaForzada = false;
+                        return Promise.resolve();
+                    },
+                    onReady: () => { console.log('Wallet Brick listo para usar.'); },
+                    onError: (error) => {
+                        console.error('Error al inicializar Wallet Brick:', error);
+                        const container = document.getElementById('walletBrick_container');
+                        if (container) {
+                            container.innerHTML = '<p class="text-danger">No se pudo cargar el método de pago. Inténtalo de nuevo más tarde.</p>';
+                        }
+                    }
+                }
             });
         } else {
             console.error("Error: No se pudo cargar Mercado Pago. Falta la Public Key o el Preference ID.");
             const container = document.getElementById('walletBrick_container');
             if (container) {
-                container.innerHTML = '<p style="color: red;">No se pudo cargar el método de pago. Por favor, asegúrate de que las claves de Mercado Pago estén configuradas correctamente.</p>';
+                container.innerHTML = '<p class="text-danger">No se pudo cargar el método de pago. Por favor, asegúrate de que las claves de Mercado Pago estén configuradas correctamente.</p>';
             }
         }
-    let salidaForzada = true;
+        let salidaForzada = true;
         window.addEventListener('beforeunload', (e) => {
-    if (salidaForzada) {
-        navigator.sendBeacon('/reserva/eliminar/{{reserva.id}}');
-    }
-  
-});
-
-
+            if (salidaForzada) {
+                navigator.sendBeacon('/reserva/eliminar/{{reserva.id}}');
+            }
+        });
     </script>
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-        /* Estilos generales para el contenedor principal */
-        .main-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 40px; /* Espacio entre las columnas */
-            margin: 3rem auto;
-            max-width: 1000px; /* Ancho máximo similar al de tu calendario */
-            padding: 0 20px; /* Padding horizontal para evitar que toque los bordes */
-        }
-
-        /* Estilos para las secciones de información y detalles */
-        .info-section, .details-section {
-            width: 48%; /* Casi la mitad para cada columna */
-            padding: 30px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
-        }
-
-        /* Estilos para los títulos y subtítulos */
-        h1, h2, h3 {
-            color: #007bff; /* Azul primario */
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            text-align: center; /* Centrar títulos */
-            font-weight: 600;
-        }
-        h2 {
-            font-size: 1.8rem;
-            margin-top: 0;
-        }
-        h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Estilos para párrafos de información */
-        p {
-            font-size: 1.1rem;
-            color: #555;
-            line-height: 1.5;
-            margin-bottom: 0.8rem;
-        }
-        p strong {
-            color: #333;
-        }
-
-        /* Estilo para la imagen de la máquina */
-        .maquina-imagen {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: block; /* Asegura que no haya espacio extra debajo */
-            object-fit: cover; /* Para que la imagen cubra el área sin distorsionarse */
-            max-height: 300px; /* Limita la altura de la imagen si es demasiado grande */
-        }
-
-        /* Estilo para el costo total final */
-        .costo-total-final {
-            font-size: 1.4em; /* Más grande que el texto normal */
-            color: #d9534f; /* Color rojo para destacar */
-            font-weight: bold;
-        }
-
-        /* Contenedor para botones */
-        .buttons-container {
-            margin-top: 30px;
-        }
-
-        /* Estilos para los botones */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 1rem 1.25rem;
-            margin-bottom: 10px; /* Espacio entre botones */
-            border: none;
-            border-radius: 0.3rem;
-            font-size: 1.15rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra base para los botones */
-        }
-
-        .btn:hover {
-            transform: translateY(-2px); /* Efecto hover */
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Sombra más pronunciada en hover */
-        }
-
-        /* Colores específicos para los botones */
-        .btn-warning { /* Botón Aplicar Cupón */
-            background-color: #f0ad4e;
-            color: white;
-        }
-        .btn-warning:hover {
-            background-color: #ec971f;
-        }
-
-        .btn-success { /* Botón Pagar y Confirmar */
-            background-color: #5cb85c;
-            color: white;
-        }
-        .btn-success:hover {
-            background-color: #449d44;
-        }
-
-        /* Estilos responsive */
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column; /* Apilar columnas en pantallas pequeñas */
-                gap: 20px;
-            }
-            .info-section, .details-section {
-                width: 100%; /* Ocupar todo el ancho */
-                padding: 20px;
-            }
-            h1, h2, h3 {
-                font-size: 1.8rem;
-            }
-            p {
-                font-size: 1rem;
-            }
-        }
-    </style>
 {% endblock %}
