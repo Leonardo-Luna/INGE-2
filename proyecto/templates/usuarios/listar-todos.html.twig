@@ -6,7 +6,6 @@
   <div class="perfil-container">
     <h1>Listado de Usuarios</h1>
 
-    
     {% for type, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
@@ -15,7 +14,6 @@
             </div>
         {% endfor %}
     {% endfor %}
-    
 
     {# Botón para crear un nuevo usuario #}
     <div class="mb-4">
@@ -46,33 +44,37 @@
                             <td>{{ user.nombre | default('N/A') }}</td> 
                             <td>
                                 {% set roleNames = {
-    'ROLE_AUTENTICADO': '',
-    'ROLE_GERENTE': 'Gerente',
-    'ROLE_EMPLEADO': 'Empleado',
-    'ROLE_CLIENTE': 'Cliente'
-} %}
+                                    'ROLE_AUTENTICADO': '',
+                                    'ROLE_GERENTE': 'Gerente',
+                                    'ROLE_EMPLEADO': 'Empleado',
+                                    'ROLE_CLIENTE': 'Cliente'
+                                } %}
 
-{% for role in user.roles %}
-    {% if roleNames[role] is defined %}
-        <span class="badge bg-primary">{{ roleNames[role] }}</span>
-    {% endif %}
-{% endfor %}
+                                {% for role in user.roles %}
+                                    {% if roleNames[role] is defined %}
+                                        <span class="badge bg-primary">{{ roleNames[role] }}</span>
+                                    {% endif %}
+                                {% endfor %}
                             </td>
                             <td class="acciones-col">
                                 <div class="btn-group-actions">
                                     <a href="{{ path('app_visualizar_cliente', {'id': user.id}) }}" class="btn btn-sm btn-info" title="Ver Detalles">
                                         <i class="fas fa-eye"></i> Visualizar
                                     </a>
-                                    <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-sm btn-warning" title="Editar Usuario">
-                                        <i class="fas fa-edit"></i> Editar
-                                    </a>
+
+                                    {% if 'ROLE_GERENTE' not in user.roles or user.id == app.user.id %}
+                                        <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-sm btn-warning" title="Editar Usuario">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                    {% endif %}
+
                                     {% if 'ROLE_GERENTE' not in user.roles %}
-                                    <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
+                                        <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
                                     {% endif %}
                                 </div>    
                             </td>
@@ -85,7 +87,6 @@
   </div>
 
   <style>
-    /* Reutiliza los estilos generales de tu `perfil-container` */
     .perfil-container {
       max-width: 1100px; 
       margin: 2rem auto;
@@ -93,17 +94,15 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       background-color: #f9f9f9;
-      /* align-content: center; /* Esto podría afectar al texto, mejor manejar el centrado de otra forma si es necesario */
     }
 
-    /* Estilos para la tabla */
     .user-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1.5rem;
       background-color: #fff;
       border-radius: 8px;
-      overflow: hidden; /* Para que border-radius afecte a los thead/tfoot */
+      overflow: hidden;
     }
 
     .user-table th, .user-table td {
@@ -113,33 +112,31 @@
     }
 
     .user-table thead th {
-      background-color: #e9ecef; /* Un color de fondo para el encabezado */
+      background-color: #e9ecef;
       font-weight: bold;
       color: #343a40;
     }
 
     .user-table tbody tr:nth-child(even) {
-      background-color: #f8f9fa; /* Color para filas pares (zebra stripping) */
+      background-color: #f8f9fa;
     }
 
     .user-table tbody tr:hover {
-      background-color: #e2f0fb; /* Resaltar fila al pasar el mouse */
+      background-color: #e2f0fb;
     }
 
-    /* Estilos para los botones de acción dentro de la tabla */
     .acciones-col {
-        white-space: nowrap; /* Evita que los botones se envuelvan */
-        text-align: center; /* Centra los botones en la celda */
+        white-space: nowrap;
+        text-align: center;
     }
 
     .acciones-col .btn {
-      padding: 5px 10px; /* Botones más pequeños para la tabla */
-      margin-right: 5px; /* Espacio entre botones */
-      font-size: 0.85em; /* Fuente más pequeña */
-      text-decoration: none; /* Asegura que no tengan subrayado */
+      padding: 5px 10px;
+      margin-right: 5px;
+      font-size: 0.85em;
+      text-decoration: none;
     }
 
-    /* Clases de colores para botones (pueden ser de Bootstrap o personalizadas) */
     .btn-info {
         background-color: #17a2b8;
     }
@@ -148,7 +145,7 @@
     }
     .btn-warning {
         background-color: #ffc107;
-        color: #212529; /* Texto oscuro para contraste */
+        color: #212529;
     }
     .btn-warning:hover {
         background-color: #e0a800;
@@ -160,7 +157,6 @@
         background-color: #c82333;
     }
 
-    /* Estilos para los badges de roles */
     .badge {
         display: inline-block;
         padding: .35em .65em;
@@ -172,16 +168,16 @@
         white-space: nowrap;
         vertical-align: baseline;
         border-radius: .25rem;
-        background-color: #0d6efd; /* Color por defecto de Bootstrap primary */
+        background-color: #0d6efd;
     }
-    .badge.bg-primary { background-color: #007bff !important; } /* Ajuste al azul de tu btn */
+    .badge.bg-primary {
+        background-color: #007bff !important;
+    }
 
-
-    /* Estilos para el botón de "Crear Nuevo Usuario" */
     .mb-4 {
         margin-bottom: 1.5rem !important;
     }
-    .btn { /* Esto es el estilo general de .btn, asegúrate de que no sobrescriba los btn-sm */
+    .btn {
       display: inline-block;
       padding: 0.6rem 1rem;
       background-color: #007bff;
@@ -189,17 +185,14 @@
       text-align: center;
       text-decoration: none;
       border-radius: 4px;
-      margin-bottom: 0px; /* Ajuste para evitar margin-bottom extra */
+      margin-bottom: 0px;
     }
     .btn:hover {
       background-color: #0056b3;
     }
 
-    /* Clases de utilidad Bootstrap-like si no usas Bootstrap completo */
-    .d-inline { display: inline; } /* Para el formulario de eliminar */
+    .d-inline { display: inline; }
     .text-center { text-align: center; }
-    .ms-2 { margin-left: 0.5rem; } /* Si se usa junto a otro botón */
+    .ms-2 { margin-left: 0.5rem; }
   </style>
-
-  
 {% endblock %}
