@@ -17,6 +17,7 @@ use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Entity\Cupon;
 
 final class ReservaController extends AbstractController
 {
@@ -331,7 +332,33 @@ final class ReservaController extends AbstractController
         $this->manager->flush();
         return new Response('Webhook procesado', Response::HTTP_OK);
 }
+ 
+#[Route('/aplicar-cupon', name: 'aplicar_cupon', methods: ['POST'])]
+    public function aplicarCupon(Request $request): JsonResponse
+    {   $data = json_decode($request->getContent(), true);
+        $codigo = $data['codigo'] ?? null;
+        $id = $data['id'] ?? null;
+        $cupon = $this->manager->getRepository(Cupon::class)->findOneBy(['codigo' => $codigo]);  
+        if (!$cupon) {
+            return new JsonResponse(['mensaje' => 'Código inválido'], 203);
+        }
+       $reserva= $this->manager->getRepository(Reserva::class)->findOneById($id);
+        // Aca se puede comprobar que haber tomado la decision de expresar el reembolso en cantidad por dia fue mala idea (mia btw).
+        // Dado que si refactorizo ese codigo voy a romper absolutamente todo, vamos a seguir con la deuda tecnica con las siguientes cuentas matematicas :)
 
+        $mulNormal = $reserva->getMontoReembolso() / $reserva->getCostoTotal();
+        $mulPenalizado = $reserva->getReembolsoPenalizado() / $reserva->getCostoTotal();
+        $reserva->setMontoReembolso( $reserva->getMontoReembolso() -  $cupon->getMonto() * $mulNormal);
+        $reserva->setReembolsoPenalizado( $reserva->getReembolsoPenalizado() -  $cupon->getMonto() * $mulPenalizado);
+        $reserva->setCostoTotal($reserva->getCostoTotal() - $cupon->getMonto());
+        
+        $this->manager->remove($cupon);
+        $this->manager->flush();
+        
+        
+        return new JsonResponse(['mensaje' => 'Cupón aplicado: ' . $codigo,
+                                'reserva' => $reserva]);
+    }
 
 
 }
