@@ -7,6 +7,7 @@ use App\Entity\EstadoReserva;
 use App\Entity\Maquina;
 use App\Entity\Reserva;
 use App\Entity\User;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -185,6 +186,7 @@ final class ReservaController extends AbstractController
         $costoFinalConRecargo = $costoOriginal + $recargoMonto;
 
         $reserva->setCostoTotal($costoFinalConRecargo);
+        $reserva->setCreacion(new DateTime());
 
         $this->manager->persist($reserva);
         $this->manager->flush();

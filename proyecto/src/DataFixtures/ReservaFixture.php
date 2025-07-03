@@ -34,10 +34,11 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $reserva->setEstado($estadoAprobada->getEstado());
         $reserva->setFechaInicio(new DateTime('2025-06-10'));
         $reserva->setFechaFin(new DateTime('2025-06-30'));
+        $reserva->setCreacion(new DateTime('2025-06-5'));
         $manager->persist($reserva);
 
         $reserva2 = new Reserva();
-        $reserva2->setMaquina($cosechadora);
+        $reserva2->setMaquina($tractor);
         $reserva2->setUsuario($usuarioPepe);
         $reserva2->setCostoTotal(60000);
         $reserva2->setMontoReembolso(300);
@@ -45,10 +46,11 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $reserva2->setEstado($estadoAprobada->getEstado());
         $reserva2->setFechaInicio(new DateTime('2025-07-10'));
         $reserva2->setFechaFin(new DateTime('2025-07-30'));
+        $reserva2->setCreacion(new DateTime('2025-06-5'));
         $manager->persist($reserva2);
 
         $reserva3 = new Reserva();
-        $reserva3->setMaquina($cosechadora);
+        $reserva3->setMaquina($tractor);
         $reserva3->setUsuario($usuarioPipo);
         $reserva3->setCostoTotal(60000);
         $reserva3->setMontoReembolso(300);
@@ -56,6 +58,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $reserva3->setEstado($estadoAprobada->getEstado());
         $reserva3->setFechaInicio(new DateTime('2025-08-10'));
         $reserva3->setFechaFin(new DateTime('2025-08-30'));
+        $reserva3->setCreacion(new DateTime('2025-06-5'));
         $manager->persist($reserva3);
 
         $reservaCancelada = new Reserva();
@@ -67,6 +70,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $reservaCancelada->setEstado($estadoCancelada->getEstado());
         $reservaCancelada->setFechaInicio(new DateTime('2025-06-10'));
         $reservaCancelada->setFechaFin(new DateTime('2025-06-30'));
+        $reservaCancelada->setCreacion(new DateTime('2025-06-5'));
         $manager->persist($reservaCancelada);
         
         $manager->flush();

@@ -43,6 +43,9 @@ class Reserva
     #[ORM\JoinColumn(nullable: false)]
     private ?user $usuario = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $creacion = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -144,6 +147,18 @@ class Reserva
     public function setUsuario(?user $usuario): static
     {
         $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    public function getCreacion(): ?\DateTimeInterface
+    {
+        return $this->creacion;
+    }
+
+    public function setCreacion(?\DateTimeInterface $creacion): static
+    {
+        $this->creacion = $creacion;
 
         return $this;
     }

@@ -93,17 +93,22 @@ final class ReportesController extends AbstractController
             ])
             ->getForm();
 
-        $query = "Seleccione un rango de fechas para mostrar los ingresos que hubo.";
+        $query = "";
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $fechaInicio = $form->get('fecha_inicio')->getData();
             $fechaFin = $form->get('fecha_fin')->getData();
-            $query = $this->manager->getRepository(Reserva::class)->buscarAlquileresEntre($fechaInicio, $fechaFin);
+
+            $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+            $estadoFinalizada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
+            
+            $query = $this->manager->getRepository(Reserva::class)->buscarAlquileresEntre($fechaInicio, $fechaFin, $estadoAprobada, $estadoFinalizada);
         }
 
         return $this->render('reportes/finanzas.html.twig', [
             'form' => $form->createView(),
-            'monto' => $query,
+            'reservas' => $query,
         ]);
     }
 }
