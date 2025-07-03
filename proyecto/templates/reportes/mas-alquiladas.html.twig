@@ -1,10 +1,18 @@
 {% extends 'layout/base.html.twig' %}
 
 {% block content %}
-    <h2 style="text-align:center; margin-bottom: 30px;">Máquinas más alquiladas</h2>
+    <h2 class="mt-4" style="text-align:center; margin-bottom: 30px;">Máquinas más alquiladas</h2>
+    {% if data is empty %}
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 200px;">
+            <div style="background: #f8f9fa; padding: 32px 48px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h3 style="color: #888; margin: 0;">Todavía no hay datos para mostrar.</h3>
+            </div>
+        </div>
+    {% else %}
     <div style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
         <canvas id="maquinasPieChart" width="400" height="400" style="max-width: 100%; max-height: 400px; background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);"></canvas>
     </div>
+    {% endif %}
 {% endblock %}
 
 {% block javascripts %}

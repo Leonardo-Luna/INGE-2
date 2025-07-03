@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\EstadoReserva;
 use App\Entity\Maquina;
+use App\Entity\Reserva;
 use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -72,6 +74,36 @@ final class ReportesController extends AbstractController
         return $this->render('reportes/mas-alquiladas.html.twig', [
             'labels' => $labels,
             'data' => $data,
+        ]);
+    }
+
+    #[Route('/gerencia/reportes/finanzas', name: 'app_reportes_finanzas')]
+    public function finanzas(Request $request): Response
+    {
+        $form = $this->createFormBuilder()
+            ->add('fecha_inicio', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+                'widget' => 'single_text',
+                'label' => 'Fecha de inicio',
+                'required' => true,
+            ])
+            ->add('fecha_fin', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+                'widget' => 'single_text',
+                'label' => 'Fecha de fin',
+                'required' => true,
+            ])
+            ->getForm();
+
+        $query = "Seleccione un rango de fechas para mostrar los ingresos que hubo.";
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $fechaInicio = $form->get('fecha_inicio')->getData();
+            $fechaFin = $form->get('fecha_fin')->getData();
+            $query = $this->manager->getRepository(Reserva::class)->buscarAlquileresEntre($fechaInicio, $fechaFin);
+        }
+
+        return $this->render('reportes/finanzas.html.twig', [
+            'form' => $form->createView(),
+            'monto' => $query,
         ]);
     }
 }
