@@ -65,16 +65,27 @@ class MaquinaRepository extends ServiceEntityRepository
 
     public function getMasAlquiladas(string $estadoAprobada, string $estadoFinalizada): array
     {
-    return $this->createQueryBuilder('m')
-        ->select('m, COUNT(r.id) AS reservasCount')
-        ->leftJoin('m.reservas', 'r')
-        ->andWhere('r.estado IN (:estados)')
-        ->setParameter('estados', [$estadoAprobada, $estadoFinalizada])
-        ->groupBy('m.id')
-        ->orderBy('reservasCount', 'DESC')
-        ->setMaxResults(10)
-        ->getQuery()
-        ->getResult();
+        return $this->createQueryBuilder('m')
+            ->select('m, COUNT(r.id) AS reservasCount')
+            ->leftJoin('m.reservas', 'r')
+            ->andWhere('r.estado IN (:estados)')
+            ->setParameter('estados', [$estadoAprobada, $estadoFinalizada])
+            ->groupBy('m.id')
+            ->orderBy('reservasCount', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+    public function tieneAlquileres(Maquina $maquina, string $estado)
+    {
+        return $this->createQueryBuilder('m')
+            ->leftJoin('m.reservas', 'r')
+            ->andWhere('m.id = :id')
+            ->andWhere('r.estado = :estado')
+            ->setParameter('id', $maquina->getId())
+            ->setParameter('estado', $estado)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
 }

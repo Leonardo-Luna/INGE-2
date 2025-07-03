@@ -113,7 +113,23 @@ final class MaquinaController extends AbstractController
         ]);
     }
 
-   
+    #[Route('/gerencia/maquina/eliminar/{id}', name: 'app_eliminar_maquina', methods: ['POST'])] # Es post, no se accede a la ruta sino que se le pega como una api pasando la id de la máquina como parámetro
+    public function eliminarMaquina(Maquina $maquina)
+    {
+        $estadoAprobado = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+        $tieneAlquileres = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoAprobado);
+
+        if(!($tieneAlquileres)) {
+            $this->entityManager->remove($maquina);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Máquina eliminada existosamente.');
+            return $this->redirectToRoute('app_catalogo');
+        }
+        else {
+            $this->addFlash('error', 'No se puede eliminar esta máquina, todavía tiene alquileres vigentes.');
+            return $this->redirectToRoute('app_catalogo');
+        }
+    }
 
    
 }
