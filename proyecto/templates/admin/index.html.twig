@@ -3,71 +3,63 @@
 {% block title %}Gerencia - Panel de Gestión{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container-fluid my-5">
     <h2 class="text-center display-4 fw-bold text-dark mb-5">Panel de Gestión</h2>
 
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        <!-- Gestión de Maquinaria -->
-        <div class="col">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body text-center">
-                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#maquinariaCollapse">
-                        <i class="bi bi-gear-fill me-2"></i> Gestión de Maquinaria
-                    </button>
-                    <div class="collapse" id="maquinariaCollapse">
-                        <a href="{{ path('app_maquina_nueva') }}" class="btn btn-outline-primary w-100 mb-2">Cargar Maquinaria</a>
-                        <a href="{{ path('app_admin') }}" class="btn btn-outline-primary w-100">Listar Maquinaria</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Contenedor que engloba todos los botones -->
+    <div class="mx-auto p-4 bg-white rounded shadow" style="width: 50%; max-width: 1100px;">
+        <div class="row justify-content-center gx-2 gy-3">
 
-        <!-- Gestión de Sucursales -->
-        <div class="col">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body text-center">
-                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#sucursalesCollapse">
-                        <i class="bi bi-shop-window me-2"></i> Gestión de Sucursales
-                    </button>
-                    <div class="collapse" id="sucursalesCollapse">
-                        <a href="{{ path('app_crear_sucursal') }}" class="btn btn-outline-primary w-100">Cargar Sucursal</a>
-                    </div>
-                </div>
+            <!-- Maquinaria -->
+            <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center">
+                <a href="{{ path('panel_maquinaria') }}"
+                   class="btn btn-primary d-flex flex-column align-items-center justify-content-center text-center"
+                   style="width: 160px; height: 160px; font-size: 1.1rem;">
+                    <i class="bi bi-gear-fill mb-2" style="font-size: 2.5rem;"></i>
+                    Maquinaria
+                </a>
             </div>
-        </div>
 
-        <!-- Gestión de Usuarios -->
-        <div class="col">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body text-center">
-                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#usuariosCollapse">
-                        <i class="bi bi-people-fill me-2"></i> Gestión de Usuarios
-                    </button>
-                    <div class="collapse" id="usuariosCollapse">
-                        <a href="{{ path('app_usuarios_nuevo_cliente') }}" class="btn btn-outline-primary w-100 mb-2">Registrar Cliente</a>
-                        <a href="{{ 'RUTA_CREAR_EMPLEADO' }}" class="btn btn-outline-primary w-100 mb-2">Registrar Empleado</a>
-                        <a href="{{ path('app_usuarios') }}" class="btn btn-outline-primary w-100">Listar Usuarios</a>
-                    </div>
-                </div>
+            <!-- Sucursales -->
+            <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center">
+                <a href="{{ path('panel_sucursales') }}"
+                   class="btn btn-primary d-flex flex-column align-items-center justify-content-center text-center"
+                   style="width: 160px; height: 160px; font-size: 1.1rem;">
+                    <i class="bi bi-shop-window mb-2" style="font-size: 2.5rem;"></i>
+                    Sucursales
+                </a>
             </div>
-        </div>
 
-        <!-- Ver Reportes -->
-        <div class="col">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-body text-center">
-                    <button class="btn btn-primary w-100 py-3 mb-3" data-bs-toggle="collapse" data-bs-target="#reportesCollapse">
-                        <i class="bi bi-bar-chart-fill me-2"></i> Ver Reportes
-                    </button>
-                    <div class="collapse" id="reportesCollapse">
-                        <a href="{{ path('app_reservas') }}" class="btn btn-outline-primary w-100 mb-2">Listar Reservas (Totales)</a>  <!-- No se donde poner esto, x ahora lo dejo aca :D -->
-                        <a href="{{ 'RUTA_REPORTE_MAQUINAS_POPULARES' }}" class="btn btn-outline-primary w-100 mb-2">Maquinarias más alquiladas</a>
-                        <a href="{{ 'RUTA_REPORTE_SUCURSALES_POPULARES' }}" class="btn btn-outline-primary w-100 mb-2">Sucursales más concurridas</a>
-                        <a href="{{ 'RUTA_REPORTE_CLIENTES_TOP' }}" class="btn btn-outline-primary w-100 mb-2">Clientes con más reservas</a>
-                        <a href="{{ 'RUTA_REPORTE_FINANZAS' }}" class="btn btn-outline-primary w-100">Reporte de Finanzas</a>
-                    </div>
-                </div>
+            <!-- Usuarios -->
+            <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center">
+                <a href="{{ path('panel_usuarios') }}"
+                   class="btn btn-primary d-flex flex-column align-items-center justify-content-center text-center"
+                   style="width: 160px; height: 160px; font-size: 1.1rem;">
+                    <i class="bi bi-people-fill mb-2" style="font-size: 2.5rem;"></i>
+                    Usuarios
+                </a>
             </div>
+
+            <!-- Reportes -->
+            <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center">
+                <a href="{{ path('panel_reportes') }}"
+                   class="btn btn-primary d-flex flex-column align-items-center justify-content-center text-center"
+                   style="width: 160px; height: 160px; font-size: 1.1rem;">
+                    <i class="bi bi-bar-chart-fill mb-2" style="font-size: 2.5rem;"></i>
+                    Reportes
+                </a>
+            </div>
+
+            <!-- Reservas -->
+            <div class="col-6 col-md-4 col-lg-2 d-flex justify-content-center">
+                <a href="{{ path('app_reservas') }}"
+                   class="btn btn-primary d-flex flex-column align-items-center justify-content-center text-center"
+                   style="width: 160px; height: 160px; font-size: 1.1rem;">
+                    <i class="bi bi-calendar-event-fill mb-2" style="font-size: 2.5rem;"></i>
+                    Reservas
+                </a>
+            </div>
+
         </div>
     </div>
 </div>
