@@ -61,7 +61,9 @@
                                                 <a href="{{ path('app_visualizar_cliente', {'id': user.id}) }}" class="btn btn-sm btn-info mx-1" title="Ver Detalles">
                                                     <i class="fas fa-eye"></i> Visualizar
                                                 </a>
-                                                {% if 'ROLE_GERENTE' not in user.roles or app.user.id == user.id %}
+                                                {# Banco mas que sea asi pero la regla dice que no se puede editar los datos de UN gerente, podemos ver si lo podemos cambiar a de OTRO gerente
+                                                {% if 'ROLE_GERENTE' not in user.roles or app.user.id == user.id %}#}
+                                                {% if 'ROLE_GERENTE' not in user.roles%}
                                                     <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-sm btn-warning mx-1" title="Editar Usuario">
                                                         <i class="fas fa-edit"></i> Editar
                                                     </a>

@@ -186,12 +186,12 @@ final class UsuariosController extends AbstractController
 
         if(!$user) {
             $this->addFlash('error', 'El usuario no existe.');
-            return $this->redirectToRoute('app_usuarios'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+            return $this->redirectToRoute('app_usuarios'); 
         }
 
         if($user->isEliminado()) {
             $this->addFlash('error', 'El usuario se encuentra eliminado y no puede ser editado.');
-            return $this->redirectToRoute('app_usuarios'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+            return $this->redirectToRoute('app_usuarios'); 
         }
 
         $form = $this->createForm(EditarUsuarioType::class, $user);
@@ -205,7 +205,7 @@ final class UsuariosController extends AbstractController
             }
             $this->manager->flush();
             $this->addFlash('success', 'Usuario editado exitosamente.');
-            return $this->redirectToRoute('app_usuarios'); # CAMBIAR ESTA LINEA POR EL LISTADO DE USUARIOS ! ! ! ! ! ! !
+            return $this->redirectToRoute('app_usuarios'); 
         }
 
         return $this->render('usuarios/editar-cliente.html.twig', [
