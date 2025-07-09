@@ -61,13 +61,50 @@
                                 <a href="{{ path('app_eliminar_reserva_id', {'id': reserva.id}) }}" class="btn btn-outline-danger btn-sm">
                                     <i class="bi bi-x-circle me-1"></i> Cancelar
                                 </a>
+                                
                             {% endif %}
                         </div>
+                         {% if reserva.estado|lower in ['en_curso'] %}
+                        <a href="{{ path('app_devolver_maquinaria', {'id': reserva.id}) }}" class="btn-recibir">
+                                    <i ></i> Recibir Maquinaria
+                                    
+                                 </a>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
 </div>
+
+{% endblock %}
+
+
+{% block stylesheets %}
+<style>
+.btn-recibir {
+    display: inline-flex;
+    align-items: center;
+    text-align:center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 2px solid #28a745; /* verde */
+    background-color: white;
+    color: #28a745;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-recibir .icono {
+    font-size: 18px;
+}
+
+.btn-recibir:hover {
+    background-color: #28a745;
+    color: white;
+}
+</style>
 
 {% endblock %}
