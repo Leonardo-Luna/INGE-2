@@ -422,7 +422,7 @@ final class ReservaController extends AbstractController
                                 'reserva' => $reserva]);
     }
 
-#[Route('/devolverMaquinaria/{id}', name: 'app_devolver_maquinaria', methods: ['GET', 'POST'])]
+#[Route('/administracion/devolverMaquinaria/{id}', name: 'app_devolver_maquinaria', methods: ['GET', 'POST'])]
     public function devolverMaquinaria(Request $request, int $id): Response
     {   
         $reserva = $this->manager->getRepository(Reserva::class)->findOneBy(['id' => $id]);
@@ -430,12 +430,10 @@ final class ReservaController extends AbstractController
         $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
         $reserva->setEstado($estado);
         $maquina->setEnReparacion(1);
-         $this->manager->persist($reserva);
-          $this->manager->persist($maquina);
 
         $this->manager->flush();
 
-        return $this->redirectToRoute('app_valorar_alquiler', ['reserva' => $reserva]);
+        return $this->redirectToRoute('app_reserva_valorar', ['reserva' => $reserva, 'id' => $reserva->getId()]);
 
     }
 
