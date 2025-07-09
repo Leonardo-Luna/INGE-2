@@ -24,6 +24,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $plantadora = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Plantadora Grano Grueso DB50']);
         $estadoAprobada = $manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA);
         $estadoCancelada = $manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
+        $estadoEnCurso = $manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO);
 
         $reserva = new Reserva();
         $reserva->setMaquina($tractor);
@@ -73,6 +74,18 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $reservaCancelada->setCreacion(new DateTime('2025-06-5'));
         $manager->persist($reservaCancelada);
         
+
+        $reservaEnCurso = new Reserva();
+        $reservaEnCurso->setMaquina($plantadora);
+        $reservaEnCurso->setUsuario($usuarioPepe);
+        $reservaEnCurso->setCostoTotal(60000);
+        $reservaEnCurso->setMontoReembolso(300);
+        $reservaEnCurso->setFechaReembolsoPenalizado(new DateTime('2025-06-05'));
+        $reservaEnCurso->setEstado($estadoEnCurso->getEstado());
+        $reservaEnCurso->setFechaInicio(new DateTime('2025-06-10'));
+        $reservaEnCurso->setFechaFin(new DateTime('2025-08-30'));
+        $reservaEnCurso->setCreacion(new DateTime('2025-06-5'));
+        $manager->persist($reservaEnCurso);
         $manager->flush();
     }
 
