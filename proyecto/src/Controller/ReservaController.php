@@ -351,6 +351,16 @@ final class ReservaController extends AbstractController
         $reserva->setMontoReembolso( $reserva->getMontoReembolso() -  $cupon->getMonto() * $mulNormal);
         $reserva->setReembolsoPenalizado( $reserva->getReembolsoPenalizado() -  $cupon->getMonto() * $mulPenalizado);
         $reserva->setCostoTotal($reserva->getCostoTotal() - $cupon->getMonto());
+
+        if ($reserva->getMontoReembolso()< 0){
+            $reserva->setMontoReembolso(0);
+        }
+        if ($reserva->getReembolsoPenalizado()< 0){
+            $reserva->setMontoReembolso(0);
+        }
+        if ($reserva->getCostoTotal()< 0){
+            $reserva->setCostoTotal(0);
+        }
         
         $this->manager->remove($cupon);
         $this->manager->flush();
