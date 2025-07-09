@@ -55,9 +55,9 @@
                                     <td>
                                         {{ reserva.maquina ? reserva.maquina.nombre : 'N/A' }}
                                     </td>
-                                    <td>{{ reserva.creacion }}</td>
-                                    <td>{{ reserva.fechaInicio ? reserva.fechaInicio|date('d/m/Y') : '' }}</td>
-                                    <td>{{ reserva.fechaFin ? reserva.fechaFin|date('d/m/Y') : '' }}</td>
+                                    <td>{{ reserva.creacion|date('d/m/Y') }}</td>
+                                    <td>{{ reserva.fechaInicio|date('d/m/Y')}}</td>
+                                    <td>{{ reserva.fechaFin|date('d/m/Y')}}</td>
                                     <td>{{ reserva.estado }}</td>
                                     <td>
                                         ${{ reserva.costoTotal|number_format(2, ',', '.') }}
