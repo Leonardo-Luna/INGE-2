@@ -61,17 +61,19 @@
                                                 <a href="{{ path('app_visualizar_cliente', {'id': user.id}) }}" class="btn btn-sm btn-info mx-1" title="Ver Detalles">
                                                     <i class="fas fa-eye"></i> Visualizar
                                                 </a>
-                                                <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-sm btn-warning mx-1" title="Editar Usuario">
-                                                    <i class="fas fa-edit"></i> Editar
-                                                </a>
+                                                {% if 'ROLE_GERENTE' not in user.roles or app.user.id == user.id %}
+                                                    <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-sm btn-warning mx-1" title="Editar Usuario">
+                                                        <i class="fas fa-edit"></i> Editar
+                                                    </a>
+                                                {% endif %}
                                             </div>
                                             {% if 'ROLE_GERENTE' not in user.roles %}
-                                            <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline mx-1" style="display:inline;">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
-                                                    <i class="fas fa-trash"></i> Eliminar
-                                                </button>
-                                            </form>
+                                                <form method="POST" action="{{ path('app_eliminar_usuario', {'id': user.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ user.email }}?');" class="d-inline mx-1" style="display:inline;">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Usuario">
+                                                        <i class="fas fa-trash"></i> Eliminar
+                                                    </button>
+                                                </form>
                                             {% endif %}
                                         </td>
                                     </tr>

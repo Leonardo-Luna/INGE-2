@@ -4,16 +4,31 @@
 
 {% block content %}
 
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
 <div class="container my-5">
     <h1 class="text-center display-4 fw-bold text-dark mb-5">Nuestras Sucursales</h1>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
         {% for sucursal in sucursales %}
             <div class="col">
-                <div class="card h-100 shadow-sm border-0 rounded-3">
+                <div class="card h-100 shadow-sm border-0 rounded-3 position-relative"> 
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title fw-semibold text-primary mb-2">{{ sucursal.nombre }}</h5>
+                        <div class="d-flex justify-content-between align-items-start mb-2"> 
+                            <h5 class="card-title fw-semibold text-primary mb-0 me-3">{{ sucursal.nombre }}</h5> 
+                            {# Ícono de tacho de basura visible SOLO para el GERENTE #}
+                            {% if is_granted('ROLE_GERENTE') %}
+                                <form method="post" action="{{ path('app_sucursal_delete', {'id': sucursal.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta sucursal? Esta acción no se puede deshacer y solo se eliminará si no tiene máquinas asociadas.');" class="ms-auto" style="z-index: 10;"> {# ms-auto para mover a la derecha y z-index #}
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sucursal.id) }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm p-1" title="Eliminar sucursal">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
                         <p class="card-text text-muted mb-3">{{ sucursal.direccion }}</p>
+                        {# El stretched-link ahora va SOLO en el enlace "Ver sucursal" #}
                         {% if is_granted('ROLE_GERENTE') %}
                             <a href="{{ path('app_administrar_sucursal', { id: sucursal.id }) }}" class="btn btn-outline-primary btn-sm mt-auto stretched-link">Ver sucursal</a>
                         {% else %}
@@ -61,6 +76,8 @@
         }
     </style>
     <link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+</head> {# Asegúrate de que Font Awesome esté en la sección <head> de tu base.html.twig #}
+{# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" /> #}
 {% endblock %}
 
 {% block javascripts %}
@@ -84,7 +101,7 @@
             .bindPopup('Sucursal {{ sucursal.nombre }}')
 
         {% endfor %}
-        
+
         });
     </script>
 

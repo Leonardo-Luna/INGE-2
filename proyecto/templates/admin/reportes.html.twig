@@ -1,0 +1,30 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Reportes y Estadísticas{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center display-4 fw-bold text-dark mb-5">Reportes y Estadísticas</h2>
+
+    <div class="row row-cols-1 g-4">
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <a href="{{ path('app_reportes_mas_alquiladas') }}" class="btn btn-outline-primary w-100 py-3 mb-3">
+                        <i class="bi bi-bar-chart-line-fill me-2"></i> Maquinarias más alquiladas
+                    </a>
+                    <a href="{{ path('app_reportes_mas_concurridas') }}" class="btn btn-outline-primary w-100 py-3 mb-3">
+                        <i class="bi bi-geo-alt-fill me-2"></i> Sucursales más concurridas
+                    </a>
+                    <a href="{{ path('app_reportes_mas_reservas') }}" class="btn btn-outline-primary w-100 py-3 mb-3">
+                        <i class="bi bi-star-fill me-2"></i> Clientes con más reservas
+                    </a>
+                    <a href="{{ path('app_reportes_finanzas') }}" class="btn btn-outline-primary w-100 py-3">
+                        <i class="bi bi-cash-coin me-2"></i> Reporte de Finanzas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -169,7 +169,7 @@ final class UsuariosController extends AbstractController
     
     }
 
-    #[Route('/administracion/usuarios', name: 'app_usuarios')]
+    #[Route('/administracion/lista-usuarios', name: 'app_lista_usuarios')]
     public function listarUsuarios(Request $request): Response
     {
         $users = $this->manager->getRepository(User::class)->findActiveUsers();

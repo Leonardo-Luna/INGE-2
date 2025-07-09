@@ -37,6 +37,7 @@
                                 <th>ID</th>
                                 <th>Cliente</th>
                                 <th>Máquina</th>
+                                <th>Fecha de creación</th>
                                 <th>Fecha Inicio</th>
                                 <th>Fecha Fin</th>
                                 <th>Estado</th>
@@ -54,6 +55,7 @@
                                     <td>
                                         {{ reserva.maquina ? reserva.maquina.nombre : 'N/A' }}
                                     </td>
+                                    <td>{{ reserva.creacion }}</td>
                                     <td>{{ reserva.fechaInicio ? reserva.fechaInicio|date('d/m/Y') : '' }}</td>
                                     <td>{{ reserva.fechaFin ? reserva.fechaFin|date('d/m/Y') : '' }}</td>
                                     <td>{{ reserva.estado }}</td>
