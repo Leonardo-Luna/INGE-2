@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Sucursal;
+use App\Repository\MaquinaRepository;
 use App\Services\MapService;
 use Symfony\Component\HttpFoundation\Request;
 final class SucursalController extends AbstractController
@@ -54,6 +55,37 @@ final class SucursalController extends AbstractController
 
         return $this->render('sucursal/nueva.html.twig', [
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/administracion/sucursal/{id}', name: 'app_sucursal_delete', methods: ['POST'])]
+    public function delete(
+        Request $request,
+        Sucursal $sucursal,
+        EntityManagerInterface $entityManager,
+        MaquinaRepository $maquinaRepository 
+    ): Response {
+        // CSRF Token Check (no se que chota es)
+        if ($this->isCsrfTokenValid('delete'.$sucursal->getId(), $request->request->get('_token'))) {
+
+            $hasAssociatedMachines = $maquinaRepository->countBySucursal($sucursal);
+
+            if ($hasAssociatedMachines > 0) {
+                // Hay máquinas asociadas, no se puede eliminar.
+                $this->addFlash('error', 'No se puede eliminar la sucursal porque tiene máquinas asociadas. Primero desvincule o elimine las máquinas.');
+                return $this->redirectToRoute('app_catalogo',['idSucursal' => $sucursal->getId()]);
+            }
+
+            $entityManager->remove($sucursal);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La sucursal se eliminó correctamente.');
+        } else {
+            $this->addFlash('error', 'Token CSRF inválido.');
+        }
+        $sucursales = $this->manager->getRepository(Sucursal::class)->findAll();
+        return $this->render('index/sucursales.html.twig', [
+            "sucursales" => $sucursales,
         ]);
     }
 
@@ -115,6 +147,4 @@ final class SucursalController extends AbstractController
             'form' => $form,
         ]);
     }
-
-
 }

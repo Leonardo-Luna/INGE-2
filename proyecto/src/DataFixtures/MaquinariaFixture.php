@@ -35,20 +35,20 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquinaS760->addImagen("fixtures/m/S760.png");
         $manager->persist($maquinaS760);
 
-        $maquina5070E = new Maquina();
-        $maquina5070E->setNombre("Tractor 5060E");
-        $maquina5070E->setMarca("John Deere");
-        $maquina5070E->setDescripcion("Motor John Deere de 60 hp, 3 cilindros.");
-        $maquina5070E->setCostoPorDia(10);
-        $maquina5070E->setAnio(2024);
-        $maquina5070E->setMinimoDias(30);
-        $maquina5070E->setTipo("Motor gasolero");
-        $maquina5070E->setReembolsoNormal(50);
-        $maquina5070E->setDiasReembolso(3);
-        $maquina5070E->setReembolsoPenalizado(10);
-        $maquina5070E->setUbicacion($sucursalMati);
-        $maquina5070E->addImagen("fixtures/m/5060E.png");
-        $manager->persist($maquina5070E);
+        $maquina5060E = new Maquina();
+        $maquina5060E->setNombre("Tractor 5060E");
+        $maquina5060E->setMarca("John Deere");
+        $maquina5060E->setDescripcion("Motor John Deere de 60 hp, 3 cilindros.");
+        $maquina5060E->setCostoPorDia(10);
+        $maquina5060E->setAnio(2024);
+        $maquina5060E->setMinimoDias(30);
+        $maquina5060E->setTipo("Motor gasolero");
+        $maquina5060E->setReembolsoNormal(50);
+        $maquina5060E->setDiasReembolso(3);
+        $maquina5060E->setReembolsoPenalizado(10);
+        $maquina5060E->setUbicacion($sucursalMati);
+        $maquina5060E->addImagen("fixtures/m/5060E.png");
+        $manager->persist($maquina5060E);
 
         $maquinaDB50 = new Maquina();
         $maquinaDB50->setNombre("Plantadora Grano Grueso DB50");

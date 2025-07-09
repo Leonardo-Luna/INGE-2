@@ -17,6 +17,7 @@ use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Entity\Cupon;
 
 final class ReservaController extends AbstractController
 {
@@ -281,7 +282,59 @@ final class ReservaController extends AbstractController
         $this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaInicio());
 
         return $this->redirectToRoute('app_mis_alquileres');
-    }   
+    }
+    
+    #[Route('/administracion/{id}/valorar', name: 'app_reserva_valorar')]
+    public function valorarAlquiler(
+        Reserva $alquiler, 
+        Request $request
+    ): Response {
+        if ($request->isMethod('POST')) {
+            $estrellas = $request->request->get('puntuacion'); // Obtén el valor del campo 'puntuacion' del formulario POST
+            $comentario = $request->request->get('comentario'); // Obtén el valor del campo 'comentario'
+
+            // Valida que 'estrellas' sea un número válido entre 1 y 5
+            if (!is_numeric($estrellas) || $estrellas < 1 || $estrellas > 5) {
+                $this->addFlash('error', 'La puntuación debe ser un número entre 1 y 5.');
+                // Renderiza la vista de nuevo para que el usuario corrija 
+                return $this->render('reserva/valorar.html.twig', [
+                    'alquiler' => $alquiler,
+                    // Pasar los valores que ya había ingresado para pre-rellenar
+                    'puntuacion_anterior' => $estrellas,
+                    'comentario_anterior' => $comentario,
+                ]);
+            }
+
+            // Obtener el usuario
+            /** @var User $userToRate */
+            $userToRate = $alquiler->getUsuario(); 
+
+            if (!$userToRate) {
+                $this->addFlash('error', 'No se pudo encontrar al usuario propietario de esta máquina para valorar.');
+                return $this->redirectToRoute('app_catalogo');
+            }
+
+            // --- Actualizar los puntos y cantidad de valoraciones del usuario ---
+            $userToRate->setValoracionTotal(
+                $userToRate->getValoracionTotal() + (int)$estrellas
+            );
+            $userToRate->setCantValoraciones(
+                $userToRate->getCantValoraciones() + 1
+            );
+            $this->manager->flush();
+            $this->mailService->EnviarComentario($comentario,$userToRate->getEmail(), $alquiler->getMaquina()->getNombre());
+            $this->addFlash('success', '¡Gracias por tu valoración!');
+            return $this->redirectToRoute('app_reservas');
+        }
+
+        // --- 3. Mostrar el formulario de valoración (GET) ---
+        return $this->render('reserva/valorar.html.twig', [
+            'alquiler' => $alquiler,
+            // pasa los valores anteriores si hubo un error en POST
+            'puntuacion_anterior' => $request->request->get('puntuacion'),
+            'comentario_anterior' => $request->request->get('comentario'),
+        ]);
+    }
 
     #[Route('/reservas/{id}/error', name: 'app_reserva_error')]
     public function reservaError(int $id): Response {
@@ -331,6 +384,59 @@ final class ReservaController extends AbstractController
         $this->manager->flush();
         return new Response('Webhook procesado', Response::HTTP_OK);
 }
+ 
+#[Route('/aplicar-cupon', name: 'aplicar_cupon', methods: ['POST'])]
+    public function aplicarCupon(Request $request): JsonResponse
+    {   $data = json_decode($request->getContent(), true);
+        $codigo = $data['codigo'] ?? null;
+        $id = $data['id'] ?? null;
+        $cupon = $this->manager->getRepository(Cupon::class)->findOneBy(['codigo' => $codigo]);  
+        if (!$cupon) {
+            return new JsonResponse(['mensaje' => 'Código inválido'], 203);
+        }
+       $reserva= $this->manager->getRepository(Reserva::class)->findOneById($id);
+        // Aca se puede comprobar que haber tomado la decision de expresar el reembolso en cantidad por dia fue mala idea (mia btw).
+        // Dado que si refactorizo ese codigo voy a romper absolutamente todo, vamos a seguir con la deuda tecnica con las siguientes cuentas matematicas :)
+
+        $mulNormal = $reserva->getMontoReembolso() / $reserva->getCostoTotal();
+        $mulPenalizado = $reserva->getReembolsoPenalizado() / $reserva->getCostoTotal();
+        $reserva->setMontoReembolso( $reserva->getMontoReembolso() -  $cupon->getMonto() * $mulNormal);
+        $reserva->setReembolsoPenalizado( $reserva->getReembolsoPenalizado() -  $cupon->getMonto() * $mulPenalizado);
+        $reserva->setCostoTotal($reserva->getCostoTotal() - $cupon->getMonto());
+
+        if ($reserva->getMontoReembolso()< 0){
+            $reserva->setMontoReembolso(0);
+        }
+        if ($reserva->getReembolsoPenalizado()< 0){
+            $reserva->setMontoReembolso(0);
+        }
+        if ($reserva->getCostoTotal()< 0){
+            $reserva->setCostoTotal(0);
+        }
+        
+        $this->manager->remove($cupon);
+        $this->manager->flush();
+        
+        
+        return new JsonResponse(['mensaje' => 'Cupón aplicado: ' . $codigo,
+                                'reserva' => $reserva]);
+    }
+
+#[Route('/administracion/devolverMaquinaria/{id}', name: 'app_devolver_maquinaria', methods: ['GET', 'POST'])]
+    public function devolverMaquinaria(Request $request, int $id): Response
+    {   
+        $reserva = $this->manager->getRepository(Reserva::class)->findOneBy(['id' => $id]);
+        $maquina = $reserva->getMaquina();
+        $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
+        $reserva->setEstado($estado);
+        $maquina->setEnReparacion(1);
+
+        $this->manager->flush();
+
+        return $this->redirectToRoute('app_reserva_valorar', ['reserva' => $reserva, 'id' => $reserva->getId()]);
+
+    }
+
 
 
 
