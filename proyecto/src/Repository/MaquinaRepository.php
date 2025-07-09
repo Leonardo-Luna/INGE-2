@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Maquina;
+use App\Entity\Sucursal;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -88,4 +89,19 @@ class MaquinaRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * Cuenta el número de máquinas asociadas a una sucursal específica.
+     *
+     * @param Sucursal $sucursal La entidad Sucursal a buscar.
+     * @return int El número de máquinas asociadas.
+     */
+    public function countBySucursal(Sucursal $sucursal): int
+    {
+        return $this->createQueryBuilder('m') // 'm' es el alias para la entidad Maquina
+            ->select('COUNT(m.id)')           
+            ->andWhere('m.ubicacion = :sucursal') 
+            ->setParameter('sucursal', $sucursal) 
+            ->getQuery()                      
+            ->getSingleScalarResult();        // Ejecuta la consulta y devuelve un único resultado escalar (el conteo)
+    }
 }

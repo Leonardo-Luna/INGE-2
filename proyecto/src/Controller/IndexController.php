@@ -26,14 +26,18 @@ final class IndexController extends AbstractController
         return $this->render('index/sucursales.html.twig', [
             "sucursales" => $sucursales,
         ]);
-    }
+    }    
 
-    #[Route('/catalogo', name: 'app_catalogo', methods: ['GET'])]
-    public function catalogo(Request $request): Response {
+    #[Route('/catalogo/{idSucursal}', name: 'app_catalogo', requirements: ['id' => '\d+'], defaults: ['id' => null])]
+    public function catalogoPorSucursal(Request $request, ?int $idSucursal = null): Response {
         $search = $request->query->get('search');
         $disponibilidad = $request->query->get('disponibilidad');
         $tipo = $request->query->get('tipo');
         $sucursalId = $request->query->get('sucursal');
+        
+        if ($idSucursal) {
+            $sucursalId = $idSucursal;
+        }
 
         $maquinas = $this->manager->getRepository(Maquina::class)->findFiltered(
             $search,
@@ -56,6 +60,7 @@ final class IndexController extends AbstractController
             'maquinas' => $maquinas,
             'tipos_maquina' => $tiposMaquina,
             'sucursales_list' => $sucursalesList,
+            'current_sucursal_id' => $sucursalId ? (int)$sucursalId : null,
         ]);
     }
 

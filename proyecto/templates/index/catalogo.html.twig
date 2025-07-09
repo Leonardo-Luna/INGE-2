@@ -133,7 +133,10 @@
                 <select class="form-select" id="sucursal" name="sucursal">
                     <option value="">Todas</option>
                     {% for sucursal_obj in sucursales_list %}
-                        <option value="{{ sucursal_obj.id }}" {% if app.request.query.get('sucursal') == sucursal_obj.id %}selected{% endif %}>{{ sucursal_obj.nombre }}</option>
+                        {# CAMBIO: Usamos 'current_sucursal_id' para pre-seleccionar #}
+                        <option value="{{ sucursal_obj.id }}" {% if current_sucursal_id is not null and current_sucursal_id == sucursal_obj.id %}selected{% endif %}>
+                            {{ sucursal_obj.nombre }}
+                        </option>
                     {% endfor %}
                 </select>
             </div>
