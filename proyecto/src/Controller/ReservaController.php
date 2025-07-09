@@ -322,16 +322,15 @@ final class ReservaController extends AbstractController
                 $userToRate->getCantValoraciones() + 1
             );
             $this->manager->flush();
-
+            $this->mailService->EnviarComentario($comentario,$userToRate->getEmail(), $alquiler->getMaquina()->getNombre());
             $this->addFlash('success', '¡Gracias por tu valoración!');
-            // Redirige a la página de la máquina o a donde quieras después de la valoración
             return $this->redirectToRoute('app_reservas');
         }
 
         // --- 3. Mostrar el formulario de valoración (GET) ---
         return $this->render('reserva/valorar.html.twig', [
             'alquiler' => $alquiler,
-            // Puedes pasar aquí los valores anteriores si hubo un error en POST
+            // pasa los valores anteriores si hubo un error en POST
             'puntuacion_anterior' => $request->request->get('puntuacion'),
             'comentario_anterior' => $request->request->get('comentario'),
         ]);
