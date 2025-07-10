@@ -19,12 +19,12 @@
         <div class="mb-4">
           <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
           <p class="mb-1"><strong>DNI:</strong> {{ user.dni }}</p>
-          <p class="mb-1"><strong>Valoración:</strong> {{ user.valoracion_total / user.cant_valoraciones }}</p>
+          <p class="mb-1"><strong>Valoración:</strong> {{ user.valoracionTotal / user.cantValoraciones }}</p>
         </div>
 
         <div class="mt-4">
           {% if 'ROLE_CLIENTE' in user.roles %}
-            <p class="mb-1"><strong>Valoración:</strong> {{ user.valoracion_total / user.cant_valoraciones }}</p>
+            <p class="mb-1"><strong>Valoración:</strong> {{ user.valoracionTotal / user.cantValoraciones }}</p>
             <div class="border rounded p-3 mb-3 bg-light">
               <p class="text-secondary mb-3">Gestionar</p>
               <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn btn-primary me-2 mb-2 d-none">Reservas</a>
