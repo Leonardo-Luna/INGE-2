@@ -35,11 +35,6 @@
                     {{ form_widget(form.dni, {'attr': {'class': 'form-control', 'placeholder': 'Ingrese el DNI'}}) }}
                     {{ form_errors(form.dni) }}
                 </div>
-                <div class="form-group mb-3">
-                    {{ form_label(form.fechaNacimiento, null, {'label': 'Fecha de Nacimiento', 'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.fechaNacimiento, {'attr': {'class': 'form-control', 'placeholder': 'Seleccione la fecha de nacimiento', 'type': 'date'}}) }}
-                    {{ form_errors(form.fechaNacimiento) }}
-                </div>
                 {{ form_rest(form) }}
                 <div class="mt-4 d-flex justify-content-between">
                     <button type="submit" class="btn btn-success">

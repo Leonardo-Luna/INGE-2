@@ -7,6 +7,7 @@ use App\Entity\Rol;
 use App\Entity\User;
 use App\Form\EditarUsuarioType;
 use App\Form\RegistrarClienteType;
+use App\Form\EditarMiUsuarioType;
 use App\Form\RegistrarEmpleadoType;
 use App\Repository\RolRepository;
 use App\Services\MailService;
@@ -178,20 +179,69 @@ final class UsuariosController extends AbstractController
             "users" => $users,
         ]);
     }
+
+    #[Route('/mi-perfil/editar', name: 'app_editar_mi_perfil')]
+    public function EditarPerfilPropio(Request $request): Response
+    {
+        $user = $this->getUser();
+
+        if(!$user) {
+            $this->addFlash('error', 'Debe iniciar sesión para editar su perfil.');
+            return $this->redirectToRoute('app_login'); 
+        }
+
+        if($user->isEliminado()) {
+            $this->addFlash('error', 'El usuario se encuentra eliminado y no puede ser editado.');
+            return $this->redirectToRoute('app_login'); 
+        }
+
+        #Si el usuario es gerente, no puede editar
+        $rolGerente = $this->rolesRepository->find(Rol::GERENTE);
+        if(in_array($rolGerente->getNombre(), $user->getRoles())) {
+            $this->addFlash('error', 'No puede editar un usuario con rol de gerente.');
+            return $this->redirectToRoute('app_perfil'); 
+        }
+
+        $form = $this->createForm(EditarMiUsuarioType::class, $user);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+            if($verificarExistencia && $verificarExistencia->getId() != $user->getId()) { # Si existe otro usuario con el mismo email y no es el mismo usuario
+                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
+                return $this->redirectToRoute('app_editar_mi_perfil'); 
+            }
+            $this->manager->flush();
+            $this->addFlash('success', 'Perfil editado exitosamente.');
+            return $this->redirectToRoute('app_perfil'); 
+        }
+
+        return $this->render('usuarios/editar-mi-perfil.html.twig', [
+            'form' => $form,
+            'user' => $user,
+        ]);
+    }
   
-    #[Route('/administracion/usuarios/editar/{id}', name: 'app_listar_usuarios')]
+    #[Route('/administracion/usuarios/editar/{id}', name: 'app_editar_usuario')]
     public function EditarUsuario(int $id, Request $request): Response
     {
         $user = $this->manager->getRepository(User::class)->find($id);
 
         if(!$user) {
             $this->addFlash('error', 'El usuario no existe.');
-            return $this->redirectToRoute('app_usuarios'); 
+            return $this->redirectToRoute('app_lista_usuarios'); 
         }
 
         if($user->isEliminado()) {
             $this->addFlash('error', 'El usuario se encuentra eliminado y no puede ser editado.');
-            return $this->redirectToRoute('app_usuarios'); 
+            return $this->redirectToRoute('app_lista_usuarios'); 
+        }
+
+        #Si el usuario es gerente, no puede editar
+        $rolGerente = $this->rolesRepository->find(Rol::GERENTE);
+        if(in_array($rolGerente->getNombre(), $user->getRoles())) {
+            $this->addFlash('error', 'No puede editar un usuario con rol de gerente.');
+            return $this->redirectToRoute('app_lista_usuarios'); 
         }
 
         $form = $this->createForm(EditarUsuarioType::class, $user);
@@ -201,11 +251,18 @@ final class UsuariosController extends AbstractController
             $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
             if($verificarExistencia&& $verificarExistencia->getId() != $id) { # Si existe otro usuario con el mismo email y no es el mismo usuario
                 $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
-                return $this->redirectToRoute('app_listar_usuarios', ['id' => $id]); 
+                return $this->redirectToRoute('app_editar_usuario', ['id' => $id]); 
+            }
+            $nacimiento = $user->getFechaNacimiento();
+            $hoy = new \DateTime();
+            $edad = $hoy->diff($nacimiento)->y;
+            if ($edad < 18) {
+                $this->addFlash('error', 'No se pudo editar la fecha de nacimiento del usuario, debe ser mayor de 18 años para tener una cuenta en el sistema.');
+                return $this->redirectToRoute('app_editar_usuario', ['id' => $id]);
             }
             $this->manager->flush();
             $this->addFlash('success', 'Usuario editado exitosamente.');
-            return $this->redirectToRoute('app_usuarios'); 
+            return $this->redirectToRoute('app_editar_usuarios'); 
         }
 
         return $this->render('usuarios/editar-cliente.html.twig', [
