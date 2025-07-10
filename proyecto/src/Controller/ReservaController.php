@@ -379,11 +379,28 @@ final class ReservaController extends AbstractController
         $reserva->setEstado($estado);
         $maquina->setEnReparacion(1);
          $this->manager->persist($reserva);
-          $this->manager->persist($maquina);
-
+        $this->manager->persist($maquina);
         $this->manager->flush();
 
         return $this->redirectToRoute('app_valorar_alquiler', ['reserva' => $reserva]);
+
+    }
+
+#[Route('/administracion/entregarMaquinaria/{id}', name: 'app_entregar_maquinaria', methods: ['GET', 'POST'])]
+    public function entregarMaquinaria(Request $request, int $id): Response
+    {   
+        $reserva = $this->manager->getRepository(Reserva::class)->findOneBy(['id' => $id]);
+        $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
+        $reserva->setEstado($estado);
+        $this->manager->persist($reserva);
+
+
+        $this->manager->flush();
+        $reservas = $this->manager->getRepository(Reserva::class)->findAll();
+        $this->addFlash('success', 'Maquina entregada correctamente.');
+        return $this->render('reserva/listar-todas.html.twig', [
+            "reservas" => $reservas,
+        ]);
 
     }
 

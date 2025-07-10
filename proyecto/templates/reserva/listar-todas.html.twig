@@ -64,13 +64,18 @@
                                 
                             {% endif %}
                         </div>
-                         {% if reserva.estado|lower in ['en_curso'] %}
+                         {% if reserva.fechaFin|date('d-m-Y')  == 'now'|date('d-m-Y') and reserva.estado|lower in ['en_curso'] %}
                         <a href="{{ path('app_devolver_maquinaria', {'id': reserva.id}) }}" class="btn-recibir">
                                     <i ></i> Recibir Maquinaria
                                     
                                  </a>
                         {% endif %}
-                    </div>
+                        {% if reserva.fechaInicio|date('d-m-Y')  == 'now'|date('d-m-Y') and  reserva.estado|lower in ['aprobado'] %}
+                        <a href="{{ path('app_entregar_maquinaria', {'id': reserva.id}) }}" class="btn-recibir">
+                        <i ></i> Entregar Maquinaria          
+                        </a>        
+                        {% endif %}
+                    </div>                    
                 </div>
             {% endfor %}
         </div>
