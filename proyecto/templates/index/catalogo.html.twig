@@ -161,6 +161,7 @@
     {# Grid principal para las máquinas #}
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for maquina in maquinas %}
+            {% if not maquina.enReparacion %}
             <div class="col">
                 <div class="card h-100 shadow-sm">
                     {# Contenedor de la imagen - Clickable para redirigir #}
@@ -173,11 +174,8 @@
                             <img src="https://placehold.co/600x400/DDDDDD/555555?text=Sin+Imagen" class="card-img-top" alt="Sin imagen de {{ maquina.nombre }}">
                         {% endif %}
                         {# Indicador de estado "En Reparación" o "Disponible" #}
-                        {% if maquina.enReparacion %}
-                            <span class="badge bg-danger badge-absolute">En Reparación</span>
-                        {% else %}
-                            <span class="badge bg-success badge-absolute">Disponible</span>
-                        {% endif %}
+                        <span class="badge bg-success badge-absolute">Disponible</span>
+                        
                     </a>
 
                     <div class="card-body d-flex flex-column">
@@ -200,6 +198,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         {% else %}
             {# Mensaje si no hay máquinas para mostrar #}
             <div class="col-12 text-center py-5 text-muted fs-5">
