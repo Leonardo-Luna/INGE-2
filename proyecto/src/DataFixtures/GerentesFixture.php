@@ -19,7 +19,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
     {
         $rolGerente = $manager->getRepository(Rol::class)->find(Rol::GERENTE)->getNombre();
         $rolAutenticado = $manager->getRepository(Rol::class)->find(Rol::AUTENTICADO)->getNombre();
-        $rolCilente = $manager->getRepository(Rol::class)->find(Rol::CLIENTE)->getNombre();
+        $rolEmpleado = $manager->getRepository(Rol::class)->find(Rol::EMPLEADO)->getNombre();
         
         $gerenteLuigi = new User();
         $gerenteLuigi->setNombre("Luigi");
@@ -43,15 +43,18 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteMario->setFechaNacimiento(new DateTime('01/01/2000'));
         $manager->persist($gerenteMario);
 
-        // $testingLeo = new User();
-        // $testingLeo->setNombre("Leo");
-        // $testingLeo->setApellido("Luna");
-        // $testingLeo->setDni("12345678");
-        // $testingLeo->setEmail("lunaleonardo031@gmail.com");
-        // $testingLeo->setPassword($this->passwordHasher->hashPassword($testingLeo, "abc123"));
-        // $testingLeo->addRole($rolAutenticado);
-        // $testingLeo->addRole($rolCilente);
-        // $manager->persist($testingLeo);
+        //Empleado para testear
+        //Podria estar en otro fixture
+        $testingLeo = new User();
+        $testingLeo->setNombre("Leo");
+        $testingLeo->setApellido("Luna");
+        $testingLeo->setDni("12345678");
+        $testingLeo->setEmail("lunaleonardo031@gmail.com");
+        $testingLeo->setPassword($this->passwordHasher->hashPassword($testingLeo, "abc123"));
+        $testingLeo->addRole($rolAutenticado);
+        $testingLeo->addRole($rolEmpleado);
+        $testingLeo->setFechaNacimiento(new DateTime('01/01/2000'));
+        $manager->persist($testingLeo);
 
         $manager->flush();
     }

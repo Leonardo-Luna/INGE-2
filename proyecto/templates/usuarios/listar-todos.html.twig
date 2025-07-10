@@ -64,7 +64,7 @@
                                                 {# Banco mas que sea asi pero la regla dice que no se puede editar los datos de UN gerente, podemos ver si lo podemos cambiar a de OTRO gerente
                                                 {% if 'ROLE_GERENTE' not in user.roles or app.user.id == user.id %}#}
                                                 {% if 'ROLE_GERENTE' not in user.roles%}
-                                                    <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-sm btn-warning mx-1" title="Editar Usuario">
+                                                    <a href="{{ path('app_editar_usuario', {'id': user.id}) }}" class="btn btn-sm btn-warning mx-1" title="Editar Usuario">
                                                         <i class="fas fa-edit"></i> Editar
                                                     </a>
                                                 {% endif %}

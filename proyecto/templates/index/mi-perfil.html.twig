@@ -19,6 +19,9 @@
         <div class="mb-4">
           <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
           <p class="mb-1"><strong>DNI:</strong> {{ user.dni }}</p>
+          {% if 'ROLE_CLIENTE' in user.roles %}
+            <p class="mb-1"><strong>Valoración:</strong> {{ user.valoracionTotal / user.cantValoraciones }} ★</p>
+          {% endif %}
         </div>
 
         <div class="row g-3">
@@ -38,7 +41,9 @@
               <div class="card-body">
                 <p class="text-secondary fs-5 mb-3">Modificar datos</p>
                 <a href="{{ path('app_reset_password') }}" class="btn btn-primary mb-2">Cambiar contraseña</a>
-                <a href="{{ path('app_listar_usuarios', {'id': user.id}) }}" class="btn btn-primary mb-2">Editar perfil</a>
+                {% if 'ROLE_GERENTE' not in app.user.roles %}
+                <a href="{{ path('app_editar_mi_perfil') }}" class="btn btn-primary mb-2">Editar perfil</a>
+                {% endif %}
               </div>
             </div>
           </div>

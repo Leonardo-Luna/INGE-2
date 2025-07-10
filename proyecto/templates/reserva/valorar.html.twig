@@ -1,0 +1,196 @@
+{#Cada dia odio mas JS#}
+
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Valorar Alquiler{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Valorar Alquiler: {{ alquiler.maquina.nombre }}</h1>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="card p-4">
+            <div class="row align-items-stretch"> 
+
+                {# Columna Izquierda: Imagen de la máquina #}
+                <div class="col-lg-5 col-md-6 mb-4 d-flex"> 
+                    <div class="main-image-container flex-grow-1"> 
+                        {% if alquiler.maquina.imagenes is not empty %}
+                            <img src="{{ asset('images/' ~ alquiler.maquina.imagenes[0]) }}" class="main-product-image" alt="{{ alquiler.maquina.nombre }}">
+                        {% else %}
+                            <i class="fas fa-image fa-7x placeholder-icon d-flex justify-content-center align-items-center h-100"></i>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Columna Derecha: Información de la máquina y Formulario de Valoración #}
+                <div class="col-lg-7 col-md-6"> 
+                    <hr class="d-md-none"> {# Divisor visible solo en pantallas pequeñas #}
+                    
+                    <h3 class="mb-3">Tu Valoración</h3>
+                    <form action="{{ path('app_reserva_valorar', {'id': alquiler.id}) }}" method="POST" id="valoracionForm">
+                        <div class="mb-3">
+                            <label for="puntuacion" class="form-label">Puntuación:</label>
+                            <div class="rating" id="ratingStars">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+                            <input type="hidden" name="puntuacion" id="puntuacion" value="{{ puntuacion_anterior|default('') }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="comentario" class="form-label">Comentario <span id="comentarioObligatorioText" class="text-danger small" style="display:none;">(Obligatorio)</span>:</label>
+                            <textarea class="form-control" id="comentario" name="comentario" rows="4">{{ comentario_anterior|default('') }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Enviar Valoración</button>
+                    </form>
+                </div>
+
+            </div> 
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.rating .star');
+            const puntuacionInput = document.getElementById('puntuacion');
+            const comentarioTextarea = document.getElementById('comentario');
+            const comentarioObligatorioText = document.getElementById('comentarioObligatorioText');
+            const valoracionForm = document.getElementById('valoracionForm');
+
+            function updateStars(selectedValue) {
+                stars.forEach(star => {
+                    if (star.dataset.value <= selectedValue) {
+                        star.classList.add('selected');
+                    } else {
+                        star.classList.remove('selected');
+                    }
+                });
+                checkComentarioObligatorio(selectedValue);
+            }
+
+            function checkComentarioObligatorio(selectedValue) {
+                if (parseInt(selectedValue) <= 3 && selectedValue !== '') {
+                    comentarioTextarea.setAttribute('required', 'required');
+                    comentarioObligatorioText.style.display = 'inline';
+                } else {
+                    comentarioTextarea.removeAttribute('required');
+                    comentarioObligatorioText.style.display = 'none';
+                }
+            }
+
+            const initialPuntuacion = puntuacionInput.value;
+            if (initialPuntuacion) {
+                updateStars(parseInt(initialPuntuacion));
+            } else {
+                checkComentarioObligatorio('');
+            }
+
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const selectedValue = this.dataset.value;
+                    puntuacionInput.value = selectedValue;
+                    updateStars(selectedValue);
+                });
+
+                star.addEventListener('mouseover', function() {
+                    const hoverValue = this.dataset.value;
+                    stars.forEach(s => {
+                        if (s.dataset.value <= hoverValue) {
+                            s.classList.add('hover');
+                        } else {
+                            s.classList.remove('hover');
+                        }
+                    });
+                });
+
+                star.addEventListener('mouseout', function() {
+                    stars.forEach(s => s.classList.remove('hover'));
+                });
+            });
+
+            valoracionForm.addEventListener('submit', function(event) {
+                if (puntuacionInput.value === '') {
+                    alert('Por favor, selecciona una puntuación.');
+                    event.preventDefault();
+                    return;
+                }
+                if (comentarioTextarea.hasAttribute('required') && comentarioTextarea.value.trim() === '') {
+                    alert('Por favor, ingresa un comentario, ya que la puntuación es baja.');
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .rating {
+            font-size: 2.5em;
+            color: #ddd;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .rating .star {
+            transition: color 0.2s ease-in-out;
+            padding: 0 2px;
+        }
+        .rating .star.selected {
+            color: #ffc107;
+        }
+        .rating .star.hover {
+            color: #ffda6a;
+        }
+
+        /* Estilos para que la imagen ocupe la totalidad de la columna izquierda */
+        /* Apply align-items-stretch to the row to make columns equal height */
+        .row.align-items-stretch {
+            display: flex; /* Ensures flex behavior */
+        }
+
+        /* Adjust column padding for full-width image */
+        .col-lg-5.col-md-6 { /* Target both screen sizes */
+            padding-right: 0; /* Remove padding on the right side of the image column */
+            padding-left: 0;  /* Remove padding on the left side of the image column */
+        }
+
+        .main-image-container {
+            width: 100%;
+            height: 100%; /* Make it fill the height of its parent (the column) */
+            overflow: hidden; /* Crucial for clipping the image if it exceeds container bounds */
+            border-radius: 8px 0 0 8px; /* Rounded border on the left side only */
+            display: flex; /* For centering the placeholder */
+            justify-content: center; /* Center placeholder horizontally */
+            align-items: center; /* Center placeholder vertically */
+            background-color: #f0f0f0; /* Background for when image is missing/loading */
+        }
+
+        .main-product-image {
+            width: 100%; /* Image fills 100% width of its container */
+            height: 100%; /* Image fills 100% height of its container */
+            display: block; /* Removes extra space below image */
+            object-fit: cover; /* **KEY:** Image covers the entire area, cropping if necessary */
+        }
+
+        .placeholder-icon {
+            color: #aaa;
+        }
+
+        .card {
+            overflow: hidden; /* Important for border-radius to work correctly with no-padding columns */
+        }
+    </style>
+{% endblock %}

@@ -5,13 +5,12 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class EditarUsuarioType extends AbstractType
+class EditarMiUsuarioType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -45,15 +44,6 @@ class EditarUsuarioType extends AbstractType
             ->add('apellido', TextType::class, [
                 'required' => false,
                 'empty_data' => $user->getApellido(),
-            ])
-            ->add('fechaNacimiento', DateType::class, [
-                'required' => false,
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Seleccione la fecha de nacimiento',
-                    'title' => 'La fecha debe tener el formato AAAA-MM-DD',
-                ],
             ]);
     }
 
