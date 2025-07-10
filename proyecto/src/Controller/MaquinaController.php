@@ -131,5 +131,15 @@ final class MaquinaController extends AbstractController
         }
     }
 
+    #[Route('/administracion/listar-maquinaria', name: 'app_listar_maquinaria')]
+    public function listarMaquinaria(): Response
+    {
+        $maquinas = $this->entityManager->getRepository(Maquina::class)->findAll();
+
+        return $this->render('maquina/listar.html.twig', [
+            'maquinas' => $maquinas,
+        ]);
+    }
+
    
 }
