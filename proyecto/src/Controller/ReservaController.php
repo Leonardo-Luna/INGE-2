@@ -282,7 +282,59 @@ final class ReservaController extends AbstractController
         $this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaInicio());
 
         return $this->redirectToRoute('app_mis_alquileres');
-    }   
+    }
+    
+    #[Route('/administracion/{id}/valorar', name: 'app_reserva_valorar')]
+    public function valorarAlquiler(
+        Reserva $alquiler, 
+        Request $request
+    ): Response {
+        if ($request->isMethod('POST')) {
+            $estrellas = $request->request->get('puntuacion'); // Obtén el valor del campo 'puntuacion' del formulario POST
+            $comentario = $request->request->get('comentario'); // Obtén el valor del campo 'comentario'
+
+            // Valida que 'estrellas' sea un número válido entre 1 y 5
+            if (!is_numeric($estrellas) || $estrellas < 1 || $estrellas > 5) {
+                $this->addFlash('error', 'La puntuación debe ser un número entre 1 y 5.');
+                // Renderiza la vista de nuevo para que el usuario corrija 
+                return $this->render('reserva/valorar.html.twig', [
+                    'alquiler' => $alquiler,
+                    // Pasar los valores que ya había ingresado para pre-rellenar
+                    'puntuacion_anterior' => $estrellas,
+                    'comentario_anterior' => $comentario,
+                ]);
+            }
+
+            // Obtener el usuario
+            /** @var User $userToRate */
+            $userToRate = $alquiler->getUsuario(); 
+
+            if (!$userToRate) {
+                $this->addFlash('error', 'No se pudo encontrar al usuario propietario de esta máquina para valorar.');
+                return $this->redirectToRoute('app_catalogo');
+            }
+
+            // --- Actualizar los puntos y cantidad de valoraciones del usuario ---
+            $userToRate->setValoracionTotal(
+                $userToRate->getValoracionTotal() + (int)$estrellas
+            );
+            $userToRate->setCantValoraciones(
+                $userToRate->getCantValoraciones() + 1
+            );
+            $this->manager->flush();
+            $this->mailService->EnviarComentario($comentario,$userToRate->getEmail(), $alquiler->getMaquina()->getNombre());
+            $this->addFlash('success', '¡Gracias por tu valoración!');
+            return $this->redirectToRoute('app_reservas');
+        }
+
+        // --- 3. Mostrar el formulario de valoración (GET) ---
+        return $this->render('reserva/valorar.html.twig', [
+            'alquiler' => $alquiler,
+            // pasa los valores anteriores si hubo un error en POST
+            'puntuacion_anterior' => $request->request->get('puntuacion'),
+            'comentario_anterior' => $request->request->get('comentario'),
+        ]);
+    }
 
     #[Route('/reservas/{id}/error', name: 'app_reserva_error')]
     public function reservaError(int $id): Response {
@@ -370,7 +422,7 @@ final class ReservaController extends AbstractController
                                 'reserva' => $reserva]);
     }
 
-#[Route('/devolverMaquinaria/{id}', name: 'app_devolver_maquinaria', methods: ['GET', 'POST'])]
+#[Route('/administracion/devolverMaquinaria/{id}', name: 'app_devolver_maquinaria', methods: ['GET', 'POST'])]
     public function devolverMaquinaria(Request $request, int $id): Response
     {   
         $reserva = $this->manager->getRepository(Reserva::class)->findOneBy(['id' => $id]);
@@ -378,12 +430,10 @@ final class ReservaController extends AbstractController
         $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
         $reserva->setEstado($estado);
         $maquina->setEnReparacion(1);
-         $this->manager->persist($reserva);
-          $this->manager->persist($maquina);
 
         $this->manager->flush();
 
-        return $this->redirectToRoute('app_valorar_alquiler', ['reserva' => $reserva]);
+        return $this->redirectToRoute('app_reserva_valorar', ['reserva' => $reserva, 'id' => $reserva->getId()]);
 
     }
 

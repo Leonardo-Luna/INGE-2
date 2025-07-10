@@ -19,6 +19,9 @@
         <div class="mb-4">
           <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
           <p class="mb-1"><strong>DNI:</strong> {{ user.dni }}</p>
+          {% if 'ROLE_CLIENTE' in user.roles %}
+            <p class="mb-1"><strong>Valoración:</strong> {{ user.valoracionTotal / user.cantValoraciones }} ★</p>
+          {% endif %}
         </div>
 
         <div class="row g-3">

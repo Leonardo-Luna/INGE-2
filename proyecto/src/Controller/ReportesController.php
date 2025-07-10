@@ -9,6 +9,7 @@ use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -81,12 +82,12 @@ final class ReportesController extends AbstractController
     public function finanzas(Request $request): Response
     {
         $form = $this->createFormBuilder()
-            ->add('fecha_inicio', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('fecha_inicio', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'Fecha de inicio',
                 'required' => true,
             ])
-            ->add('fecha_fin', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('fecha_fin', DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'Fecha de fin',
                 'required' => true,
