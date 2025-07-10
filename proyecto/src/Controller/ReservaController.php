@@ -51,7 +51,10 @@ final class ReservaController extends AbstractController
     public function alquileresHistorico(Request $request): Response
     {
         $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-        $alquileres = $this->manager->getRepository(Reserva::class)->findBy(['estado' => $estadoAprobado]);
+        $estadoEnCurso = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
+        $alquileres = $this->manager->getRepository(Reserva::class)->findBy([
+            'estado' => [$estadoAprobado, $estadoEnCurso]
+        ]);
 
         return $this->render('reserva/listar-alquileres-todos.html.twig', [
             "alquileres" => $alquileres,

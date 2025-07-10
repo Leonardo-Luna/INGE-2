@@ -45,30 +45,30 @@ class ReservaRepository extends ServiceEntityRepository
     //    }
     
     public function filtrarReservasPropias(User $user) {
-    
+
         $qb = $this->createQueryBuilder('r');
 
         $qb->select('r')
             ->where('r.usuario = :usuario')
-            ->andWhere($qb->expr()->neq('r.estado', ':estadoAprobada')) # NEQ = not equals
+            ->andWhere($qb->expr()->notIn('r.estado', ':estados')) // NOT IN = not in array
 
             ->setParameter('usuario', $user)
-            ->setParameter('estadoAprobada', 'APROBADO');
+            ->setParameter('estados', ['APROBADO', 'EN CURSO']);
 
         $query = $qb->getQuery();
         return $query->getResult();
     }
 
     public function filtrarAlquileresPropios(User $user) {
-    
+
         $qb = $this->createQueryBuilder('r');
 
         $qb->select('r')
             ->where('r.usuario = :usuario')
-            ->andWhere($qb->expr()->eq('r.estado', ':estadoAprobada')) # EQ = equals
-            
+            ->andWhere($qb->expr()->in('r.estado', ':estados')) // IN = in array
+
             ->setParameter('usuario', $user)
-            ->setParameter('estadoAprobada', 'APROBADO');
+            ->setParameter('estados', ['APROBADO', 'EN CURSO']);
 
         $query = $qb->getQuery();
         return $query->getResult();

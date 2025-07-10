@@ -117,7 +117,8 @@ final class MaquinaController extends AbstractController
     public function eliminarMaquina(Maquina $maquina)
     {
         $estadoAprobado = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
-        $tieneAlquileres = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoAprobado);
+        $estadoEnCurso = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
+        $tieneAlquileres = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoAprobado, $estadoEnCurso);
 
         if(!($tieneAlquileres)) {
             $this->entityManager->remove($maquina);

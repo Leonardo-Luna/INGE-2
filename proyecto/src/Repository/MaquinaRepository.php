@@ -77,14 +77,14 @@ class MaquinaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    public function tieneAlquileres(Maquina $maquina, string $estado)
+    public function tieneAlquileres(Maquina $maquina, string $estadoAprobada, string $estadoEnCurso)
     {
         return $this->createQueryBuilder('m')
             ->leftJoin('m.reservas', 'r')
             ->andWhere('m.id = :id')
-            ->andWhere('r.estado = :estado')
+            ->andWhere('r.estado IN :estados')
             ->setParameter('id', $maquina->getId())
-            ->setParameter('estado', $estado)
+            ->setParameter('estados', [$estadoAprobada, $estadoEnCurso])
             ->getQuery()
             ->getOneOrNullResult();
     }

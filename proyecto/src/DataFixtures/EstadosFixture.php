@@ -33,7 +33,7 @@ class EstadosFixture extends Fixture implements FixtureGroupInterface
         $manager->persist($estadoFinalizada);
 
         $estadoEnCurso = new EstadoReserva();
-        $estadoEnCurso->setEstado("EN_CURSO");
+        $estadoEnCurso->setEstado("EN CURSO");
         $estadoEnCurso->setDescripcion("Estado para los alquileres que no hayan finalizado.");
         $manager->persist($estadoEnCurso);
 
