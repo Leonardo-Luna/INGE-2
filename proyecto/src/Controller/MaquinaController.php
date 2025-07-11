@@ -126,7 +126,7 @@ final class MaquinaController extends AbstractController
         if($tieneEnCurso) {
             # Tirar error, la máquina no está en la sucursal, no se puede eliminar
 
-            $this->addFlash('error', 'No se puede eliminar esta máquina, todavía tiene alquileres vigentes.');
+            $this->addFlash('error', 'No se puede eliminar esta máquina, todavía tiene un alquiler en curso.');
             return $this->redirectToRoute('app_catalogo');
         }
 
