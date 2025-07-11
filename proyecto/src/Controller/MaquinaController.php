@@ -6,6 +6,7 @@ use App\Entity\EstadoReserva;
 use App\Entity\Reserva;
 use App\Entity\Maquina;
 use App\Form\MaquinaType;
+use App\Services\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 final class MaquinaController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $entityManager) { }
+    public function __construct(private EntityManagerInterface $entityManager,
+                                private MailService $mailService,) { }
 
     #[Route('/gerencia/maquina/nueva', name: 'app_maquina_nueva')]
     public function nueva(Request $request, SluggerInterface $slugger): Response
@@ -118,18 +120,31 @@ final class MaquinaController extends AbstractController
     {
         $estadoAprobado = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
         $estadoEnCurso = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
-        $tieneAlquileres = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoAprobado, $estadoEnCurso);
+        $tienePagos = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoAprobado);
+        $tieneEnCurso = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoEnCurso);
 
-        if(!($tieneAlquileres)) {
-            $this->entityManager->remove($maquina);
-            $this->entityManager->flush();
-            $this->addFlash('success', 'Máquina eliminada existosamente.');
-            return $this->redirectToRoute('app_catalogo');
-        }
-        else {
+        if($tieneEnCurso) {
+            # Tirar error, la máquina no está en la sucursal, no se puede eliminar
+
             $this->addFlash('error', 'No se puede eliminar esta máquina, todavía tiene alquileres vigentes.');
             return $this->redirectToRoute('app_catalogo');
         }
+
+        if($tienePagos) {
+            # Hacer los reembolsos y mostrar mensaje de éxito 
+            
+            foreach($tienePagos as $pago) {
+                # Enviar correo sobre el reembolso
+
+                $this->mailService->EnviarCancelacionSinCuponYSinPolitica($maquina->getNombre(), $pago->getCostoTotal(), $pago->getUsuario()->getEmail());
+            }
+        }
+
+        # Si no se cumple ningún caso, se elimina sin problema
+        $this->entityManager->remove($maquina);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Máquina eliminada existosamente.');
+        return $this->redirectToRoute('app_catalogo');
     }
 
    
