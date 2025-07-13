@@ -444,7 +444,7 @@ final class ReservaController extends AbstractController
     public function entregarMaquinaria(Request $request, int $id): Response
     {   
         $reserva = $this->manager->getRepository(Reserva::class)->findOneBy(['id' => $id]);
-        $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
+        $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
         $reserva->setEstado($estado);
         $this->manager->persist($reserva);
 
