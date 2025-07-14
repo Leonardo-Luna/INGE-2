@@ -7,6 +7,8 @@ use App\Entity\EstadoReserva;
 use App\Entity\Maquina;
 use App\Entity\Reserva;
 use App\Entity\User;
+
+use App\Entity\Cupon;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +19,6 @@ use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Entity\Cupon;
 
 final class ReservaController extends AbstractController
 {
@@ -59,6 +60,34 @@ final class ReservaController extends AbstractController
         return $this->render('reserva/listar-alquileres-todos.html.twig', [
             "alquileres" => $alquileres,
         ]);
+    }
+
+     #[Route('/reservas/eliminarIndisponibilidad/{id}', name: 'app_eliminar_indisponibilidad', methods: ['GET','POST'])]
+    public function eliminarReservaCuatro(Request $request, EntityManagerInterface $entityManager, int $id): Response
+    {
+        $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+        $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
+
+        $codigo = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $montoCupon = $reserva->getCostoTotal() * 0.15;
+        
+        $cupon = new Cupon();
+        $cupon->setCodigo($codigo);
+        $cupon->setMonto($montoCupon);
+
+        $monto = $reserva->getCostoTotal();
+
+        $usuario = $reserva->getUsuario();
+
+        $this->mailService->reembolsoCupon($monto, $usuario->getEmail(), $montoCupon, $cupon->getCodigo(), $reserva->getFechaInicio()->format('Y-m-d H:i:s'), $reserva->getMaquina()->getNombre());
+        
+        
+
+        $reserva->setEstado($estadoCancelada->getEstado());
+        $entityManager->flush();
+
+        $this->addFlash('error', 'Se canceló la reserva exitosamente.');
+        return $this->redirectToRoute('app_reservas');
     }
 
     #[Route('/reservas/eliminar', name: 'app_eliminar_reserva', methods: ['GET','POST'])]
@@ -422,7 +451,10 @@ final class ReservaController extends AbstractController
         
         
         return new JsonResponse(['mensaje' => 'Cupón aplicado: ' . $codigo,
-                                'reserva' => $reserva]);
+                                'reservaCosto' => $reserva->getCostoTotal(),
+                                 'descuento'=>$cupon->getMonto(),
+                                'reservaR1'=>$reserva->getMontoReembolso(),
+                                'reservaR2'=> $reserva->getReembolsoPenalizado()]);
     }
 
 #[Route('/administracion/devolverMaquinaria/{id}', name: 'app_devolver_maquinaria', methods: ['GET', 'POST'])]

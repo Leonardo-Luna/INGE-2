@@ -18,7 +18,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
     public function load(ObjectManager $manager): void
     {
         $usuarioPepe = $manager->getRepository(User::class)->findOneBy(['email' => 'pepe@gmail.com']);
-        $usuarioPipo = $manager->getRepository(User::class)->findOneBy(['email' => 'pipo@gmail.com']);
+        $usuarioPipo = $manager->getRepository(User::class)->findOneBy(['email' => 'matiterrone@gmail.com']);
         $tractor = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Tractor 5060E']);
         $cosechadora = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Cosechadora S760']);
         $plantadora = $manager->getRepository(Maquina::class)->findOneBy(['nombre' => 'Plantadora Grano Grueso DB50']);
