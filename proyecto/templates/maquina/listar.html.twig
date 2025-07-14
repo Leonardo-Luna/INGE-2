@@ -17,13 +17,13 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h1 class="mb-4">Listado de Maquinaria</h1>
-
+            {% if is_granted("ROLE_GERENTE") %}
             <div class="mb-4">
                 <a href="{{ path('app_maquina_nueva') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Agregar Nueva Máquina
                 </a>
             </div>
-
+            {% endif %}
             {% if maquinas is empty %}
                 <div class="alert alert-info text-center">
                     <p class="mb-0">No hay máquinas registradas en el sistema.</p>

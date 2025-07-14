@@ -3,6 +3,11 @@
 {% block title %}Seleccionar Reserva{% endblock %}
 
 {% block content %}
+{% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
 <div class="calendar-container">
   <h1>Reservar máquina: <span>{{ maquina.nombre }}</span></h1>
   <p class="calendar-info">Mínimo de días requeridos: <strong>{{ maquina.minimoDias }}</strong></p>
