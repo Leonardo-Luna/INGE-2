@@ -69,8 +69,18 @@
                                     </p>
                                     <div class="mt-auto">
                                         <a href="{{ path('app_maquina_show', {'id': maquina.id}) }}" class="btn btn-sm btn-info" title="Ver detalles">
-                                            <i class="fas fa-eye"></i> Ver
+                                            <i class="fas fa-eye"></i> Ver en catalogo
                                         </a>
+                                        {% if not maquina.enReparacion %}
+                                        <a href="{{ path('app_maquina_reparacion', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Marcar Reparacion">
+                                            <i class="fas fa-eye"></i> Marcar en reparacion
+                                        </a>
+                                        {% endif %}
+                                        {% if maquina.enReparacion %}
+                                        <a href="{{ path('app_maquina_reparacion', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Marcar Reparacion">
+                                            <i class="fas fa-eye"></i> Marcar disponible
+                                        </a>
+                                        {% endif %}
                                         {% if 'ROLE_GERENTE' in app.user.roles %}
                                             <a href="{{ path('app_maquina_show', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Editar máquina">
                                                 <i class="fas fa-edit"></i> Editar
