@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Cupon;
 use App\Entity\EstadoReserva;
 use App\Entity\Reserva;
 use App\Entity\Maquina;
@@ -122,21 +123,32 @@ final class MaquinaController extends AbstractController
         $estadoEnCurso = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
         $tienePagos = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoAprobado);
         $tieneEnCurso = $this->entityManager->getRepository(Maquina::class)->tieneAlquileres($maquina, $estadoEnCurso);
+        $estadoCancelada = $this->entityManager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
 
-        if($tieneEnCurso) {
-            # Tirar error, la máquina no está en la sucursal, no se puede eliminar
+        if($tieneEnCurso) { # Tirar error, la máquina no está en la sucursal, no se puede eliminar
 
             $this->addFlash('error', 'No se puede eliminar esta máquina, todavía tiene un alquiler en curso.');
-            return $this->redirectToRoute('app_catalogo');
+            return $this->redirectToRoute('app_listar_maquinaria');
         }
 
-        if($tienePagos) {
-            # Hacer los reembolsos y mostrar mensaje de éxito 
+        if($tienePagos) { # Hacer los reembolsos y mostrar mensaje de éxito 
             
-            foreach($tienePagos as $pago) {
+            foreach($tienePagos->getReservas() as $pago) {
                 # Enviar correo sobre el reembolso
 
-                $this->mailService->EnviarCancelacionSinCuponYSinPolitica($maquina->getNombre(), $pago->getCostoTotal(), $pago->getUsuario()->getEmail());
+                $montoCupon = $pago->getCostoTotal() * 0.15; # Variables temporales, a ojetes 2 no le gusta esto
+                $usuario = $pago->getUsuario();
+                $monto = $pago->getCostoTotal();
+                
+                $cupon = new Cupon();
+                $codigo = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                $cupon->setCodigo($codigo);
+                $cupon->setMonto($montoCupon);
+
+                $pago->setEstado($estadoCancelada->getEstado());
+                $this->entityManager->persist($cupon); # Se persiste cada cupón creado, por eso adentro del loop 🤓 
+
+                $this->mailService->reembolsoCupon($monto, $usuario->getEmail(), $montoCupon, $cupon->getCodigo(), $pago->getFechaInicio()->format('Y-m-d H:i:s'), $pago->getMaquina()->getNombre());
             }
         }
 
@@ -144,7 +156,7 @@ final class MaquinaController extends AbstractController
         $this->entityManager->remove($maquina);
         $this->entityManager->flush();
         $this->addFlash('success', 'Máquina eliminada existosamente.');
-        return $this->redirectToRoute('app_catalogo');
+        return $this->redirectToRoute('app_listar_maquinaria');
     }
 
     #[Route('/administracion/listar-maquinaria', name: 'app_listar_maquinaria')]

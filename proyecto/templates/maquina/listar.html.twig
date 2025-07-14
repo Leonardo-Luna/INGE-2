@@ -3,19 +3,20 @@
 {% block title %}Listado de Maquinaria - Alquil.AR{% endblock %}
 
 {% block content %}
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endfor %}
+
 <div class="container my-4">
     <div class="card shadow-sm">
         <div class="card-body">
             <h1 class="mb-4">Listado de Maquinaria</h1>
-
-            {% for type, messages in app.flashes %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                    </div>
-                {% endfor %}
-            {% endfor %}
 
             <div class="mb-4">
                 <a href="{{ path('app_maquina_nueva') }}" class="btn btn-primary">

@@ -75,14 +75,14 @@ final class ReservaController extends AbstractController
         $cupon->setCodigo($codigo);
         $cupon->setMonto($montoCupon);
 
+        $entityManager->persist($cupon);
+
         $monto = $reserva->getCostoTotal();
 
         $usuario = $reserva->getUsuario();
 
         $this->mailService->reembolsoCupon($monto, $usuario->getEmail(), $montoCupon, $cupon->getCodigo(), $reserva->getFechaInicio()->format('Y-m-d H:i:s'), $reserva->getMaquina()->getNombre());
         
-        
-
         $reserva->setEstado($estadoCancelada->getEstado());
         $entityManager->flush();
 
