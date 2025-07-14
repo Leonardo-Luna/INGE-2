@@ -472,7 +472,7 @@ final class ReservaController extends AbstractController
 
     }
 
-#[Route('/administracion/entregarMaquinaria/{id}', name: 'app_entregar_maquinaria', methods: ['GET', 'POST'])]
+    #[Route('/administracion/entregarMaquinaria/{id}', name: 'app_entregar_maquinaria', methods: ['GET', 'POST'])]
     public function entregarMaquinaria(Request $request, int $id): Response
     {   
         $reserva = $this->manager->getRepository(Reserva::class)->findOneBy(['id' => $id]);
