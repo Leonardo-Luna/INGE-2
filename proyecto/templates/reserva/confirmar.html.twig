@@ -35,14 +35,15 @@
                     {% else %}
                         <p><strong>Sin recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas)</strong></p>
                     {% endif %}
+                    <p id='cupon' hidden ><strong id='cuponText'>Sin recargo por valoración (cliente con {{ valoracionPromedio|number_format(1) }} estrellas)</strong></p>
 
-                    <p>
+                    <p >
                         <strong>Costo total:</strong>
-                        <span class="fs-4 fw-bold text-danger">${{ costoFinalDisplay|number_format(2, ',', '.') }}</span>
+                        <span id='total' class="fs-4 fw-bold text-danger">${{ costoFinalDisplay|number_format(2, ',', '.') }}</span>
                     </p>
 
-                    <p>Reembolso si cancelas antes del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.montoReembolso|number_format(2, ',', '.') }}</p>
-                    <p>Reembolso si cancelas después del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.reembolsoPenalizado|number_format(2, ',', '.') }}</p>
+                    <p id='R1'>Reembolso si cancelas antes del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.montoReembolso|number_format(2, ',', '.') }}</p>
+                    <p id='R2'>Reembolso si cancelas después del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.reembolsoPenalizado|number_format(2, ',', '.') }}</p>
                     <div name='flash' id="flashMessage" class="flash-message" hidden> Sadnjsdfndsjfkdns</div>
                     <form id="couponForm" class="mt-4">
                          <input type="text" name="codigo" id="codigo" class="form-control mb-2" placeholder="Código de cupón" required>
@@ -109,8 +110,9 @@
     })
     .then(res => res.json())
     .then(data => {
-        
-          mostrarFlash(data.mensaje, 'flashExito');
+        console.log(data)
+        mostrarAplicacionDeCupon(data.reservaCosto, data.descuento, data.reservaR1, data.reservaR2)  
+        mostrarFlash(data.mensaje, 'flashExito');
        
     })
     .catch(err => {
@@ -132,6 +134,21 @@
         aa.removeAttribute('hidden', '');
         setTimeout(() => aa.setAttribute('hidden', ''), 4000);
          console.log(aa)
+    }
+
+    function mostrarAplicacionDeCupon(costoTotal, descuento, montoR1, montoR2){
+        cupon = document.getElementById('cupon'); 
+        cuponText = document.getElementById('cuponText');  
+        total = document.getElementById('total');
+        R2 = document.getElementById('R2');
+        R1 = document.getElementById('R1');
+
+
+        cupon.removeAttribute('hidden', '');
+        cuponText.innerText = 'Descuento por cupón: ' + descuento;
+        total.innerText = costoTotal;
+       R1.innerText = 'Reembolso si cancelás antes del {{ reserva.fechaReembolsoPenalizado|date("d/m/Y") }}: ' + montoR1.toLocaleString('es-AR', { minimumFractionDigits: 2 });
+       R2.innerText = 'Reembolso si cancelás antes del {{ reserva.fechaReembolsoPenalizado|date("d/m/Y") }}: ' + montoR2.toLocaleString('es-AR', { minimumFractionDigits: 2 });
     }
     </script>
 {% endblock %}

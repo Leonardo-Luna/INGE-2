@@ -84,6 +84,23 @@ class MailService {
         # Se almacena en una variable porque puede usarse para debugging, no es necesario 👍 
     }
 
+      public function reembolsoCupon($monto, $to, $montoCupon, $Cupon, $fecha, $maquina) {
+
+        $email = (new Email())
+            ->from(new Address('alquilar@leostrange.live', 'Alquil.AR'))
+            ->to($to)
+            ->replyTo('ivtech.unlp@gmail.com')
+            ->priority(Email::PRIORITY_HIGH)
+            ->subject('Alquil.AR | Confirmacion de reembolso')
+            ->text('¡Gracias por usar Alquil.AR!')
+            ->html('<p> Por motivos ajenos a nuestro control nos vimos obligado a cancelar tu reserva de '. $maquina .'
+            para el dia ' . $fecha . ' te corresponde un reembolso por un monto de: <b>' . $monto . '</b>. Presentate con este correo en tu sucursal más cercana para recibir tu dinero.
+             Ademas, te dejamos un cupon de descuento para tu proxima compra por un monto de: <b>' . $montoCupon . '</b>. Podes usarlo con el codigo de cupon: <b>' . $Cupon . '</b>. </p>'  );
+
+        $sent = $this->mailer->send($email);
+        # Se almacena en una variable porque puede usarse para debugging, no es necesario 👍 
+    }
+
     public function EnviarReservaFinalizada($total, $to, $nombreMaquina,$diaInicio) {
 
         $email = (new Email())
