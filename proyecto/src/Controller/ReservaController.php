@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Entity\Cupon;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,6 +20,12 @@ use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+//por lo que vi vas a necesitar esto valen
+use MercadoPago\Client\Point\PointClient; // Para el QR de punto de venta (empleado)
+// use MercadoPago\Resources\Point\PaymentIntent;
+
+
 
 final class ReservaController extends AbstractController
 {
@@ -231,75 +238,184 @@ final class ReservaController extends AbstractController
  
 
     #[Route('/reservas/{id}/confirmar', name: 'app_reservas_confirmar', methods: ['GET', 'POST'])]
-    public function confirmarReserva(Reserva $reserva, Request $request): Response {
-        // Verificar que la reserva pertenezca al usuario actual o tenga un estado 'pendiente' adecuado
-        if ($reserva->getUsuario() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('Esta reserva no te pertenece.');
-        }
-        
-        // Si la reserva ya está confirmada o pagada, redirigir
-        if ($reserva->getEstado() !== 'FALTA DE PAGO') {
-            $this->addFlash('error', 'La reserva ya ha sido procesada.');
-            return $this->redirectToRoute('app_mis_reservas');
-        }
-
-        //ya lo calcule, podria no hacerlo se supone que es por consistencia de que no hayan cambiando las cosas
-        $usuarioReserva = $reserva->getUsuario();
-        $valoracionTotal = $usuarioReserva->getValoracionTotal();
-        $cantValoraciones = $usuarioReserva->getCantValoraciones();
-
-        $recargoPorcentaje = 0;
-        $valoracionPromedio = 0;
-
-        if ($cantValoraciones > 0) {
-            $valoracionPromedio = $valoracionTotal / $cantValoraciones;
-            if ($valoracionPromedio <= 1) {
-                $recargoPorcentaje = 0.30;
-            } elseif ($valoracionPromedio <= 2) {
-                $recargoPorcentaje = 0.20;
-            } elseif ($valoracionPromedio <= 3) {
-                $recargoPorcentaje = 0.10;
+    public function confirmarReserva(
+        Reserva $reserva,
+        Request $request,
+        UserRepository $userRepository, 
+        EntityManagerInterface $entityManager
+    ): Response {
+        // --- Lógica para empleados ---
+        if ($this->isGranted('ROLE_EMPLEADO')) {
+            if ($reserva->getEstado() !== 'FALTA DE PAGO') { 
+                $this->addFlash('error', 'Esta reserva ya ha sido procesada o no está en un estado adecuado para ser confirmada por un empleado.');
+                return $this->redirectToRoute('app_index'); 
             }
-        }
 
-        $costoOriginal = $reserva->getCostoTotal();
-        $recargoMonto = $costoOriginal * $recargoPorcentaje;
-        $costoFinalConRecargo = $costoOriginal + $recargoMonto;
+            // Manejar el formulario para ingresar el DNI del cliente y generar el QR
+            if ($request->isMethod('POST')) {
+                $dniCliente = $request->request->get('dni_cliente');
 
+                if (empty($dniCliente)) {
+                    $this->addFlash('error', 'Debe ingresar el DNI del cliente.');
+                    return $this->render('reserva/confirmar_empleado.html.twig', [
+                        'reserva' => $reserva,
+                        'maquina' => $reserva->getMaquina(),
+                    ]);
+                }
 
-        $url = $request->getUriForPath('/reservas/' . $reserva->getId() . '/exito');
-        $successUrl = $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-        $failureUrl = $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+                /** @var User|null $cliente */
+                $cliente = $userRepository->findOneBy(['dni' => $dniCliente]);
 
-        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
-        $client = new PreferenceClient();
-        $preference = $client->create([
-            "items" => [
-                [
-                    "title" => "Reserva de Maquina",
-                    "quantity" => 1,
-                    "unit_price" => $costoFinalConRecargo,
+                if (!$cliente) {
+                    $this->addFlash('error', 'Cliente no encontrado con el DNI proporcionado. Por favor, asegúrese de que el cliente esté registrado.');
+                    return $this->render('reserva/confirmar_empleado.html.twig', [
+                        'reserva' => $reserva,
+                        'maquina' => $reserva->getMaquina(),
+                    ]);
+                }
+
+                // Si el cliente fue encontrado, asociar la reserva a ese cliente
+                $reserva->setUsuario($cliente);
+                
+                // --- Calcular el costo total para el QR de Mercado Pago (reutilizando tu lógica) ---
+                $valoracionTotal = $cliente->getValoracionTotal(); // Usa la valoración del cliente encontrado
+                $cantValoraciones = $cliente->getCantValoraciones();
+
+                $recargoPorcentaje = 0;
+                if ($cantValoraciones > 0) {
+                    $valoracionPromedio = $valoracionTotal / $cantValoraciones;
+                    if ($valoracionPromedio <= 1) { $recargoPorcentaje = 0.30; }
+                    elseif ($valoracionPromedio <= 2) { $recargoPorcentaje = 0.20; }
+                    elseif ($valoracionPromedio <= 3) { $recargoPorcentaje = 0.10; }
+                }
+
+                $costoOriginal = $reserva->getCostoTotal();
+                $recargoMonto = $costoOriginal * $recargoPorcentaje;
+                $costoFinalConRecargo = $costoOriginal + $recargoMonto;
+
+                // --- INICIO DE LA LÓGICA PARA GENERAR QR DE MERCADO PAGO PARA PAGO PRESENCIAL ---
+                MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']);
+
+                $client = new PointClient(); // Cliente para punto de venta (QR)
+                try {
+                    $paymentIntent = $client->createPaymentIntent([
+                        "amount" => $costoFinalConRecargo,
+                        "description" => "Reserva de " . $reserva->getMaquina()->getNombre(),
+                        "external_reference" => $reserva->getId() . "_EMP_" . time(), // ID único para referencia externa
+                        "payment_methods" => [
+                            "debit_card",
+                            "credit_card",
+                            "ticket",
+                            "bank_transfer"
+                        ]
+                    ]);
+
+                    $qrBase64Image = $paymentIntent->qr->image; // Obtener la imagen QR en base64
+
+                    $reserva->setEstado('ESPERANDO_PAGO_QR'); // Nuevo estado
+                    $reserva->getMaquina()->setEstado('RESERVADA_PRESENCIALMENTE'); // O similar
+
+                    $entityManager->persist($reserva);
+                    $entityManager->flush();
+
+                    $this->addFlash('success', 'Reserva iniciada para pago QR. Muestre el código al cliente.');
+                    // Renderiza la plantilla para mostrar el QR
+                    return $this->render('reserva/mostrar_qr_empleado.html.twig', [
+                        'reserva' => $reserva,
+                        'maquina' => $reserva->getMaquina(),
+                        'cliente' => $cliente,
+                        'costoFinalDisplay' => $costoFinalConRecargo,
+                        'qrBase64Image' => $qrBase64Image,
+                        'payment_intent_id' => $paymentIntent->id
+                    ]);
+
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Error al generar el QR de Mercado Pago: ' . $e->getMessage());
+                    // Vuelve a renderizar el formulario si hay un error en el QR
+                    return $this->render('reserva/confirmar_empleado.html.twig', [
+                        'reserva' => $reserva,
+                        'maquina' => $reserva->getMaquina(),
+                    ]);
+                }
+                // --- FIN DE LA LÓGICA PARA GENERAR QR DE MERCADO PAGO PARA PAGO PRESENCIAL ---
+                // No hay más lógica aquí, ya se retornó un Response
+            } // CIERRA CORRECTAMENTE EL if ($request->isMethod('POST'))
+
+            // Si el método no es POST (es GET), o si POST no pasó las validaciones de DNI/QR,
+            // se renderiza la vista inicial para que el empleado ingrese el DNI.
+            return $this->render('reserva/confirmar_empleado.html.twig', [
+                'reserva' => $reserva,
+                'maquina' => $reserva->getMaquina(),
+            ]);
+
+        } else { // --- Lógica para usuarios normales (clientes) ---
+        
+            // Verificar que la reserva pertenezca al usuario actual o tenga un estado 'pendiente' adecuado
+            if ($reserva->getUsuario() !== $this->getUser()) {
+                throw $this->createAccessDeniedException('Esta reserva no te pertenece.');
+            }
+            
+            // Si la reserva ya está confirmada o pagada, redirigir
+            if ($reserva->getEstado() !== 'FALTA DE PAGO') {
+                $this->addFlash('error', 'La reserva ya ha sido procesada.');
+                return $this->redirectToRoute('app_mis_reservas');
+            }
+
+            // Cálculo del costo (mantiene la lógica existente)
+            $usuarioReserva = $reserva->getUsuario();
+            $valoracionTotal = $usuarioReserva->getValoracionTotal();
+            $cantValoraciones = $usuarioReserva->getCantValoraciones();
+
+            $recargoPorcentaje = 0;
+            $valoracionPromedio = 0;
+
+            if ($cantValoraciones > 0) {
+                $valoracionPromedio = $valoracionTotal / $cantValoraciones;
+                if ($valoracionPromedio <= 1) {
+                    $recargoPorcentaje = 0.30;
+                } elseif ($valoracionPromedio <= 2) {
+                    $recargoPorcentaje = 0.20;
+                } elseif ($valoracionPromedio <= 3) {
+                    $recargoPorcentaje = 0.10;
+                }
+            }
+
+            $costoOriginal = $reserva->getCostoTotal();
+            $recargoMonto = $costoOriginal * $recargoPorcentaje;
+            $costoFinalConRecargo = $costoOriginal + $recargoMonto;
+
+            // --- Lógica de Mercado Pago para pago ONLINE (sin cambios) ---
+            MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
+            $client = new PreferenceClient(); // Cliente para preferencias de pago (online)
+            $preference = $client->create([
+                "items" => [
+                    [
+                        "title" => "Reserva de Maquina",
+                        "quantity" => 1,
+                        "unit_price" => $costoFinalConRecargo,
+                    ],
                 ],
-            ],
-            "statement_descriptor" => "Alquil.AR",
-            "external_reference" => $reserva->getId(),
-            "back_urls" => [
-                "success" => $successUrl,
-                "failure" => $failureUrl
-             ],
-            "auto_return" => "approved", 
-            "notification_url" => $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL),
-        ]);
+                "statement_descriptor" => "Alquil.AR",
+                "external_reference" => $reserva->getId(),
+                "back_urls" => [
+                    "success" => $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    "failure" => $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+                ],
+                "auto_return" => "approved", 
+                "notification_url" => $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            ]);
 
-        return $this->render('reserva/confirmar.html.twig', [
-            'maquina' => $reserva->getMaquina(),
-            'reserva' => $reserva, // La entidad Reserva se pasa completa
-            'preferenceId' => $preference->id,
-            'costoFinalDisplay' => $costoFinalConRecargo, // Este es el valor que mostrarás como "Costo total"
-            'recargoMontoDisplay' => $recargoMonto, // Para mostrar el detalle del recargo
-            'valoracionPromedio' => $valoracionPromedio, // Para depuración o información adicional
-        ]);
+            return $this->render('reserva/confirmar.html.twig', [
+                'maquina' => $reserva->getMaquina(),
+                'reserva' => $reserva,
+                'preferenceId' => $preference->id,
+                'costoFinalDisplay' => $costoFinalConRecargo,
+                'recargoMontoDisplay' => $recargoMonto,
+                'valoracionPromedio' => $valoracionPromedio,
+            ]);
+        }
     }
+
 
     #[Route('/reservas/{id}/exito', name: 'app_reserva_exito')]
     public function reservaExito(int $id, Request $request): Response {
@@ -489,8 +605,6 @@ final class ReservaController extends AbstractController
         ]);
 
     }
-
-
 
 
 }
