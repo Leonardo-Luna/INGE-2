@@ -35,37 +35,37 @@ class ClientesFixture extends Fixture implements FixtureGroupInterface
         $clientePedro = new User();
         $clientePedro->setNombre("Pedro");
         $clientePedro->setApellido("Pérez");
-        $clientePedro->setDni("12345678");
+        $clientePedro->setDni("12345679");
         $clientePedro->setEmail("pedro@gmail.com");
         $clientePedro->setPassword($this->passwordHasher->hashPassword($clientePedro, "abc123"));
         $clientePedro->addRole($rolAutenticado);
         $clientePedro->addRole($rolCilente);
         $clientePedro->setValoracionTotal(3);
-        $clientePedro->setFechaNacimiento(new DateTime('01/01/2000'));
+        $clientePedro->setFechaNacimiento(new DateTime('04/01/2000'));
         $manager->persist($clientePedro);
 
         $clientePipo = new User();
         $clientePipo->setNombre("Pipo");
         $clientePipo->setApellido("Pérez");
-        $clientePipo->setDni("12345678");
+        $clientePipo->setDni("12345680");
         $clientePipo->setEmail("matiterrone@gmail.com");
         $clientePipo->setPassword($this->passwordHasher->hashPassword($clientePipo, "abc123"));
         $clientePipo->addRole($rolAutenticado);
         $clientePipo->addRole($rolCilente);
-        $clientePipo->setFechaNacimiento(new DateTime('01/01/2000'));
+        $clientePipo->setFechaNacimiento(new DateTime('02/01/2000'));
         $clientePipo->setValoracionTotal(2);
         $manager->persist($clientePipo);
 
         $clientePato = new User();
         $clientePato->setNombre("Pato");
         $clientePato->setApellido("Pérez");
-        $clientePato->setDni("12345678");
+        $clientePato->setDni("12345681");
         $clientePato->setEmail("chico.comp0@gmail.com");
         $clientePato->setPassword($this->passwordHasher->hashPassword($clientePato, "abc123"));
         $clientePato->addRole($rolAutenticado);
         $clientePato->addRole($rolCilente);
         $clientePato->setValoracionTotal(1);
-        $clientePato->setFechaNacimiento(new DateTime('01/01/2000'));
+        $clientePato->setFechaNacimiento(new DateTime('03/01/2000'));
         $manager->persist($clientePato);
 
         $manager->flush();

@@ -14,9 +14,15 @@
     {# Estos inputs son los que se envían al servidor #}
     <input type="hidden" id="fecha_inicio" name="fecha_inicio">
     <input type="hidden" id="fecha_fin" name="fecha_fin">
-
     <div class="error" id="error-msg"></div>
 
+    {% if is_granted('ROLE_EMPLEADO') %}
+      <div class="form-group mt-3">
+        <label for="dni_cliente_empleado" class="form-label">DNI del Cliente:</label>
+        <input type="text" id="dni_cliente_empleado" name="dni_cliente_empleado" class="form-control" placeholder="Ingrese DNI del cliente" required>
+        <small class="form-text text-muted">Si el empleado realiza la reserva para un cliente presencialmente, ingrese el DNI del cliente.</small>
+      </div>
+    {% endif %}
     <button type="submit" id="submit-btn">Seleccionar reserva</button>
   </form>
 </div>
