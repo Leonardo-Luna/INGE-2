@@ -170,5 +170,16 @@ final class MaquinaController extends AbstractController
         ]);
     }
 
+    #[Route('/administracion/liberarMaquinaria/{id}', name: 'app_liberar_maquinaria', methods: ['GET', 'POST'])]
+    public function liberarMaquinaria(Request $request, int $id): Response
+    {   
+        $maquina = $this->manager->getRepository(Maquina::class)->findOneBy(['id' => $id]);
+        $maquina->setEnReparacion(false);
+
+        $this->manager->flush();
+        $this->addFlash('success', 'Maquina disponible correctamente.');
+        return $this->render('admin/maquinaria.html.twig');
+    }
+
    
 }
