@@ -284,9 +284,11 @@ final class ReservaController extends AbstractController
         $recargoMonto = $costoOriginal * $recargoPorcentaje;
         $costoFinalConRecargo = $costoOriginal + $recargoMonto;
 
-        // --- Lógica de Mercado Pago para pago ONLINE (sin cambios) ---
+
+        // cambiar por un if granted como empleado para qr 
+        // --- Lógica de Mercado Pago para pago ONLINE ---
         MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
-        $client = new PreferenceClient(); // Cliente para preferencias de pago (online)
+        $client = new PreferenceClient(); 
         $preference = $client->create([
             "items" => [
                 [

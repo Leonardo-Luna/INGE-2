@@ -111,9 +111,10 @@
     .then(res => res.json())
     .then(data => {
         console.log(data)
-        mostrarAplicacionDeCupon(data.reservaCosto, data.descuento, data.reservaR1, data.reservaR2)  
         mostrarFlash(data.mensaje, 'flashExito');
-       
+        if (bool){
+            mostrarAplicacionDeCupon(data.reservaCosto, data.descuento, data.reservaR1, data.reservaR2);
+        }
     })
     .catch(err => {
         console.error(err);
@@ -128,12 +129,15 @@
        
         aa.textContent = mensaje;
         aa.id = tipo;
+        bool = true;
         if (mensaje == 'Código inválido'){
             aa.id = 'flashError';
+            bool = false;
         }
         aa.removeAttribute('hidden', '');
         setTimeout(() => aa.setAttribute('hidden', ''), 4000);
-         console.log(aa)
+        console.log(aa);
+        return bool;
     }
 
     function mostrarAplicacionDeCupon(costoTotal, descuento, montoR1, montoR2){
