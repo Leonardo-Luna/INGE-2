@@ -20,16 +20,14 @@ use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
 //por lo que vi vas a necesitar esto valen
 use MercadoPago\Client\Point\PointClient; // Para el QR de punto de venta (empleado)
 // use MercadoPago\Resources\Point\PaymentIntent;
-
-
+use App\Services\QRService;
 
 final class ReservaController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $manager, private MailService $mailService) { }
+    public function __construct(private EntityManagerInterface $manager, private MailService $mailService, private QRService $qrService) { }
 
     #[Route('/mis-reservas', name: 'app_mis_reservas')]
     public function misReservas(Request $request): Response
@@ -283,9 +281,23 @@ final class ReservaController extends AbstractController
         $costoOriginal = $reserva->getCostoTotal();
         $recargoMonto = $costoOriginal * $recargoPorcentaje;
         $costoFinalConRecargo = $costoOriginal + $recargoMonto;
-
-
+        $url = $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $idReserva = $reserva->getId();
         // cambiar por un if granted como empleado para qr 
+        if ($this->isGranted('ROLE_EMPLEADO')) {
+            $qrData = $this->qrService->generarOrdenQr($costoFinalConRecargo, $idReserva, $url);
+            if (!$qrData) {
+                $this->addFlash('error', 'No se pudo generar el QR de pago. Intente nuevamente.');
+            }
+            return $this->render('reserva/confirmar.html.twig', [
+                'maquina' => $reserva->getMaquina(),
+                'reserva' => $reserva,
+                'costoFinalDisplay' => $costoFinalConRecargo,
+                'recargoMontoDisplay' => $recargoMonto,
+                'valoracionPromedio' => $valoracionPromedio,
+                'qr_data' => $qrData, 
+            ]);
+        }
         // --- Lógica de Mercado Pago para pago ONLINE ---
         MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
         $client = new PreferenceClient(); 
@@ -506,8 +518,6 @@ final class ReservaController extends AbstractController
         ]);
 
     }
-
-
 }
 
 
