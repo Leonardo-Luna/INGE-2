@@ -7,6 +7,7 @@ use App\Entity\EstadoReserva;
 use App\Entity\Maquina;
 use App\Entity\Reserva;
 use App\Entity\User;
+use App\Entity\Rol;
 
 use App\Entity\Cupon;
 use DateTime;
@@ -201,8 +202,8 @@ final class ReservaController extends AbstractController
             $usuario = $this->getUser();
         } else { 
             $dniClienteEmpleado = $request->request->get('dni_cliente_empleado');
-            $rolCliente = $manager->getRepository(Rol::class)->find(Rol::CLIENTE)->getNombre();
-            $clientePorDni = $userRepository->findOneByDniAndRole([$dniClienteEmpleado, $roleCliente]); 
+            $rolCliente = $this->manager->getRepository(Rol::class)->find(Rol::CLIENTE)->getNombre();
+            $clientePorDni = $userRepository->findOneByDniAndRole($dniClienteEmpleado, $rolCliente); 
 
             if ($clientePorDni) {
                 $usuario = $clientePorDni;
@@ -283,8 +284,40 @@ final class ReservaController extends AbstractController
         $costoFinalConRecargo = $costoOriginal + $recargoMonto;
         $url = $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $idReserva = $reserva->getId();
-        // cambiar por un if granted como empleado para qr 
-        if ($this->isGranted('ROLE_EMPLEADO')) {
+
+        if ($this->isGranted('ROLE_CLIENTE')) {
+            // --- Lógica de Mercado Pago para pago ONLINE ---
+            MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
+            $client = new PreferenceClient(); 
+            $preference = $client->create([
+                "items" => [
+                    [
+                        "title" => "Reserva de Maquina",
+                        "quantity" => 1,
+                        "unit_price" => $costoFinalConRecargo,
+                    ],
+                ],
+                "statement_descriptor" => "Alquil.AR",
+                "external_reference" => $reserva->getId(),
+                "back_urls" => [
+                    "success" => $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    "failure" => $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+                ],
+                "auto_return" => "approved", 
+                "notification_url" => $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            ]);
+            $qrData = null; 
+            return $this->render('reserva/confirmar.html.twig', [
+                'maquina' => $reserva->getMaquina(),
+                'reserva' => $reserva,
+                'preferenceId' => $preference->id,
+                'costoFinalDisplay' => $costoFinalConRecargo,
+                'recargoMontoDisplay' => $recargoMonto,
+                'valoracionPromedio' => $valoracionPromedio,
+                'qr_data' => $qrData, 
+            ]);
+
+        }else{
             $qrData = $this->qrService->generarOrdenQr($costoFinalConRecargo, $idReserva, $url);
             if (!$qrData) {
                 $this->addFlash('error', 'No se pudo generar el QR de pago. Intente nuevamente.');
@@ -298,35 +331,6 @@ final class ReservaController extends AbstractController
                 'qr_data' => $qrData, 
             ]);
         }
-        // --- Lógica de Mercado Pago para pago ONLINE ---
-        MercadoPagoConfig::setAccessToken($_ENV['MERCADOPAGO_ACCESS_TOKEN']); 
-        $client = new PreferenceClient(); 
-        $preference = $client->create([
-            "items" => [
-                [
-                    "title" => "Reserva de Maquina",
-                    "quantity" => 1,
-                    "unit_price" => $costoFinalConRecargo,
-                ],
-            ],
-            "statement_descriptor" => "Alquil.AR",
-            "external_reference" => $reserva->getId(),
-            "back_urls" => [
-                "success" => $this->generateUrl('app_reserva_exito', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                "failure" => $this->generateUrl('app_reserva_error', ['id' => $reserva->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
-            ],
-            "auto_return" => "approved", 
-            "notification_url" => $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL),
-        ]);
-
-        return $this->render('reserva/confirmar.html.twig', [
-            'maquina' => $reserva->getMaquina(),
-            'reserva' => $reserva,
-            'preferenceId' => $preference->id,
-            'costoFinalDisplay' => $costoFinalConRecargo,
-            'recargoMontoDisplay' => $recargoMonto,
-            'valoracionPromedio' => $valoracionPromedio,
-        ]);
     }
 
 
