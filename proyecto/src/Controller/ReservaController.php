@@ -196,7 +196,7 @@ final class ReservaController extends AbstractController
         $fechaPenalizacion = (clone $fechaInicio)->modify('-' . $maquina->getDiasReembolso() . ' days');
         $reserva->setFechaReembolsoPenalizado($fechaPenalizacion);
         $reserva->setReembolsoPenalizado($maquina->getReembolsoPenalizado());
-        $costoOriginal=$maquina->getCostoPorDia() * $intervalo->days;
+        $costoOriginal=$maquina->getCostoPorDia() * ($intervalo->days+1);
 
         if ($this->isGranted('ROLE_CLIENTE')) {
             $usuario = $this->getUser();
