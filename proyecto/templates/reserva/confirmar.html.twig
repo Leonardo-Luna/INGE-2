@@ -47,14 +47,15 @@
                     <div name='flash' id="flashMessage" class="flash-message" hidden> Sadnjsdfndsjfkdns</div>
 
                     {% if 'ROLE_EMPLEADO' in app.user.roles %}
+                    <form id="couponForm" class="mt-4">
+                             <input type="text" name="codigo" id="codigo" class="form-control mb-2" placeholder="Código de cupón" required>
+                             <button type="submit" class="btn btn-warning w-100 mb-2">Aplicar cupón</button>
+                        </form>
                         <div hidden id="textoQR"class="text-center mt-4">
                             <p><strong>Escaneá este código QR para pagar:</strong></p>
                             <canvas id="qrcode"></canvas>
                         </div>
-                        <form id="couponForm" class="mt-4">
-                             <input type="text" name="codigo" id="codigo" class="form-control mb-2" placeholder="Código de cupón" required>
-                             <button type="submit" class="btn btn-warning w-100 mb-2">Aplicar cupón</button>
-                        </form>
+                        
                         <button id="generarQR"onClick=mostrarQR() class="btn btn-warning w-100 mb-2">Generar QR</button>
                     {% else %}
                         <form id="couponForm" class="mt-4">

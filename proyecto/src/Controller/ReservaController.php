@@ -152,9 +152,11 @@ final class ReservaController extends AbstractController
     public function eliminar(int $id): JsonResponse
     {
     $reserva = $this->manager->getRepository(Reserva::class)->findOneById($id);
+$estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA);
     $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
-
+    if ($reserva->getEstado()!=$estadoAprobado->getEstado()){
     $reserva->setEstado($estadoCancelada->getEstado());
+    }
     
     $this->manager->flush();
 
