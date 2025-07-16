@@ -97,9 +97,15 @@ final class ReportesController extends AbstractController
         $query = "";
         $form->handleRequest($request);
 
+        $mensaje = "";
+
         if ($form->isSubmitted() && $form->isValid()) {
             $fechaInicio = $form->get('fecha_inicio')->getData();
             $fechaFin = $form->get('fecha_fin')->getData();
+
+            if($fechaInicio > $fechaFin) {
+                $mensaje = "La fecha de inicio debe ser anterior a la de fin";
+            }
 
             $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
             $estadoFinalizada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
@@ -110,6 +116,7 @@ final class ReportesController extends AbstractController
         return $this->render('reportes/finanzas.html.twig', [
             'form' => $form->createView(),
             'reservas' => $query,
+            'mensaje' => $mensaje,
         ]);
     }
 }

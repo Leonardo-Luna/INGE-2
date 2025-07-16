@@ -1,86 +1,49 @@
-
 {% extends 'layout/base.html.twig' %}
 
 {% block title %}Alquil.AR{% endblock %}
 
 {% block imports %}
-    {{parent()}}
-    <link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
-    <script src="{{ asset('leaflet/leaflet.js') }}"></script>
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+  <script src="{{ asset('leaflet/leaflet.js') }}"></script>
 {% endblock %}
 
-
 {% block content %}
-  <div class="perfil-container">
-    <h1>{{ sucursal.nombre }}</h1>
-
-    <div class="info-box">
-      <p><strong>Dirección:</strong> {{ sucursal.direccion }}</p>
-      <p><strong>Ciudad:</strong> {{ sucursal.ciudad }}</p>
-      <p><strong>Horario de atención:</strong> {{ sucursal.horario }}</p>
+<div class="container my-5">
+  <div class="card shadow">
+    <div class="card-body">
+      <h1 class="card-title mb-4">{{ sucursal.nombre }}</h1>
+      <div class="mb-4">
+        <p class="mb-2"><strong>Dirección:</strong> {{ sucursal.direccion }}</p>
+        <p class="mb-2"><strong>Ciudad:</strong> {{ sucursal.ciudad }}</p>
+        <p class="mb-0"><strong>Horario de atención:</strong> {{ sucursal.horario }}</p>
+      </div>
+      <div class="mb-4">
+        {# <a onClick="redirigirACatalogo({{sucursal.id}})" class="btn btn-primary mb-2">Ver máquinas</a> #}
+      </div>
+      <h3 class="mb-3">Ubicación</h3>
+      <div id="map" class="rounded" style="height: 300px; width: 100%;"></div>
     </div>
-
-    <div class="acciones">
-       
-
-      {#<a onClick= redirigirACatalogo({{sucursal.id}}) class="btn">Ver máquinas </a>#} 
-    </div>
-      <h3>Ubicación</h3>
-<div id="map" style="height: 300px; width: 538px; border-radius: 10px; margin-top: 20px;"></div>
+  </div>
+</div>
 
 <script>
-    const lat = {{ sucursal.latitud }};
-    const lng = {{ sucursal.longitud }};
+  const lat = {{ sucursal.latitud }};
+  const lng = {{ sucursal.longitud }};
 
-    const map = L.map('map').setView([lat, lng], 15);
+  const map = L.map('map').setView([lat, lng], 15);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
 
-    L.marker([lat, lng]).addTo(map)
-        .bindPopup('{{ sucursal.nombre|e('js') }}')
-        .openPopup();
+  L.marker([lat, lng]).addTo(map)
+    .bindPopup('{{ sucursal.nombre|e('js') }}')
+    .openPopup();
 
   function redirigirACatalogo(sucursalId) {
     const url = `/catalogo?search=&tipo=&sucursal=${encodeURIComponent(sucursalId)}`;
     window.location.href = url;
-}
+  }
 </script>
-  </div>
-
-
-  <style>
-    .perfil-container {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 2rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-      align-content:center;
-    }
-    .info-box p {
-      margin: 0.5rem 0;
-    }
-    .acciones {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.6rem 1rem;
-      background-color: #007bff;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 4px;
-      margin-bottom: 20px;
-    }
-    .btn:hover {
-      background-color: #0056b3;
-    }
-  </style>
 {% endblock %}

@@ -73,7 +73,11 @@
                     ${{ total|number_format(2, ',', '.') }}
                 </div>
             {% else %}
-                <div class="alert alert-info text-center">No hay datos para mostrar.</div>
+                {% if mensaje is not empty %}
+                    <div class="alert alert-danger text-center">{{ mensaje }}</div>
+                {% else %}
+                    <div class="alert alert-info text-center">No hay datos para mostrar.</div>
+                {% endif %}
             {% endif %}
         </div>
     </div>
