@@ -15,9 +15,9 @@
   <form method="POST" action="{{ path('app_reserva_nueva', { id: maquina.id }) }}">
     <label for="fecha_inicio_display" class="form-label">Seleccionar intervalo de fechas:</label><br>
     {# Este input es el que ve el usuario #}
-    <input type="text" id="fecha_inicio_display" name="fecha_inicio_display" placeholder="Fecha inicio" class="form-control">
+    <input type="text" id="fecha_inicio_display" name="fecha_inicio_display" placeholder="Fecha inicio" class="form-control" required>
     {# Estos inputs son los que se envían al servidor #}
-    <input type="hidden" id="fecha_inicio" name="fecha_inicio">
+    <input type="hidden" id="fecha_inicio" name="fecha_inicio" required>
     <input type="hidden" id="fecha_fin" name="fecha_fin">
     <div class="error" id="error-msg"></div>
 
@@ -49,7 +49,8 @@
   const fechaInicioHiddenInput = document.getElementById("fecha_inicio"); // Input oculto para el inicio
   const fechaFinHiddenInput = document.getElementById("fecha_fin"); // Input oculto para el fin
   const submitBtn = document.getElementById("submit-btn");
-
+  submitBtn.disabled = true;
+  
   const fechasOcupadas = [];
 
   for (const r of reservas) {
