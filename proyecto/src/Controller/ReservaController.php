@@ -197,10 +197,12 @@ final class ReservaController extends AbstractController
         $reserva->setReembolsoPenalizado($maquina->getReembolsoPenalizado());
         $costoOriginal=$maquina->getCostoPorDia() * $intervalo->days;
 
-        if ($this->isGranted('ROLE_EMPLEADO')) {
+        if ($this->isGranted('ROLE_CLIENTE')) {
+            $usuario = $this->getUser();
+        } else { 
             $dniClienteEmpleado = $request->request->get('dni_cliente_empleado');
-
-            $clientePorDni = $userRepository->findOneBy(['dni' => $dniClienteEmpleado]);
+            $rolCliente = $manager->getRepository(Rol::class)->find(Rol::CLIENTE)->getNombre();
+            $clientePorDni = $userRepository->findOneByDniAndRole([$dniClienteEmpleado, $roleCliente]); 
 
             if ($clientePorDni) {
                 $usuario = $clientePorDni;
@@ -209,8 +211,6 @@ final class ReservaController extends AbstractController
                 $this->addFlash('error', 'El DNI del cliente proporcionado no está registrado.');
                 return $this->redirectToRoute('app_maquina_fechas', ['id' => $maquina->getId()]);
             }
-        } else {
-            $usuario = $this->getUser();
         }
 
         $reserva->setUsuario($usuario);
@@ -519,5 +519,3 @@ final class ReservaController extends AbstractController
 
     }
 }
-
-
