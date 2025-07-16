@@ -207,7 +207,7 @@ final class ReservaController extends AbstractController
 
             if ($clientePorDni) {
                 $usuario = $clientePorDni;
-                $this->addFlash('success', 'Reserva creada para el cliente ' . $clientePorDni->getNombre() . '.');
+                
             } else {
                 $this->addFlash('error', 'El DNI del cliente proporcionado no está registrado.');
                 return $this->redirectToRoute('app_maquina_fechas', ['id' => $maquina->getId()]);
