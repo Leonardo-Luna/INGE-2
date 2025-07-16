@@ -39,10 +39,15 @@ final class UsuariosController extends AbstractController
             $rolAutenticado = $this->rolesRepository->find(Rol::AUTENTICADO);
             $rolCliente = $this->rolesRepository->find(Rol::CLIENTE);
 
-            $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $nuevoUsuario->getEmail()]);
-
-            if($verificarExistencia) {
+            $verificarExistencia = $this->manager->getRepository(User::class)->findOneUniqueUser($nuevoUsuario->getDni(), $rolCliente->getNombre(), $nuevoUsuario->getEmail());
+            
+            if($verificarExistencia->getEmail() == $nuevoUsuario->getEmail()) {
                 $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
+                return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
+            }
+
+            if($verificarExistencia->getDni() == $nuevoUsuario->getDni()) {
+                $this->addFlash('error', 'El DNI ya se encuentra registrado en el sistema.');
                 return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
             }
 

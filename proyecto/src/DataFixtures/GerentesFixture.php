@@ -24,7 +24,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteLuigi = new User();
         $gerenteLuigi->setNombre("Luigi");
         $gerenteLuigi->setApellido("Mario");
-        $gerenteLuigi->setDni("12345678");
+        $gerenteLuigi->setDni("20345678");
         $gerenteLuigi->setEmail("santiago0105@hotmail.com.ar"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
         $gerenteLuigi->setPassword($this->passwordHasher->hashPassword($gerenteLuigi, 'abc123'));
         $gerenteLuigi->addRole($rolAutenticado);
@@ -35,7 +35,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $gerenteMario = new User();
         $gerenteMario->setNombre("Mario");
         $gerenteMario->setApellido("Mario");
-        $gerenteMario->setDni("12345678");
+        $gerenteMario->setDni("20345679");
         $gerenteMario->setEmail("ivtech.unlp@gmail.com"); // Deberíamos reemplazarlo por un mail real para que lleguen códigos de 2FA...
         $gerenteMario->setPassword($this->passwordHasher->hashPassword($gerenteMario, 'abc123'));
         $gerenteMario->addRole($rolAutenticado);
@@ -48,7 +48,7 @@ class GerentesFixture extends Fixture implements FixtureGroupInterface
         $testingLeo = new User();
         $testingLeo->setNombre("Leo");
         $testingLeo->setApellido("Luna");
-        $testingLeo->setDni("12345678");
+        $testingLeo->setDni("20345680");
         $testingLeo->setEmail("lunaleonardo031@gmail.com");
         $testingLeo->setPassword($this->passwordHasher->hashPassword($testingLeo, "abc123"));
         $testingLeo->addRole($rolAutenticado);
