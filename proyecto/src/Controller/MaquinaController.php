@@ -7,6 +7,7 @@ use App\Entity\EstadoReserva;
 use App\Entity\Reserva;
 use App\Entity\Maquina;
 use App\Form\MaquinaType;
+use App\Form\EditarMaquinaType;
 use App\Services\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
@@ -85,7 +86,7 @@ final class MaquinaController extends AbstractController
         return $this->render('maquina/nueva.html.twig', [
             'form' => $form, 
         ]);
-    }   
+    } 
 
     #[Route('/maquina/{id}', name: 'app_maquina_show')]
     public function show(Maquina $maquina): Response
@@ -158,6 +159,70 @@ final class MaquinaController extends AbstractController
         $this->addFlash('success', 'Máquina eliminada existosamente.');
         return $this->redirectToRoute('app_listar_maquinaria');
     }
+
+#[Route('/gerencia/maquina/editar/{id}', name: 'app_maquina_editar')]
+public function editar(Request $request, Maquina $maquina, SluggerInterface $slugger): Response
+{
+    $form = $this->createForm(EditarMaquinaType::class, $maquina);
+    $form->handleRequest($request);
+
+    $imagenesActuales = $maquina->getImagenes() ?? [];
+
+    if ($form->isSubmitted() && $form->isValid()) {
+
+        $imagenesAEliminar = $request->request->all('eliminar_imagenes');
+        if ($imagenesAEliminar) {
+            foreach ($imagenesAEliminar as $rutaRelativa) {
+                $key = array_search($rutaRelativa, $imagenesActuales);
+                if ($key !== false) {
+                    unset($imagenesActuales[$key]);
+                }
+            }
+        }
+        $imagenesSubidas = $form->get('imagenes')->getData();
+        $targetDirectory = $this->getParameter('kernel.project_dir') . '/public/images/maquinaria';
+
+        if (!file_exists($targetDirectory)) {
+            mkdir($targetDirectory, 0777, true);
+        }
+
+        foreach ($imagenesSubidas as $imagenFile) {
+            if ($imagenFile) {
+                $originalFilename = pathinfo($imagenFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imagenFile->guessExtension();
+
+                try {
+                    $imagenFile->move($targetDirectory, $newFilename);
+                    $imagenesActuales[] = 'maquinaria/' . $newFilename;
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Error al subir la imagen: ' . $e->getMessage());
+                }
+            }
+        }
+
+        $imagenesFinales = array_values($imagenesActuales); // Reindexar
+        if (count($imagenesFinales) === 0) {
+            $this->addFlash('error', 'Debes subir al menos una imagen.');
+            return $this->render('maquina/editar.html.twig', [
+                'form' => $form->createView(),
+                'maquina' => $maquina,
+            ]);
+        }
+
+        $maquina->setImagenes($imagenesFinales);
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Máquina editada correctamente.');
+        return $this->redirectToRoute('app_maquina_editar', ['id' => $maquina->getId()]);
+    }
+
+    return $this->render('maquina/editar.html.twig', [
+        'form' => $form->createView(),
+        'maquina' => $maquina,
+    ]);
+}
 
     #[Route('/administracion/listar-maquinaria', name: 'app_listar_maquinaria')]
     public function listarMaquinaria(): Response
