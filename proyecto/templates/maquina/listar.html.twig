@@ -83,7 +83,7 @@
                                         </a>
                                         {% endif %}
                                         {% if 'ROLE_GERENTE' in app.user.roles %}
-                                            <a href="{{ path('app_maquina_show', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Editar máquina">
+                                            <a href="{{ path('app_maquina_editar', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Editar máquina">
                                                 <i class="fas fa-edit"></i> Editar
                                             </a>
                                             <form method="POST" action="{{ path('app_eliminar_maquina', {'id': maquina.id}) }}" onsubmit="return confirm('¿Está seguro que desea eliminar esta máquina?');" style="display:inline;">

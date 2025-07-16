@@ -1,0 +1,142 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block content %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert" style="font-size: 0.9rem;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="card shadow-sm rounded-lg mx-auto d-flex flex-column" style="max-width: 2000px; font-size: 0.875rem; height: calc(100vh - 140px);">
+        <div class="card-header bg-primary text-white py-2">
+            <h5 class="mb-0" style="font-size: 1.1rem;"><i class="ri-settings-3-line me-2"></i> Editar Máquina</h5>
+        </div>
+
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'class': 'd-flex flex-column flex-grow-1'}}) }}
+        <div class="card-body px-3 py-2 flex-grow-1 overflow-auto">
+            {% set campos = [form.Nombre, form.Marca, form.costoPorDia, form.Descripcion, form.Anio, form.minimoDias, form.Tipo, form.reembolsoNormal, form.diasReembolso, form.reembolsoPenalizado, form.ubicacion, form.imagenes] %}
+            <div class="row">
+                <div class="col-md-6">
+                    {% for campo in campos|slice(0, (campos|length / 2)|round(0, 'ceil')) %}
+                        <div class="form-group mb-2">
+                            {{ form_label(campo, null, {'label_attr': {'class': 'form-label small'}}) }}
+                            {{ form_widget(campo, {'attr': {'class': 'form-control form-control-sm'}}) }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6">
+                    {% for campo in campos|slice((campos|length / 2)|round(0, 'ceil')) %}
+                        <div class="form-group mb-2">
+                            {{ form_label(campo, null, {'label_attr': {'class': 'form-label small'}}) }}
+                            {{ form_widget(campo, {'attr': {'class': 'form-control form-control-sm'}}) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <hr class="my-3">
+            <h6 class="mb-2">Imágenes actuales</h6>
+            {% if maquina.imagenes is not empty %}
+                <div class="position-relative" style="height: 180px;">
+                    <div id="imageCarousel" class="d-flex align-items-center h-100">
+                        <!-- Botón anterior -->
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-2" id="prevBtn" onclick="previousPage()" disabled>
+                            <i class="ri-arrow-left-line"></i>
+                        </button>
+                        
+                        <!-- Contenedor de imágenes -->
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div id="imageContainer" class="d-flex transition-transform" style="gap: 10px; transform: translateX(0px);">
+                                {% for imagen in maquina.imagenes %}
+                                    <div class="flex-shrink-0">
+                                        <div class="card border-1 position-relative" style="width: 140px; height: 150px;">
+                                            <div class="position-absolute top-0 start-0 bg-primary text-white rounded-end" style="font-size: 0.75rem; padding: 2px 6px; z-index: 10;">
+                                                #{{ loop.index }}
+                                            </div>
+                                            <img src="{{ asset('images/' ~ imagen) }}" class="card-img-top" alt="Imagen" style="height: 100px; object-fit: cover;">
+                                            <div class="card-body py-1 px-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="eliminar_imagenes[]" value="{{ imagen }}" id="img_{{ loop.index }}">
+                                                    <label class="form-check-label small" for="img_{{ loop.index }}">
+                                                        Eliminar
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Botón siguiente -->
+                        <button type="button" class="btn btn-outline-secondary btn-sm ms-2" id="nextBtn" onclick="nextPage()">
+                            <i class="ri-arrow-right-line"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Indicador de página -->
+                    <div class="text-center mt-2">
+                        <small class="text-muted" id="pageIndicator">Página 1 de 1</small>
+                    </div>
+                </div>
+                
+                <script>
+                    let currentPage = 0;
+                    const itemsPerPage = 4; // Número de imágenes por página
+                    const totalItems = {{ maquina.imagenes|length }};
+                    const totalPages = Math.ceil(totalItems / itemsPerPage);
+                    const itemWidth = 150; // 140px width + 10px gap
+                    
+                    function updatePagination() {
+                        const container = document.getElementById('imageContainer');
+                        const translateX = -(currentPage * itemsPerPage * itemWidth);
+                        container.style.transform = `translateX(${translateX}px)`;
+                        
+                        // Actualizar botones
+                        document.getElementById('prevBtn').disabled = currentPage === 0;
+                        document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+                        
+                        // Actualizar indicador
+                        document.getElementById('pageIndicator').textContent = `Página ${currentPage + 1} de ${totalPages}`;
+                    }
+                    
+                    function nextPage() {
+                        if (currentPage < totalPages - 1) {
+                            currentPage++;
+                            updatePagination();
+                        }
+                    }
+                    
+                    function previousPage() {
+                        if (currentPage > 0) {
+                            currentPage--;
+                            updatePagination();
+                        }
+                    }
+                    
+                    // Inicializar
+                    updatePagination();
+                </script>
+            {% else %}
+                <p class="text-muted small">No hay imágenes cargadas.</p>
+            {% endif %}
+        </div>
+
+        <div class="card-footer bg-white border-top py-2 mt-auto">
+            <div class="d-flex justify-content-between">
+                <a href="{{ path('app_listar_maquinaria') }}" class="btn btn-secondary btn-sm">
+                    <i class="ri-arrow-left-line me-1"></i> Volver
+                </a>
+                <button type="submit" class="btn btn-success btn-sm">
+                    <i class="ri-save-line me-1"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
