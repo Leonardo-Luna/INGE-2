@@ -271,11 +271,9 @@
                     </div>
 
                     {% if not maquina.enReparacion %}
-                        {% if (is_granted('ROLE_CLIENTE')) or (is_granted('ROLE_EMPLEADO')) %}
-                            <form action="#" method="POST" class="mb-2">
-                                <a href="{{ path('app_maquina_fechas', {'id': maquina.id}) }}" class="btn btn-buy mb-2">Alquilar ahora</a>
-                            </form>
-                        {% endif %}
+                        <form action="#" method="POST" class="mb-2">
+                            <a href="{{ path('app_maquina_fechas', {'id': maquina.id}) }}" class="btn btn-buy mb-2">Alquilar ahora</a>
+                        </form>
                     {% else %}
                         <button type="button" class="btn btn-secondary btn-buy" disabled>No disponible para alquiler</button>
                     {% endif %}

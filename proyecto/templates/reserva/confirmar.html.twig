@@ -27,7 +27,7 @@
                 <div class="card-body">
                     <h3 class="text-primary text-center fw-semibold fs-5 mb-3">Datos de la reserva</h3>
                     <p><strong>Fechas:</strong> {{ reserva.fechaInicio|date('d/m/Y') }} – {{ reserva.fechaFin|date('d/m/Y') }}</p>
-                    <p><strong>Días:</strong> {{ reserva.fechaInicio.diff(reserva.fechaFin).days + (reserva.fechaInicio.format('Y-m-d') == reserva.fechaFin.format('Y-m-d') ? 1 : 0) }}</p>
+                    <p><strong>Días:</strong> {{ reserva.fechaInicio.diff(reserva.fechaFin).days + 1 }}</p>
 
                     {% if recargoMontoDisplay > 0 %}
                         <p><strong>Costo base:</strong> ${{ (costoFinalDisplay - recargoMontoDisplay)|number_format(2, ',', '.') }}</p>
@@ -124,10 +124,13 @@
             })
             .then(res => res.json())
             .then(data => {
+                salidaForzada=false;
+                
+                
                 console.log(data);
                 mostrarFlash(data.mensaje, 'flashExito');
                 if (bool) {
-                    mostrarAplicacionDeCupon(data.reservaCosto, data.descuento, data.reservaR1, data.reservaR2);
+                    window.location.href = window.location.href;
                 }
             })
             .catch(err => {
@@ -148,20 +151,6 @@
             aa.removeAttribute('hidden');
             setTimeout(() => aa.setAttribute('hidden', ''), 4000);
             return bool;
-        }
-
-        function mostrarAplicacionDeCupon(costoTotal, descuento, montoR1, montoR2) {
-            const cupon = document.getElementById('cupon');
-            const cuponText = document.getElementById('cuponText');
-            const total = document.getElementById('total');
-            const R1 = document.getElementById('R1');
-            const R2 = document.getElementById('R2');
-
-            cupon.removeAttribute('hidden');
-            cuponText.innerText = 'Descuento por cupón: ' + descuento;
-            total.innerText = costoTotal;
-            R1.innerText = 'Reembolso si cancelás antes del {{ reserva.fechaReembolsoPenalizado|date("d/m/Y") }}: ' + montoR1.toLocaleString('es-AR', { minimumFractionDigits: 2 });
-            R2.innerText = 'Reembolso si cancelás después del {{ reserva.fechaReembolsoPenalizado|date("d/m/Y") }}: ' + montoR2.toLocaleString('es-AR', { minimumFractionDigits: 2 });
         }
 
         // Generar QR si el usuario es empleado y qrData existe
