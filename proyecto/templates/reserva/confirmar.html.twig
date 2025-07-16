@@ -124,10 +124,13 @@
             })
             .then(res => res.json())
             .then(data => {
+                salidaForzada=false;
+                
+                
                 console.log(data);
                 mostrarFlash(data.mensaje, 'flashExito');
                 if (bool) {
-                    mostrarAplicacionDeCupon(data.reservaCosto, data.descuento, data.reservaR1, data.reservaR2);
+                    window.location.href = window.location.href;
                 }
             })
             .catch(err => {
@@ -148,20 +151,6 @@
             aa.removeAttribute('hidden');
             setTimeout(() => aa.setAttribute('hidden', ''), 4000);
             return bool;
-        }
-
-        function mostrarAplicacionDeCupon(costoTotal, descuento, montoR1, montoR2) {
-            const cupon = document.getElementById('cupon');
-            const cuponText = document.getElementById('cuponText');
-            const total = document.getElementById('total');
-            const R1 = document.getElementById('R1');
-            const R2 = document.getElementById('R2');
-
-            cupon.removeAttribute('hidden');
-            cuponText.innerText = 'Descuento por cupón: ' + descuento;
-            total.innerText = costoTotal;
-            R1.innerText = 'Reembolso si cancelás antes del {{ reserva.fechaReembolsoPenalizado|date("d/m/Y") }}: ' + montoR1.toLocaleString('es-AR', { minimumFractionDigits: 2 });
-            R2.innerText = 'Reembolso si cancelás después del {{ reserva.fechaReembolsoPenalizado|date("d/m/Y") }}: ' + montoR2.toLocaleString('es-AR', { minimumFractionDigits: 2 });
         }
 
         // Generar QR si el usuario es empleado y qrData existe
