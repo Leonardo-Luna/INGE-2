@@ -126,9 +126,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                salidaForzada=false;
-                
-                
+                salidaForzada = false;
                 console.log(data);
                 mostrarFlash(data.mensaje, 'flashExito');
                 if (bool) {
@@ -155,18 +153,16 @@
             return bool;
         }
 
-
         function mostrarQR() {
             const qrTexto = document.getElementById('textoQR');
             const qrBoton = document.getElementById('generarQR');
-            setTimeout(function() {
-            qrTexto.removeAttribute("hidden");         
-            qrBoton.setAttribute("hidden", "");
+            setTimeout(function () {
+                qrTexto.removeAttribute("hidden");
+                qrBoton.setAttribute("hidden", "");
             }, 1000)
-            
         }
 
-        // Generar QR si el usuario es empleado y qrData existe
+        // Generar QR si qrData existe
         if (qrData && qrData !== "null" && qrData !== "") {
             const canvas = document.getElementById('qrcode');
             if (canvas) {
@@ -185,6 +181,21 @@
                     }
                 });
             }
+
+            // 🚀 Nuevo: polling para redireccionar automáticamente cuando el pago esté aprobado
+            const intervalo = setInterval(() => {
+                fetch('/reserva/{{ reserva.id }}/estado')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.estado === 'APROBADO') {
+                            clearInterval(intervalo);
+                            window.location.href = '{{ path("app_todos_alquileres") }}?flash=success';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error consultando estado:', error);
+                    });
+            }, 4000);
         }
     </script>
 {% endblock %}

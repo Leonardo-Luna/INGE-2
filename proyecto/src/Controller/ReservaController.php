@@ -57,8 +57,13 @@ final class ReservaController extends AbstractController
     #[Route('/administracion/alquileres', name: 'app_todos_alquileres')]
     public function alquileresHistorico(Request $request): Response
     {
+        if ($request->query->get('flash') === 'success') {
+            $this->addFlash('success', 'Pago aprobado. La reserva ha sido confirmada.');
+        }
+
         $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
         $estadoEnCurso = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
+
         $alquileres = $this->manager->getRepository(Reserva::class)->findBy([
             'estado' => [$estadoAprobado, $estadoEnCurso]
         ]);
@@ -193,11 +198,11 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
         $reserva->setMaquina($maquina);
 
         $intervalo = $fechaInicio->diff($fechaFin);
-        $reserva->setMontoReembolso($maquina->getReembolsoNormal() * $intervalo->days);
+        $reserva->setMontoReembolso($maquina->getReembolsoNormal() * ($intervalo->days+1));
 
         $fechaPenalizacion = (clone $fechaInicio)->modify('-' . $maquina->getDiasReembolso() . ' days');
         $reserva->setFechaReembolsoPenalizado($fechaPenalizacion);
-        $reserva->setReembolsoPenalizado($maquina->getReembolsoPenalizado());
+        $reserva->setReembolsoPenalizado($maquina->getReembolsoPenalizado() * ($intervalo->days+1));
         $costoOriginal=$maquina->getCostoPorDia() * ($intervalo->days+1);
 
         if ($this->isGranted('ROLE_CLIENTE')) {
@@ -280,10 +285,10 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
                 $recargoPorcentaje = 0.10;
             }
         }
-
-        $costoOriginal = $reserva->getCostoTotal();
-        $recargoMonto = $costoOriginal * $recargoPorcentaje;
-        $costoFinalConRecargo = $costoOriginal + $recargoMonto;
+        $intervalo = $reserva->getFechaInicio()->diff($reserva->getFechaFin());
+        $costoOriginal = $reserva->getMaquina()->getCostoPorDia() * ($intervalo->days + 1);
+        $costoFinalConRecargo = $reserva->getCostoTotal();
+        $recargoMonto = $reserva->getMaquina()->getCostoPorDia() * $recargoPorcentaje * ($intervalo->days + 1);
         $url = $this->generateUrl('app_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $idReserva = $reserva->getId();
 
@@ -487,7 +492,7 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
         
         return new JsonResponse(['mensaje' => 'Cupón aplicado: ' . $codigo,
                                 'reservaCosto' => $reserva->getCostoTotal(),
-                                 'descuento'=>$cupon->getMonto(),
+                                'descuento'=>$cupon->getMonto(),
                                 'reservaR1'=>$reserva->getMontoReembolso(),
                                 'reservaR2'=> $reserva->getReembolsoPenalizado()]);
     }
@@ -523,5 +528,16 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
             "reservas" => $reservas,
         ]);
 
+    }
+    
+    #[Route('/reserva/{id}/estado', name: 'app_reserva_estado', methods: ['GET'])]
+    public function estadoReserva(int $id): JsonResponse
+    {
+        $reserva = $this->manager->getRepository(Reserva::class)->find($id);
+        if (!$reserva) {
+            return new JsonResponse(['error' => 'Reserva no encontrada'], 404);
+        }
+
+        return new JsonResponse(['estado' => $reserva->getEstado()]);
     }
 }
