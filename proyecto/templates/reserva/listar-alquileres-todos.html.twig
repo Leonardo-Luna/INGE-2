@@ -74,7 +74,20 @@
                                 </a>
                                 
                             {% endif %}
-                        </div>
+                          </div>
+                        {% if alquiler.fechaFin|date('Y-m-d') == "now"|date('Y-m-d') and alquiler.estado|lower == 'en curso' %}
+                        <a href="{{ path('app_devolver_maquinaria', {'id': alquiler.id}) }}" class="btn-recibir">
+                                    <i ></i> Recibir Maquinaria
+                                    
+                                 </a>
+                        {% endif %}
+                        {% if alquiler.fechaInicio|date('d-m-Y') == 'now'|date('d-m-Y') and alquiler.estado|lower in ['aprobado'] %}
+                        <a href="{{ path('app_entregar_maquinaria', {'id': alquiler.id}) }}" class="btn-recibir">
+                        <i ></i> Entregar Maquinaria          
+                        </a>        
+                        {% endif %}
+                    
+                        
                         
                     </div>
                 </div>
@@ -112,4 +125,36 @@
     });
     });
     </script>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+.btn-recibir {
+    display: inline-flex;
+    align-items: center;
+    text-align:center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 2px solid #28a745; /* verde */
+    background-color: white;
+    color: #28a745;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-recibir .icono {
+    font-size: 18px;
+}
+
+.btn-recibir:hover {
+    background-color: #28a745;
+    color: white;
+}
+body {
+    background-color: rgb(221, 221, 221); /* Lo seteo a mano porque por algún motivo se ve blanco */
+}
+</style>
+
 {% endblock %}
