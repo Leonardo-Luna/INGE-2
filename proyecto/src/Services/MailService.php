@@ -116,7 +116,7 @@ class MailService {
         # Se almacena en una variable porque puede usarse para debugging, no es necesario 👍 
     }
 
-    public function EnviarComentario($comentario, $to, $nombreMaquina) {
+    public function EnviarComentario($comentario, $to, $nombreMaquina, $estrellas) {
 
         $email = (new Email())
             ->from(new Address('alquilar@leostrange.live', 'Alquil.AR'))
@@ -125,7 +125,7 @@ class MailService {
             ->priority(Email::PRIORITY_HIGH)
             ->subject('Alquil.AR | Confirmacion de reembolso')
             ->text('¡Gracias por usar Alquil.AR!')
-            ->html('<p> Esperamos que hayas tenido una excelente experiencia con el alquiler de tu' . $nombreMaquina .'. Queríamos informarte que hemos completado la valoración de la devolución del equipo y nuestro equipo quiere hacerte llegar el siguiente comentario' . $comentario . '<p>');
+            ->html('<p> Esperamos que hayas tenido una excelente experiencia con el alquiler de tu' . $nombreMaquina .'. Queríamos informarte que hemos completado la valoración de la devolución del equipo. Hemos calificado tu alquiler con: ' . $estrellas .' estrellas y nuestro equipo quiere hacerte llegar el siguiente comentario' . $comentario . '<p>');
 
         $sent = $this->mailer->send($email);
         # Se almacena en una variable porque puede usarse para debugging, no es necesario 👍 

@@ -58,7 +58,7 @@
                             </a>
 
                             {% if reserva.estado|lower in ['aprobado'] %}
-                                <a href="{{ path('app_eliminar_reserva_id', {'id': reserva.id}) }}" class="btn btn-outline-danger btn-sm">
+                                <a href="{{ path('app_eliminar_reserva_id_empleado', {'id': reserva.id}) }}" class="btn btn-outline-danger btn-sm">
                                     <i class="bi bi-x-circle me-1"></i> Cancelar
                                 </a>
                                 
@@ -70,13 +70,13 @@
                                 
                             {% endif %}
                         </div>
-                         {% if reserva.fechaFin|date('d-m-Y')  == 'now'|date('d-m-Y') and reserva.estado|lower in ['en_curso'] %}
+                        {% if reserva.fechaFin|date('Y-m-d') == "now"|date('Y-m-d') and reserva.estado|lower == 'en curso' %}
                         <a href="{{ path('app_devolver_maquinaria', {'id': reserva.id}) }}" class="btn-recibir">
                                     <i ></i> Recibir Maquinaria
                                     
                                  </a>
                         {% endif %}
-                        {% if reserva.fechaInicio|date('d-m-Y')  == 'now'|date('d-m-Y') and  reserva.estado|lower in ['aprobado'] %}
+                        {% if reserva.fechaInicio|date('d-m-Y') == 'now'|date('d-m-Y') and reserva.estado|lower in ['aprobado'] %}
                         <a href="{{ path('app_entregar_maquinaria', {'id': reserva.id}) }}" class="btn-recibir">
                         <i ></i> Entregar Maquinaria          
                         </a>        

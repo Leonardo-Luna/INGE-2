@@ -148,6 +148,33 @@ final class ReservaController extends AbstractController
         return $this->redirectToRoute('app_reservas');
     }
 
+
+    #[Route('/reservas/eliminarEmpleado/{id}', name: 'app_eliminar_reserva_id_empleado', methods: ['GET','POST'])]
+    public function eliminarReservaIDEmpleado(int $id, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $reserva = $entityManager->getRepository(Reserva::class)->findOneById($id);
+        $estadoCancelada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::CANCELADA);
+
+
+        $hoy = new \DateTime();
+        if  ($hoy < $reserva->getFechaReembolsoPenalizado()){
+            $monto = $reserva->getMontoReembolso();
+        }
+        else{
+            $monto = $reserva->getReembolsoPenalizado();
+        }
+        $usuario = $reserva->getUsuario();
+        if($monto > 0){
+        $this->mailService->reembolso($monto, $usuario->getEmail());
+        }
+
+        $reserva->setEstado($estadoCancelada->getEstado());
+        $entityManager->flush();
+
+        $this->addFlash('error', 'Se canceló la reserva exitosamente.');
+        return $this->redirectToRoute('app_reservas');
+    }
+
     #[Route('/reserva/eliminar/{id}', name: 'reserva_eliminar', methods: ['POST'])]
     public function eliminar(int $id): JsonResponse
     {
@@ -359,6 +386,9 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
         if ($request->isMethod('POST')) {
             $estrellas = $request->request->get('puntuacion'); // Obtén el valor del campo 'puntuacion' del formulario POST
             $comentario = $request->request->get('comentario'); // Obtén el valor del campo 'comentario'
+            if ($comentario === null || $comentario === '') {
+            $comentario = 'Todo en orden! Gracias';
+            }
 
             // Valida que 'estrellas' sea un número válido entre 1 y 5
             if (!is_numeric($estrellas) || $estrellas < 1 || $estrellas > 5) {
@@ -389,7 +419,8 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
                 $userToRate->getCantValoraciones() + 1
             );
             $this->manager->flush();
-            $this->mailService->EnviarComentario($comentario,$userToRate->getEmail(), $alquiler->getMaquina()->getNombre());
+
+            $this->mailService->EnviarComentario($comentario,$userToRate->getEmail(), $alquiler->getMaquina()->getNombre(), (string)$estrellas);
             $this->addFlash('success', '¡Gracias por tu valoración!');
             return $this->redirectToRoute('app_reservas');
         }
@@ -511,7 +542,7 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
     public function entregarMaquinaria(Request $request, int $id): Response
     {   
         $reserva = $this->manager->getRepository(Reserva::class)->findOneBy(['id' => $id]);
-        $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
+        $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
         $reserva->setEstado($estado);
         $this->manager->persist($reserva);
 

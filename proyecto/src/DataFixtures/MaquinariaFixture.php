@@ -39,7 +39,7 @@ class MaquinariaFixture extends Fixture implements FixtureGroupInterface
         $maquina5060E->setNombre("Tractor 5060E");
         $maquina5060E->setMarca("John Deere");
         $maquina5060E->setDescripcion("Motor John Deere de 60 hp, 3 cilindros.");
-        $maquina5060E->setCostoPorDia(10);
+        $maquina5060E->setCostoPorDia(100);
         $maquina5060E->setAnio(2024);
         $maquina5060E->setMinimoDias(30);
         $maquina5060E->setTipo("Motor gasolero");

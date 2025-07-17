@@ -48,7 +48,7 @@ class ClientesFixture extends Fixture implements FixtureGroupInterface
         $clientePipo->setNombre("Pipo");
         $clientePipo->setApellido("Pérez");
         $clientePipo->setDni("12345680");
-        $clientePipo->setEmail("matiterrone@gmail.com");
+        $clientePipo->setEmail("santi2frames@gmail.com");
         $clientePipo->setPassword($this->passwordHasher->hashPassword($clientePipo, "abc123"));
         $clientePipo->addRole($rolAutenticado);
         $clientePipo->addRole($rolCilente);
