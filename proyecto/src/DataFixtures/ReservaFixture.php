@@ -33,7 +33,7 @@ class ReservaFixture extends Fixture implements FixtureGroupInterface
         $reserva->setMontoReembolso(300);
         $reserva->setFechaReembolsoPenalizado(new DateTime('2025-06-05'));
         $reserva->setEstado($estadoAprobada->getEstado());
-        $reserva->setFechaInicio(new DateTime('2025-07-16'));
+        $reserva->setFechaInicio(new DateTime('2025-07-17'));
         $reserva->setFechaFin(new DateTime('2025-06-30'));
         $reserva->setCreacion(new DateTime('2025-06-5'));
         $manager->persist($reserva);
