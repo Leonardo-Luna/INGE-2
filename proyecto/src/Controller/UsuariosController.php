@@ -217,6 +217,11 @@ final class UsuariosController extends AbstractController
                 $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
                 return $this->redirectToRoute('app_editar_mi_perfil'); 
             }
+            $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['dni' => $user->getDni()]);
+            if($verificarExistencia && $verificarExistencia->getId() != $user->getId()) { # Si existe otro usuario con el mismo email y no es el mismo usuario
+                $this->addFlash('error', 'El DNI ya se encuentra registrado.');
+                return $this->redirectToRoute('app_editar_mi_perfil'); 
+            }
             $this->manager->flush();
             $this->addFlash('success', 'Perfil editado exitosamente.');
             return $this->redirectToRoute('app_perfil'); 
