@@ -41,15 +41,16 @@ final class UsuariosController extends AbstractController
             $rolCliente = $this->rolesRepository->find(Rol::CLIENTE);
 
             $verificarExistencia = $this->manager->getRepository(User::class)->findOneUniqueUser($nuevoUsuario->getDni(), $rolCliente->getNombre(), $nuevoUsuario->getEmail());
-            
-            if($verificarExistencia->getEmail() == $nuevoUsuario->getEmail()) {
-                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
-                return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
-            }
+            if($verificarExistencia){
+                if($verificarExistencia->getEmail() == $nuevoUsuario->getEmail()) {
+                    $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
+                    return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
+                }
 
-            if($verificarExistencia->getDni() == $nuevoUsuario->getDni()) {
-                $this->addFlash('error', 'El DNI ya se encuentra registrado en el sistema para otro cliente.');
-                return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
+                if($verificarExistencia->getDni() == $nuevoUsuario->getDni()) {
+                    $this->addFlash('error', 'El DNI ya se encuentra registrado en el sistema para otro cliente.');
+                    return $this->redirectToRoute('app_usuarios_nuevo_cliente');       
+                }
             }
 
             $nacimiento = $nuevoUsuario->getFechaNacimiento();
@@ -93,15 +94,16 @@ final class UsuariosController extends AbstractController
             $rolEmpleado = $this->rolesRepository->find(Rol::EMPLEADO);
 
             $verificarExistencia = $this->manager->getRepository(User::class)->findOneUniqueUser($nuevoUsuario->getDni(), $rolEmpleado->getNombre(), $nuevoUsuario->getEmail());
-            
-            if($verificarExistencia->getEmail() == $nuevoUsuario->getEmail()) {
-                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
-                return $this->redirectToRoute('app_usuarios_nuevo_empleado');       
-            }
+            if ($verificarExistencia){
+                if($verificarExistencia->getEmail() == $nuevoUsuario->getEmail()) {
+                    $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
+                    return $this->redirectToRoute('app_usuarios_nuevo_empleado');       
+                }
 
-            if($verificarExistencia->getDni() == $nuevoUsuario->getDni()) {
-                $this->addFlash('error', 'El DNI ya se encuentra registrado en el sistema para otro empleado.');
-                return $this->redirectToRoute('app_usuarios_nuevo_empleado');       
+                if($verificarExistencia->getDni() == $nuevoUsuario->getDni()) {
+                    $this->addFlash('error', 'El DNI ya se encuentra registrado en el sistema para otro empleado.');
+                    return $this->redirectToRoute('app_usuarios_nuevo_empleado');       
+                }
             }
 
             $nacimiento = $nuevoUsuario->getFechaNacimiento();
