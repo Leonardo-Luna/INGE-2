@@ -46,7 +46,7 @@
                     <p id='R2'>Reembolso si cancelas después del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.reembolsoPenalizado|number_format(2, ',', '.') }}</p>
                     <div name='flash' id="flashMessage" class="flash-message" hidden> Sadnjsdfndsjfkdns</div>
 
-                    {% if 'ROLE_EMPLEADO' in app.user.roles %}
+                    {% if 'ROLE_EMPLEADO' in app.user.roles or 'ROLE_GERENTE' in app.user.roles %}
                     <form id="couponForm" class="mt-4">
                              <input type="text" name="codigo" id="codigo" class="form-control mb-2" placeholder="Código de cupón" required>
                              <button type="submit" class="btn btn-warning w-100 mb-2">Aplicar cupón</button>

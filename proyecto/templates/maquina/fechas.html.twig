@@ -21,7 +21,7 @@
     <input type="hidden" id="fecha_fin" name="fecha_fin">
     <div class="error" id="error-msg"></div>
 
-    {% if is_granted('ROLE_EMPLEADO') %}
+    {% if is_granted('ROLE_EMPLEADO') or is_granted('ROLE_GERENTE') %}
       <div class="form-group mt-3">
         <label for="dni_cliente_empleado" class="form-label">DNI del Cliente:</label>
         <input type="text" id="dni_cliente_empleado" name="dni_cliente_empleado" class="form-control" placeholder="Ingrese DNI del cliente" required>
