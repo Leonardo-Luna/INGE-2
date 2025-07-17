@@ -45,7 +45,17 @@
                                     </div>
                                 {% endif %}
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title text-primary mb-2">{{ maquina.nombre }}</h5>
+                                        <div class="d-flex justify-content-between align-items-start mb-2"> 
+                                            <h5 class="card-title text-primary mb-2">{{ maquina.nombre }}</h5>
+                                            {% if is_granted('ROLE_GERENTE') %}
+                                                <form method="post" action="{{ path('app_eliminar_maquina', {'id': maquina.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta máquina? Esta acción no se puede deshacer y solo se eliminará si no tiene alquileres en curso.');" class="ms-auto" style="z-index: 10;">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ maquina.id) }}">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm p-1" title="Eliminar máquina">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
                                     <div class="mb-2">
                                         <span class="badge bg-secondary me-1">{{ maquina.tipo }}</span>
                                         <span class="badge bg-info text-dark">{{ maquina.ubicacion ? maquina.ubicacion.nombre : 'Sin ubicación' }}</span>
@@ -69,30 +79,32 @@
                                         {{ maquina.descripcion|striptags|slice(0, 100) ~ (maquina.descripcion|length > 100 ? '...' : '') }}
                                     </p>
                                     <div class="mt-auto">
-                                        <a href="{{ path('app_maquina_show', {'id': maquina.id}) }}" class="btn btn-sm btn-info" title="Ver detalles">
-                                            <i class="fas fa-eye"></i> Ver en catalogo
-                                        </a>
-                                        {% if not maquina.enReparacion %}
-                                        <a href="{{ path('app_maquina_reparacion', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Marcar Reparacion">
-                                            <i class="fas fa-eye"></i> Marcar en reparacion
-                                        </a>
-                                        {% endif %}
-                                        {% if maquina.enReparacion %}
-                                        <a href="{{ path('app_maquina_reparacion', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Marcar Reparacion">
-                                            <i class="fas fa-eye"></i> Marcar disponible
-                                        </a>
-                                        {% endif %}
-                                        {% if 'ROLE_GERENTE' in app.user.roles %}
-                                            <a href="{{ path('app_maquina_editar', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Editar máquina">
-                                                <i class="fas fa-edit"></i> Editar
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <a href="{{ path('app_maquina_show', {'id': maquina.id}) }}" class="btn btn-sm btn-info" title="Ver detalles">
+                                                Ver en catálogo
                                             </a>
-                                            <form method="POST" action="{{ path('app_eliminar_maquina', {'id': maquina.id}) }}" onsubmit="return confirm('¿Está seguro que desea eliminar esta máquina?');" style="display:inline;">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete_maquina_' ~ maquina.id) }}">
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar máquina">
-                                                    <i class="fas fa-trash"></i> Eliminar
-                                                </button>
-                                            </form>
-                                        {% endif %}
+                                            {% if not maquina.enReparacion %}
+                                                <a href="{{ path('app_maquina_reparacion', {'id': maquina.id}) }}" class="btn btn-sm btn-warning" title="Marcar Reparación">
+                                                    Marcar en reparación
+                                                </a>
+                                            {% endif %}
+                                            {% if maquina.enReparacion %}
+                                                <a href="{{ path('app_maquina_reparacion', {'id': maquina.id}) }}" class="btn btn-sm btn-success" title="Marcar Disponible">
+                                                    Marcar disponible
+                                                </a>
+                                            {% endif %}
+                                            {% if 'ROLE_GERENTE' in app.user.roles %}
+                                                <a href="{{ path('app_maquina_editar', {'id': maquina.id}) }}" class="btn btn-sm btn-primary" title="Editar máquina">
+                                                    Editar
+                                                </a>
+                                                {# <form method="POST" action="{{ path('app_eliminar_maquina', {'id': maquina.id}) }}" onsubmit="return confirm('¿Está seguro que desea eliminar esta máquina?');" style="display:inline;">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_maquina_' ~ maquina.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar máquina">
+                                                        <i class="fas fa-trash"></i> Eliminar
+                                                    </button>
+                                                </form> #}
+                                            {% endif %} {# Lo dejo comentado por las dudas, pero está arriba y lo puse con un ícono así no queda abajo #}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -103,4 +115,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
