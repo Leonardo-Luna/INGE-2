@@ -1,0 +1,24 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Panel de Reservas y Alquileres{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center display-4 fw-bold text-dark mb-5">Panel de Reservas y Alquileres</h2>
+
+    <div class="row row-cols-1 g-4">
+        <div class="col">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <a href="{{ path('app_reservas') }}" class="btn btn-outline-primary w-100 py-3 mb-3">
+                        <i class="bi bi-calendar-check me-2"></i> Listar Reservas
+                    </a>
+                    <a href="{{ path('app_todos_alquileres') }}" class="btn btn-outline-primary w-100 py-3">
+                        <i class="bi bi-truck me-2"></i> Listar Alquileres
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

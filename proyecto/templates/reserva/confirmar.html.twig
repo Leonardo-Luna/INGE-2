@@ -46,7 +46,7 @@
                     <p id='R2'>Reembolso si cancelas después del {{ reserva.fechaReembolsoPenalizado|date('d/m/Y') }} : ${{ reserva.reembolsoPenalizado|number_format(2, ',', '.') }}</p>
                     <div name='flash' id="flashMessage" class="flash-message" hidden> Sadnjsdfndsjfkdns</div>
 
-                    {% if 'ROLE_EMPLEADO' in app.user.roles %}
+                    {% if 'ROLE_EMPLEADO' in app.user.roles or 'ROLE_GERENTE' in app.user.roles %}
                     <form id="couponForm" class="mt-4">
                              <input type="text" name="codigo" id="codigo" class="form-control mb-2" placeholder="Código de cupón" required>
                              <button type="submit" class="btn btn-warning w-100 mb-2">Aplicar cupón</button>
@@ -126,9 +126,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                salidaForzada=false;
-                
-                
+                salidaForzada = false;
                 console.log(data);
                 mostrarFlash(data.mensaje, 'flashExito');
                 if (bool) {
@@ -155,18 +153,16 @@
             return bool;
         }
 
-
         function mostrarQR() {
             const qrTexto = document.getElementById('textoQR');
             const qrBoton = document.getElementById('generarQR');
-            setTimeout(function() {
-            qrTexto.removeAttribute("hidden");         
-            qrBoton.setAttribute("hidden", "");
+            setTimeout(function () {
+                qrTexto.removeAttribute("hidden");
+                qrBoton.setAttribute("hidden", "");
             }, 1000)
-            
         }
 
-        // Generar QR si el usuario es empleado y qrData existe
+        // Generar QR si qrData existe
         if (qrData && qrData !== "null" && qrData !== "") {
             const canvas = document.getElementById('qrcode');
             if (canvas) {
@@ -185,6 +181,21 @@
                     }
                 });
             }
+
+            // 🚀 Nuevo: polling para redireccionar automáticamente cuando el pago esté aprobado
+            const intervalo = setInterval(() => {
+                fetch('/reserva/{{ reserva.id }}/estado')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.estado === 'APROBADO') {
+                            clearInterval(intervalo);
+                            window.location.href = '{{ path("app_todos_alquileres") }}?flash=success';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error consultando estado:', error);
+                    });
+            }, 4000);
         }
     </script>
 {% endblock %}

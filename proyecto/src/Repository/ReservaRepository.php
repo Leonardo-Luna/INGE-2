@@ -59,6 +59,19 @@ class ReservaRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    public function buscarReservas() {
+
+        $qb = $this->createQueryBuilder('r');
+
+        $qb->select('r')
+            ->andWhere($qb->expr()->notIn('r.estado', ':estados')) // NOT IN = not in array
+
+            ->setParameter('estados', ['APROBADO', 'EN CURSO']);
+
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
+
     public function filtrarAlquileresPropios(User $user) {
 
         $qb = $this->createQueryBuilder('r');
@@ -88,14 +101,14 @@ class ReservaRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-    public function buscarAlquileresEntre(DateTime $fechaUno, DateTime $fechaDos, string $aprobado, string $finalizado) {
+    public function buscarAlquileresEntre(DateTime $fechaUno, DateTime $fechaDos, string $aprobado, string $finalizado, string $enCurso) {
         return $this->createQueryBuilder('r')
             ->where('r.creacion >= :fechaUno')
             ->andWhere('r.creacion <= :fechaDos')
             ->andWhere('r.estado IN (:estados)')
             ->setParameter('fechaUno', $fechaUno)
             ->setParameter('fechaDos', $fechaDos)
-            ->setParameter('estados', [$aprobado, $finalizado])
+            ->setParameter('estados', [$aprobado, $finalizado, $enCurso])
             ->getQuery()
             ->getResult();
     }

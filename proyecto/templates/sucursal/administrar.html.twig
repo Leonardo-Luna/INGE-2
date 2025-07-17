@@ -1,63 +1,73 @@
-{# templates/tu_ruta_de_gestion_sucursal.html.twig #}
-
 {% extends 'layout/base.html.twig' %}
 
 {% block title %}Alquil.AR{% endblock %}
 
 {% block imports %}
-    {{parent()}}
+    {{ parent() }}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 {% endblock %}
 
-
 {% block content %}
-  <div class="perfil-container">
-    <h1>{{ sucursal.nombre }}</h1>
+<div class="container my-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h1 class="card-title mb-4">{{ sucursal.nombre }}</h1>
+            <div class="mb-4">
+                <p class="mb-2"><strong>Dirección:</strong> {{ sucursal.direccion }}</p>
+                <p class="mb-2"><strong>Ciudad:</strong> {{ sucursal.ciudad }}</p>
+                <p class="mb-0"><strong>Horario de atención:</strong> {{ sucursal.horario }}</p>
+            </div>
 
-    <div class="info-box">
-      <p><strong>Dirección:</strong> {{ sucursal.direccion }}</p>
-      <p><strong>Ciudad:</strong> {{ sucursal.ciudad }}</p>
-      <p><strong>Horario de atención:</strong> {{ sucursal.horario }}</p>
-    </div>
+            <div class="mb-4">
+                {# <a onClick="redirigirACatalogo({{sucursal.id}})" class="btn btn-primary mb-2">Ver máquinas</a> #}
+            </div>
 
-    <div class="acciones">
-       {# Este es el botón para redirigir al catálogo con el filtro #}
-      {#<a onClick=redirigirACatalogo({{sucursal.id}}) class="btn">Ver máquinas</a> #}
-    </div>
+            <div class="mb-4">
+              <p class="mb-2 fw-bold">Gestionar</p>
+              <div class="row g-2 justify-content-center align-items-center">
+              <div class="col-12 col-md-6 d-flex pb-3">
+                <a href="{{ path('app_editar_sucursal', {'id': sucursal.id}) }}" class="btn btn-warning w-100 text-nowrap d-flex align-items-center justify-content-center" style="min-width: 180px;">
+                Modificar Información
+                </a>
+              </div>
+              <hr>
+              <div class="col-12 col-md-6 d-flex">
+                <form method="post" action="{{ path('app_sucursal_delete', {'id': sucursal.id}) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta sucursal? Esta acción no se puede deshacer y solo se eliminará si no tiene máquinas asociadas.');" class="w-100 d-flex align-items-center justify-content-center" style="min-width: 180px; z-index: 10;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sucursal.id) }}">
+                <button type="submit" class="btn btn-danger w-100" title="Eliminar sucursal">
+                  Eliminar Sucursal
+                </button>
+                </form>
+              </div>
+              </div>
+            </div>
 
-    {# Sección de Gestionar #}
-    <div class="info-box2">
-        <p><strong>Gestionar</strong></p> {# El texto "Gestionar" se mantiene como párrafo, negrita para destacar #}
-        <div class="gestion-buttons"> {# Nuevo contenedor para los botones para aplicar flex #}
-            <a href="{{ path('app_editar_sucursal', {'id': sucursal.id}) }}" class="btn btn-modificar">Modificar Información</a>
-            <a REEMPLAZAR:"Este campo por la ruta adecuada a la HU" class="btn btn-eliminar">Eliminar Sucursal</a>
+            <h3 class="mb-3">Ubicación</h3>
+            <div id="map" class="rounded" style="height: 300px; width: 100%;"></div>
         </div>
     </div>
-    
-    <h3>Ubicación</h3> {# Si quieres mantener el mapa aquí #}
-    <div id="map" style="height: 300px; width: 538px; border-radius: 10px; margin-top: 20px;"></div>
+</div>
 
-    <script>
-        const lat = {{ sucursal.latitud }};
-        const lng = {{ sucursal.longitud }};
+<script>
+    const lat = {{ sucursal.latitud }};
+    const lng = {{ sucursal.longitud }};
 
-        const map = L.map('map').setView([lat, lng], 15);
+    const map = L.map('map').setView([lat, lng], 15);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        L.marker([lat, lng]).addTo(map)
-            .bindPopup('{{ sucursal.nombre|e('js') }}')
-            .openPopup();
+    L.marker([lat, lng]).addTo(map)
+        .bindPopup('{{ sucursal.nombre|e('js') }}')
+        .openPopup();
 
-              function redirigirACatalogo(sucursalId) {
-    const url = `/catalogo?search=&tipo=&sucursal=${encodeURIComponent(sucursalId)}`;
-    window.location.href = url;
-}
-    </script>
-  </div>
+    function redirigirACatalogo(sucursalId) {
+        const url = `/catalogo?search=&tipo=&sucursal=${encodeURIComponent(sucursalId)}`;
+        window.location.href = url;
+    }
+</script>
 {% for type, messages in app.flashes %}
     {% for message in messages %}
         <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
@@ -66,76 +76,4 @@
         </div>
     {% endfor %}
 {% endfor %}
-
-  <style>
-    .perfil-container {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 2rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-      align-content:center;
-    }
-    .info-box p {
-      margin: 0.5rem 0;
-    }
-    .acciones {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column; /* Apila los botones de acción */
-      gap: 0.5rem;
-    }
-    .btn {
-      display: inline-block;
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 4px;
-      /* Eliminar margin-bottom para que no afecte la disposición inline */
-      /* margin-bottom: 20px; */ 
-    }
-    .btn:hover {
-      background-color: #0056b3;
-    }
-
-    .info-box2 {
-        border :solid;
-        border-color:grey;
-        border-radius: 10px;
-        padding:10px;
-        margin-top: 20px; /* Espacio entre el botón "Ver máquinas" y este cuadro */
-    }
-
-    .info-box2 p { /* Estilo para el texto "Gestionar" */
-        margin-top: 0;
-        margin-bottom: 10px;
-        font-size: 1.1em;
-    }
-
-    .gestion-buttons {
-        display: flex; /* **Usa flexbox para alinear los botones** */
-        justify-content: space-around; /* O space-between, flex-start, etc. para espaciado */
-        gap: 10px; /* Espacio entre los botones */
-        flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
-    }
-
-    /* Estilos específicos para los botones dentro de .gestion-buttons */
-    .gestion-buttons .btn {
-        flex-grow: 1; /* Permite que los botones crezcan para ocupar el espacio disponible */
-        flex-basis: 0; /* Base de cero para que flex-grow funcione mejor */
-        min-width: 150px; /* Ancho mínimo para evitar que se hagan demasiado pequeños */
-        margin-bottom: 0; /* Asegurarse de que no tengan margin-bottom */
-    }
-
-    .btn-eliminar { /* Clase específica para el botón de eliminar */
-        background-color: red;
-    }
-
-    .btn-eliminar:hover {
-        background-color: rgb(158, 0, 0);
-    }
-  </style>
 {% endblock %}
