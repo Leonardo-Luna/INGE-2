@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 final class UsuariosController extends AbstractController
 {
@@ -26,7 +27,8 @@ final class UsuariosController extends AbstractController
                                 private EntityManagerInterface $manager,
                                 private MailService $mailService,
                                 private StringService $stringService,
-                                private UserPasswordHasherInterface $passwordHasher) { }
+                                private UserPasswordHasherInterface $passwordHasher,
+                                private TokenStorageInterface $tokenStorage) { }
 
     #[Route('/administracion/usuarios/nuevo-cliente', name: 'app_usuarios_nuevo_cliente')]
     public function NuevoCliente(Request $request): Response
@@ -193,52 +195,71 @@ final class UsuariosController extends AbstractController
         ]);
     }
 
-    #[Route('/mi-perfil/editar', name: 'app_editar_mi_perfil')]
-    public function EditarPerfilPropio(Request $request): Response
-    {
-        $user = $this->getUser();
+ #[Route('/mi-perfil/editar', name: 'app_editar_mi_perfil')]
+public function EditarPerfilPropio(Request $request): Response
+{
+    $user = $this->getUser();
 
-        if(!$user) {
-            $this->addFlash('error', 'Debe iniciar sesión para editar su perfil.');
-            return $this->redirectToRoute('app_login'); 
-        }
-
-        if($user->isEliminado()) {
-            $this->addFlash('error', 'El usuario se encuentra eliminado y no puede ser editado.');
-            return $this->redirectToRoute('app_login'); 
-        }
-
-        #Si el usuario es gerente, no puede editar
-        $rolGerente = $this->rolesRepository->find(Rol::GERENTE);
-        if(in_array($rolGerente->getNombre(), $user->getRoles())) {
-            $this->addFlash('error', 'No puede editar un usuario con rol de gerente.');
-            return $this->redirectToRoute('app_perfil'); 
-        }
-
-        $form = $this->createForm(EditarMiUsuarioType::class, $user);
-        $form->handleRequest($request);
-
-        if($form->isSubmitted() && $form->isValid()) {
-            $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-            if($verificarExistencia && $verificarExistencia->getId() != $user->getId()) { # Si existe otro usuario con el mismo email y no es el mismo usuario
-                $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
-                return $this->redirectToRoute('app_editar_mi_perfil'); 
-            }
-            $verificarExistencia = $this->manager->getRepository(User::class)->findOneByDniAndRole($user->getDni(), $user->getRoles()[1]);
-            if($verificarExistencia && $verificarExistencia->getId() != $user->getId()) { # Si existe otro usuario con el mismo email y no es el mismo usuario
-                $this->addFlash('error', 'El DNI ya se encuentra registrado.');
-                return $this->redirectToRoute('app_editar_mi_perfil'); 
-            }
-            $this->manager->flush();
-            $this->addFlash('success', 'Perfil editado exitosamente.');
-            return $this->redirectToRoute('app_perfil'); 
-        }
-
-        return $this->render('usuarios/editar-mi-perfil.html.twig', [
-            'form' => $form,
-            'user' => $user,
-        ]);
+    if(!$user) {
+        $this->addFlash('error', 'Debe iniciar sesión para editar su perfil.');
+        return $this->redirectToRoute('app_login'); 
     }
+
+    if($user->isEliminado()) {
+        $this->addFlash('error', 'El usuario se encuentra eliminado y no puede ser editado.');
+        return $this->redirectToRoute('app_login'); 
+    }
+
+    #Si el usuario es gerente, no puede editar
+    $rolGerente = $this->rolesRepository->find(Rol::GERENTE);
+    if(in_array($rolGerente->getNombre(), $user->getRoles())) {
+        $this->addFlash('error', 'No puede editar un usuario con rol de gerente.');
+        return $this->redirectToRoute('app_perfil'); 
+    }
+
+    $form = $this->createForm(EditarMiUsuarioType::class, $user);
+    $form->handleRequest($request);
+
+    if($form->isSubmitted() && $form->isValid()) {
+        $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+        if($verificarExistencia && $verificarExistencia->getId() != $user->getId()) {
+            $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
+            $token = $this->tokenStorage->getToken();
+            $this->manager->refresh($user);
+            if ($token) {
+                $token->setUser($user);
+            }
+            return $this->redirectToRoute('app_editar_mi_perfil'); 
+        }
+
+        $verificarExistencia = $this->manager->getRepository(User::class)->findOneByDniAndRole($user->getDni(), $user->getRoles()[1]);
+        if($verificarExistencia && $verificarExistencia->getId() != $user->getId()) {
+            $this->addFlash('error', 'El DNI ya se encuentra registrado.');
+            $this->manager->refresh($user);
+            $token = $this->tokenStorage->getToken();
+            if ($token) {
+                $token->setUser($user);
+            }
+            return $this->redirectToRoute('app_editar_mi_perfil'); 
+        }
+
+        $this->manager->flush();
+
+        // ✅ Refrescar el token para mantener la sesión activa
+        $token = $this->tokenStorage->getToken();
+        if ($token) {
+            $token->setUser($user);
+        }
+
+        $this->addFlash('success', 'Perfil editado exitosamente.');
+        return $this->redirectToRoute('app_perfil'); 
+    }
+
+    return $this->render('usuarios/editar-mi-perfil.html.twig', [
+        'form' => $form,
+        'user' => $user,
+    ]);
+}
   
     #[Route('/gerencia/usuarios/editar/{id}', name: 'app_editar_usuario')]
     public function EditarUsuario(int $id, Request $request): Response
