@@ -217,7 +217,7 @@ final class UsuariosController extends AbstractController
                 $this->addFlash('error', 'El correo electrónico ya se encuentra registrado.');
                 return $this->redirectToRoute('app_editar_mi_perfil'); 
             }
-            $verificarExistencia = $this->manager->getRepository(User::class)->findOneBy(['dni' => $user->getDni()]);
+            $verificarExistencia = $this->manager->getRepository(User::class)->findOneByDniAndRole($user->getDni(), $user->getRoles()[1]);
             if($verificarExistencia && $verificarExistencia->getId() != $user->getId()) { # Si existe otro usuario con el mismo email y no es el mismo usuario
                 $this->addFlash('error', 'El DNI ya se encuentra registrado.');
                 return $this->redirectToRoute('app_editar_mi_perfil'); 
@@ -259,7 +259,7 @@ final class UsuariosController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
-            $existingUserWithSameDni = $this->manager->getRepository(User::class)->findOneBy(['dni' => $user->getDni()]);
+            $existingUserWithSameDni = $this->manager->getRepository(User::class)->findOneByDniAndRole($user->getDni(), $user->getRoles()[1]);
             if ($existingUserWithSameDni && $existingUserWithSameDni->getId() !== $user->getId()) {
                 $this->addFlash('error', 'El DNI ya se encuentra registrado por otro usuario.');
                 return $this->redirectToRoute('app_editar_usuario', ['id' => $id]);
@@ -279,7 +279,7 @@ final class UsuariosController extends AbstractController
             }
             $this->manager->flush();
             $this->addFlash('success', 'Usuario editado exitosamente.');
-            return $this->redirectToRoute('app_editar_usuarios'); 
+            return $this->redirectToRoute('app_lista_usuarios'); 
         }
 
         return $this->render('usuarios/editar-cliente.html.twig', [
