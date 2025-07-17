@@ -39,12 +39,12 @@ final class AdminController extends AbstractController
         return $this->render('admin/usuarios.html.twig');
     }
 
-    #[Route('/administracion/reservas', name: 'app_reservas')]
+    #[Route('/administracion/reservasyalquileres', name: 'panel_reservasyalquileres')]
     public function listarReservas(Request $request): Response
     {
         $reservas = $this->manager->getRepository(Reserva::class)->findAll();
 
-        return $this->render('reserva/listar-todas.html.twig', [
+        return $this->render('admin/reservasyalquileres.html.twig', [
             "reservas" => $reservas,
         ]);
     }
