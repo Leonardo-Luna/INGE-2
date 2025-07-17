@@ -81,7 +81,7 @@ class ReservaRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->in('r.estado', ':estados')) // IN = in array
 
             ->setParameter('usuario', $user)
-            ->setParameter('estados', ['APROBADO', 'EN CURSO']);
+            ->setParameter('estados', ['APROBADO', 'EN CURSO', 'FINALIZADO']);
 
         $query = $qb->getQuery();
         return $query->getResult();

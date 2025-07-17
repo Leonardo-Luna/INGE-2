@@ -63,9 +63,10 @@ final class ReservaController extends AbstractController
 
         $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
         $estadoEnCurso = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
+        $estadoFinalizado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
 
         $alquileres = $this->manager->getRepository(Reserva::class)->findBy([
-            'estado' => [$estadoAprobado, $estadoEnCurso]
+            'estado' => [$estadoAprobado, $estadoEnCurso, $estadoFinalizado]
         ]);
 
         return $this->render('reserva/listar-alquileres-todos.html.twig', [
