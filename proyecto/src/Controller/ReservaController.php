@@ -351,7 +351,6 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
 
         $this->addFlash('success', 'Pago aprobado. Tu reserva ha sido confirmada.');
 
-        $this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaInicio());
 
         return $this->redirectToRoute('app_mis_alquileres');
     }
@@ -449,6 +448,7 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
         // Cambiar estado según resultado
         if ($status === 'approved') {
             $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
+            $this->mailService->EnviarReservaFinalizada($reserva->getCostoTotal(), $reserva->getUsuario()->getEmail(), $reserva->getMaquina()->getNombre(), $reserva->getFechaInicio());
         } else {
             $estado = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FALTA_PAGO)->getEstado();
         }
