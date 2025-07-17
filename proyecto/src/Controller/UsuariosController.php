@@ -92,7 +92,7 @@ final class UsuariosController extends AbstractController
             $rolAutenticado = $this->rolesRepository->find(Rol::AUTENTICADO);
             $rolEmpleado = $this->rolesRepository->find(Rol::EMPLEADO);
 
-            $verificarExistencia = $this->manager->getRepository(User::class)->findOneUniqueUser($nuevoUsuario->getDni(), $rolCliente->getNombre(), $nuevoUsuario->getEmail());
+            $verificarExistencia = $this->manager->getRepository(User::class)->findOneUniqueUser($nuevoUsuario->getDni(), $rolEmpleado->getNombre(), $nuevoUsuario->getEmail());
             
             if($verificarExistencia->getEmail() == $nuevoUsuario->getEmail()) {
                 $this->addFlash('error', 'El correo electrónico ya se encuentra registrado en el sistema.');
