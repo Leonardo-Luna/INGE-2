@@ -3,52 +3,38 @@
 
 {% block content %}
   <div class="container my-5">
-    <div class="card shadow">
-      <div class="card-body">
-        <h1 class="card-title">
-          Perfil de {{ user.nombre }} {{ user.apellido }}
+    <div class="text-center mb-4">
+      <img src="https://ui-avatars.com/api/?name={{ user.nombre }}+{{ user.apellido }}&background=0D8ABC&color=fff&size=128" alt="Avatar" class="rounded-circle shadow" style="width: 128px; height: 128px;">
+    </div>
+    <div class="text-center mb-4">
+      <h1 class="fw-bold mb-1">{{ user.nombre }} {{ user.apellido }}</h1>
+      <span class="fs-5 text-secondary">
+        {% if 'ROLE_CLIENTE' in user.roles %}(Cliente){% elseif 'ROLE_EMPLEADO' in user.roles %}(Empleado){% elseif 'ROLE_GERENTE' in user.roles %}(Gerente){% endif %}
+      </span>
+    </div>
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-6">
+        <ul class="list-group list-group-flush shadow-sm">
+          <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+          <li class="list-group-item"><strong>DNI:</strong> {{ user.dni }}</li>
           {% if 'ROLE_CLIENTE' in user.roles %}
-            <span class="fs-6 text-secondary">(Cliente)</span>
-          {% elseif 'ROLE_EMPLEADO' in user.roles %}
-            <span class="fs-6 text-secondary">(Empleado)</span>
-          {% elseif 'ROLE_GERENTE' in user.roles %}
-            <span class="fs-6 text-secondary">(Gerente)</span>
+            <li class="list-group-item"><strong>Valoración:</strong> {{ user.valoracionTotal / user.cantValoraciones }} ★</li>
           {% endif %}
-        </h1>
-
-        <div class="mb-4">
-          <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
-          <p class="mb-1"><strong>DNI:</strong> {{ user.dni }}</p>
-          {% if 'ROLE_CLIENTE' in user.roles %}
-            <p class="mb-1"><strong>Valoración:</strong> {{ user.valoracionTotal / user.cantValoraciones }} ★</p>
-          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="row justify-content-center g-4">
+      {% if 'ROLE_CLIENTE' in user.roles %}
+        <div class="col-md-4 d-flex flex-column align-items-center">
+          <a href="{{ path('app_mis_reservas') }}" class="btn btn-primary btn-lg w-100 mb-2">Mis reservas</a>
+          <a href="{{ path('app_mis_alquileres')}}" class="btn btn-primary btn-lg w-100">Mis alquileres</a>
         </div>
-
-        <div class="row g-3">
-          {% if 'ROLE_CLIENTE' in user.roles %}
-            <div class="col-md-6">
-              <div class="card border-secondary">
-                <div class="card-body">
-                  <p class="text-secondary fs-5 mb-3">Ver historiales</p>
-                  <a href="{{ path('app_mis_reservas') }}" class="btn btn-primary mb-2">Mis reservas</a>
-                  <a href="{{ path('app_mis_alquileres')}}" class="btn btn-primary mb-2">Mis alquileres</a>
-                </div>
-              </div>
-            </div>
-          {% endif %}
-          <div class="col-md-6">
-            <div class="card border-secondary">
-              <div class="card-body">
-                <p class="text-secondary fs-5 mb-3">Modificar datos</p>
-                <a href="{{ path('app_reset_password') }}" class="btn btn-primary mb-2">Cambiar contraseña</a>
-                {% if 'ROLE_GERENTE' not in app.user.roles %}
-                <a href="{{ path('app_editar_mi_perfil') }}" class="btn btn-primary mb-2">Editar perfil</a>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-        </div>
-
+      {% endif %}
+      <div class="col-md-4 d-flex flex-column align-items-center">
+        <a href="{{ path('app_reset_password') }}" class="btn btn-secondary btn-lg w-100 mb-2">Cambiar contraseña</a>
+        {% if 'ROLE_GERENTE' not in app.user.roles %}
+          <a href="{{ path('app_editar_mi_perfil') }}" class="btn btn-secondary btn-lg w-100">Editar perfil</a>
+        {% endif %}
       </div>
     </div>
   </div>

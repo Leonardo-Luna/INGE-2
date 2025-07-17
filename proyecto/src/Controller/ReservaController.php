@@ -167,7 +167,7 @@ $estadoAprobado = $this->manager->getRepository(EstadoReserva::class)->find(Esta
     #[Route('/administracion/reservas', name: 'app_reservas')]
     public function listarReservas(Request $request): Response
     {
-        $reservas = $this->manager->getRepository(Reserva::class)->findAll();
+        $reservas = $this->manager->getRepository(Reserva::class)->buscarReservas();
 
         return $this->render('reserva/listar-todas.html.twig', [
             "reservas" => $reservas,

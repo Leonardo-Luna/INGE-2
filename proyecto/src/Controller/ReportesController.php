@@ -109,8 +109,9 @@ final class ReportesController extends AbstractController
 
             $estadoAprobada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::APROBADA)->getEstado();
             $estadoFinalizada = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::FINALIZADO)->getEstado();
+            $estadoEnCurso = $this->manager->getRepository(EstadoReserva::class)->find(EstadoReserva::EN_CURSO)->getEstado();
             
-            $query = $this->manager->getRepository(Reserva::class)->buscarAlquileresEntre($fechaInicio, $fechaFin, $estadoAprobada, $estadoFinalizada);
+            $query = $this->manager->getRepository(Reserva::class)->buscarAlquileresEntre($fechaInicio, $fechaFin, $estadoAprobada, $estadoFinalizada, $estadoEnCurso);
         }
 
         return $this->render('reportes/finanzas.html.twig', [
